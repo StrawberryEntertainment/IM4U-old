@@ -32,7 +32,8 @@ namespace UnrealBuildTool.Rules
 					"SlateCore",
 					"RawMesh" ,
 					"MessageLog",
-					"MainFrame"
+					"MainFrame",
+					"PropertyEditor"
 					// ... add other public dependencies that you statically link with here ...
 				}
 				);
@@ -41,8 +42,7 @@ namespace UnrealBuildTool.Rules
 				new string[]
 				{
 					"EditorStyle",
-					"EditorWidgets",
-					"PropertyEditor"
+					"EditorWidgets"
 					// ... add private dependencies that you statically link with here ...
 				}
 				);

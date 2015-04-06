@@ -1,3 +1,4 @@
+// Copyright 2015 BlackMa9. All Rights Reserved.
 
 /*=============================================================================
 Main implementation of FFbxImporter : import FBX data to Unreal
@@ -50,7 +51,6 @@ PMXImportOptions* GetImportOptions(
 
 		PMXImportOptions* ImportOptions 
 			= PmxImporter->GetImportOptions();
-#if 0
 		// if Skeleton was set by outside, please make sure copy back to UI
 		if (ImportOptions->SkeletonForAnimation)
 		{
@@ -69,7 +69,6 @@ PMXImportOptions* GetImportOptions(
 		{
 			ImportUI->PhysicsAsset = NULL;
 		}
-#endif
 		if (bForceImportType)
 		{
 			ImportUI->MeshTypeToImport = ImportType;
@@ -88,7 +87,8 @@ PMXImportOptions* GetImportOptions(
 		}
 
 		TSharedRef<SWindow> Window = SNew(SWindow)
-			.Title(NSLOCTEXT("UnrealEd", "FBXImportOpionsTitle", "FBX Import Options"))
+			//.Title(NSLOCTEXT("UnrealEd", "FBXImportOpionsTitle", "FBX Import Options"))
+			.Title(NSLOCTEXT("IM4U", "MMDImportOpionsTitle", "MMD Import Options"))
 			.SizingRule(ESizingRule::Autosized);
 
 		TSharedPtr<SPmxOptionWindow> PmxOptionWindow;
@@ -170,7 +170,7 @@ void ApplyImportUIToImportOptions(
 	InOutImportOptions.bUsedAsFullName = ImportUI->bOverrideFullName;
 	InOutImportOptions.bConvertScene = ImportUI->bConvertScene;
 	InOutImportOptions.bImportAnimations = ImportUI->bImportAnimations;
-#if 0
+#if 1
 	InOutImportOptions.SkeletonForAnimation = ImportUI->Skeleton;
 #endif
 	if (ImportUI->MeshTypeToImport == PMXIT_StaticMesh)
@@ -198,7 +198,6 @@ void ApplyImportUIToImportOptions(
 			AnimData->ImportRotation = SkeletalMeshData->ImportRotation;
 			AnimData->ImportUniformScale = SkeletalMeshData->ImportUniformScale;
 		}
-
 	}
 	else
 	{

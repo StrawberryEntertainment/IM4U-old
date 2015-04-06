@@ -1,3 +1,4 @@
+// Copyright 2015 BlackMa9. All Rights Reserved.
 
 
 #include "IM4UPrivatePCH.h"
@@ -865,7 +866,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 				UMaterialExpressionMultiply* MulExpression_3
 					= ConstructObject< UMaterialExpressionMultiply >(UMaterialExpressionMultiply::StaticClass(), UnrealMaterial);
 				UnrealMaterial->Expressions.Add(MulExpression_3);
-				UnrealMaterial->EmissiveColor.Expression = MulExpression_3;
+				//UnrealMaterial->EmissiveColor.Expression = MulExpression_3; //TES: lighting EmmisicveColor For AutoLuminous 
 				MulExpression_3->MaterialExpressionEditorX = -250;
 				MulExpression_3->MaterialExpressionEditorY = 400;
 				MulExpression_3->bHidePreviewWindow = 0;
@@ -887,6 +888,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 				MulExpression->A.Expression = UnrealTextureExpression;
 				MulExpression->B.Connect(4, UnrealTextureExpression);
 				MulExpression_2->B.Connect(4, UnrealTextureExpression);
+				UnrealMaterial->OpacityMask.Connect(4, UnrealTextureExpression);//TEST: Non Light EmmisciveColor For Easy AutoLuminous
 				//MulExpression->B.Expression = UnrealTextureExpression.Outputs[4];
 				UnrealTextureExpression->Texture = UnrealTexture;
 				UnrealTextureExpression->SamplerType = /*bSetupAsNormalMap ? SAMPLERTYPE_Normal :*/ SAMPLERTYPE_Color;

@@ -1,3 +1,4 @@
+// Copyright 2015 BlackMa9. All Rights Reserved.
 // copy from UE4 :: FbxFactory class
 
 #pragma once

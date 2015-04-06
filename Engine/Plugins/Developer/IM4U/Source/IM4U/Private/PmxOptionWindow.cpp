@@ -1,4 +1,7 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+
+// Copyright 2015 BlackMa9. All Rights Reserved.
+
 #include "IM4UPrivatePCH.h"
 
 #include "UnrealEd.h"
@@ -72,8 +75,8 @@ void SPmxOptionWindow::Construct(const FArguments& InArgs)
 						[
 							SNew(SButton)
 							.HAlign(HAlign_Center)
-							.Text(LOCTEXT("FbxOptionWindow_ImportAll", "Import All"))
-							.ToolTipText(LOCTEXT("FbxOptionWindow_ImportAll_ToolTip", "Import all files with these same settings"))
+							.Text(LOCTEXT("MMDOptionWindow_ImportAll", "Import All"))
+							.ToolTipText(LOCTEXT("MMDOptionWindow_ImportAll_ToolTip", "Import all files with these same settings"))
 							.IsEnabled(this, &SPmxOptionWindow::CanImport)
 							.OnClicked(this, &SPmxOptionWindow::OnImportAll)
 						]
@@ -81,7 +84,7 @@ void SPmxOptionWindow::Construct(const FArguments& InArgs)
 						[
 							SAssignNew(ImportButton, SButton)
 							.HAlign(HAlign_Center)
-							.Text(LOCTEXT("FbxOptionWindow_Import", "Import"))
+							.Text(LOCTEXT("MMDOptionWindow_Import", "Import"))
 							.IsEnabled(this, &SPmxOptionWindow::CanImport)
 							.OnClicked(this, &SPmxOptionWindow::OnImport)
 						]
@@ -89,8 +92,8 @@ void SPmxOptionWindow::Construct(const FArguments& InArgs)
 						[
 							SNew(SButton)
 							.HAlign(HAlign_Center)
-							.Text(LOCTEXT("FbxOptionWindow_Cancel", "Cancel"))
-							.ToolTipText(LOCTEXT("FbxOptionWindow_Cancel_ToolTip", "Cancels importing this FBX file"))
+							.Text(LOCTEXT("MMDOptionWindow_Cancel", "Cancel"))
+							.ToolTipText(LOCTEXT("MMDOptionWindow_Cancel_ToolTip", "Cancels importing this MMD file"))
 							.OnClicked(this, &SPmxOptionWindow::OnCancel)
 						]
 				]
@@ -112,7 +115,7 @@ bool SPmxOptionWindow::CanImport()  const
 {
 #if 0
 	// do test to see if we are ready to import
-	if (ImportUI->MeshTypeToImport == FBXIT_Animation)
+	if (ImportUI->MeshTypeToImport == PMXIT_Animation)
 	{
 		if (ImportUI->Skeleton == NULL || !ImportUI->bImportAnimations)
 		{

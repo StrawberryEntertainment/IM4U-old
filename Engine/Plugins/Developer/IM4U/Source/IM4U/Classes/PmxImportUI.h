@@ -1,4 +1,5 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 2015 BlackMa9. All Rights Reserved.
 
 /**
 * Copyright 2010 Autodesk, Inc. All Rights Reserved.

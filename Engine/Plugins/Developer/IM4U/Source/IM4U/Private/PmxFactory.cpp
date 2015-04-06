@@ -1,3 +1,4 @@
+// Copyright 2015 BlackMa9. All Rights Reserved.
 
 
 #include "IM4UPrivatePCH.h"
@@ -46,6 +47,7 @@
 
 DEFINE_LOG_CATEGORY(LogMMD4UE4_PMXFactory)
 
+/////////////////////////////////////////////////////////
 // 3 "ProcessImportMesh..." functions outputing Unreal data from a filled FSkeletalMeshBinaryImport
 // and a handfull of other minor stuff needed by these 
 // Fully taken from SkeletalMeshImport.cpp
@@ -54,7 +56,7 @@ extern void ProcessImportMeshInfluences(FSkeletalMeshImportData& ImportData);
 extern void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalMeshImportData& ImportData);
 extern bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalDepth, FSkeletalMeshImportData& ImportData);
 
-
+/////////////////////////////////////////////////////////
 
 UPmxFactory::UPmxFactory(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -88,6 +90,8 @@ UClass* UPmxFactory::ResolveSupportedClass()
 	return UPmxFactory::StaticClass();
 }
 
+////////////////////////////////////////////////
+//IM4U Develop Temp Define
 //////////////////////////////////////////////
 //#define DEBUG_MMD_UE4_ORIGINAL_CODE	(1)
 #define DEBUG_MMD_PLUGIN_SKELTON	(1) 
@@ -169,71 +173,103 @@ UObject* UPmxFactory::FactoryCreateBinary
 		// If the user chose to import all, we don't show the dialog again and use the same settings for each object until importing another set of files
 		bShowOption = false;
 	}
-#else
+#endif
 	FPmxImporter* PmxImporter = FPmxImporter::GetInstance();
 
 	EPMXImportType ForcedImportType = PMXIT_StaticMesh;
 
-	bool bImportAll = false;
-	PMXImportOptions* ImportOptions
-		= GetImportOptions(
-			PmxImporter,
-			ImportUI,
-			true,//bShowImportDialog, 
-			InParent->GetPathName(), 
-			bOperationCanceled, 
-			bImportAll,
-			false,//bIsObjFormat, 
-			false,//bIsObjFormat,
-			ForcedImportType
-			);
-	if (bImportAll)
-	{
-		// If the user chose to import all, we don't show the dialog again and use the same settings for each object until importing another set of files
-		//bShowOption = false;
-	}
-#endif
+	// For multiple files, use the same settings
+	bDetectImportTypeOnImport = false;
+
+	//judge MMD format(pmx or pmd)
 	bool bIsPmxFormat = false;
 	if (FString(Type).Equals(TEXT("pmx"), ESearchCase::IgnoreCase))
 	{
 		//Is PMX format 
 		bIsPmxFormat = true;
 	}
-
+	//Load MMD Model From binary File
 	MMD4UE4::PmxMeshInfo pmxMeshInfoPtr;
 	pmxMaterialImportHelper.InitializeBaseValue(InParent);
+	bool pmxImportResult = false;
+	if (bIsPmxFormat)
+	{
+		//pmx ver
+		pmxImportResult = pmxMeshInfoPtr.PMXLoaderBinary(Buffer, BufferEnd);
+	}
+	else
+	{
+		//pmd ver
+		MMD4UE4::PmdMeshInfo PmdMeshInfo;
+		if (PmdMeshInfo.PMDLoaderBinary(Buffer, BufferEnd))
+		{
+			//Up convert From PMD to PMX format gfor ue4
+			pmxImportResult = PmdMeshInfo.ConvertToPmxFormat(&pmxMeshInfoPtr);
+		}
+	}
+	if (!pmxImportResult)
+	{
+		// Log the error message and fail the import.
+		Warn->Log(ELogVerbosity::Error, L"PMX Import ERR...FLT");
+		FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
+		return NULL;
+	}
+	else
+	{
+		//モデル読み込み後の警告文表示：コメント欄
+		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic", "{0}"), FText::FromString("tilesss"));
+		const FText Message
+			= FText::Format(LOCTEXT("ImportReadMe_Generic",
+			"Important!! \nReadMe Lisence \n modele Name:\n'{0}'\n \n Model Comment JP:\n'{1}'"),
+			FText::FromString(pmxMeshInfoPtr.modelNameJP), FText::FromString(pmxMeshInfoPtr.modelCommentJP));
+		if (EAppReturnType::Ok != FMessageDialog::Open(EAppMsgType::OkCancel, Message))
+		{
+			//ダイアログボックスをキャンセル（同意できないされた場合は読み込み中止
+			/*FMessageDialog::Open(EAppMsgType::Ok, Message, &TitleStr);
+			FMessageDialog::Open(EAppMsgType::YesNo, Message);
+			FMessageDialog::Open(EAppMsgType::OkCancel, Message);
+			FMessageDialog::Open(EAppMsgType::YesNoCancel, Message);
+			FMessageDialog::Open(EAppMsgType::CancelRetryContinue, Message);
+			FMessageDialog::Open(EAppMsgType::YesNoYesAllNoAll, Message);
+			FMessageDialog::Open(EAppMsgType::YesNoYesAllNoAllCancel, Message);
+			FMessageDialog::Open(EAppMsgType::YesNoYesAll, Message);
+			//
+			FMessageDialog::Debugf(Message);*/
+			FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
+			return NULL;
+		}
+		TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
+		const FText MessageDbg
+			= FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg",
+			"次のImportOption用Slateはまだ実装途中です。\n現時点で有効なパラメータは、\n{0}\nです。"),
+			FText::FromString("・ImportMorphTargets\n"));
+		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
+	}
 
-	// For multiple files, use the same settings
-	bDetectImportTypeOnImport = false;
+	// show Import Option Slate
+	bool bImportAll = false;
+	PMXImportOptions* ImportOptions
+		= GetImportOptions(
+		PmxImporter,
+		ImportUI,
+		true,//bShowImportDialog, 
+		InParent->GetPathName(),
+		bOperationCanceled,
+		bImportAll,
+		bIsPmxFormat,
+		bIsPmxFormat,
+		ForcedImportType
+		);
+	if (bImportAll)
+	{
+		// If the user chose to import all, we don't show the dialog again and use the same settings for each object until importing another set of files
+		//bShowOption = false;
+	}
 
 	if (ImportOptions)
-	//if(true)
 	{
 		Warn->BeginSlowTask(NSLOCTEXT("PmxFactory", "BeginImportingPmxMeshTask", "Importing Pmx mesh"), true);
 #if 1
-		bool pmxImportResult = false;
-		if (bIsPmxFormat)
-		{
-			//pmx 
-			pmxImportResult = pmxMeshInfoPtr.PMXLoaderBinary(Buffer, BufferEnd);
-		}
-		else
-		{
-			//pmd
-			MMD4UE4::PmdMeshInfo PmdMeshInfo;
-			if (PmdMeshInfo.PMDLoaderBinary(Buffer, BufferEnd))
-			{
-				pmxImportResult = PmdMeshInfo.ConvertToPmxFormat(&pmxMeshInfoPtr);
-			}
-		}
-		//if (!FbxImporter->ImportFromFile(*UFactory::CurrentFilename, Type))
-		if (!pmxImportResult)
-		{
-			// Log the error message and fail the import.
-			//Warn->Log(ELogVerbosity::Error, FbxImporter->GetErrorMessage());
-			Warn->Log(ELogVerbosity::Error, L"PMX Import ERR...FLT");
-		}
-		else
 		{
 #ifdef DEBUG_MMD_UE4_ORIGINAL_CODE
 			// Log the import message and import the mesh.
@@ -500,11 +536,11 @@ UObject* UPmxFactory::FactoryCreateBinary
 						}
 #if 1 //Morth
 						// import morph target
-						if (NewObject /*&& ImportUI->SkeletalMeshImportData->bImportMorphTargets*/)
+						if (NewObject && ImportUI->SkeletalMeshImportData->bImportMorphTargets)
 						{
 							// Disable material importing when importing morph targets
-							//uint32 bImportMaterials = ImportOptions->bImportMaterials;
-							//ImportOptions->bImportMaterials = 0;
+							uint32 bImportMaterials = ImportOptions->bImportMaterials;
+							ImportOptions->bImportMaterials = 0;
 
 							/*FbxImporter->*/ImportFbxMorphTarget(
 								//SkelMeshNodeArray, 
@@ -515,7 +551,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 								LODIndex
 								);
 
-							//ImportOptions->bImportMaterials = !!bImportMaterials;
+							ImportOptions->bImportMaterials = !!bImportMaterials;
 						}
 #endif
 
@@ -585,6 +621,15 @@ UObject* UPmxFactory::FactoryCreateBinary
 		//FbxImporter->ReleaseScene();
 #endif
 		Warn->EndSlowTask();
+	}
+	else
+	{
+		const FText Message 
+			= FText::Format(LOCTEXT("ImportFailed_Generic", 
+				"Failed to import '{0}'. Failed to create asset '{1}'\nMMDモデルの読み込みを中止します。\nIM4U Plugin"),
+				FText::FromString(*Name.ToString()), FText::FromString(*Name.ToString()));
+		FMessageDialog::Open(EAppMsgType::Ok, Message);
+		//UE_LOG(LogAssetTools, Warning, TEXT("%s"), *Message.ToString());
 	}
 
 	FEditorDelegates::OnAssetPostImport.Broadcast(this, NewObject);
@@ -1374,7 +1419,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 }
 
 
-
+///////////////////////////////////////////////////////////////////////////
 
 UPmxImportUI::UPmxImportUI(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

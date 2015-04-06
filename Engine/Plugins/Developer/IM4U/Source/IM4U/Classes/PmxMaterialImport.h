@@ -1,3 +1,4 @@
+// Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
 #include "Engine.h"
