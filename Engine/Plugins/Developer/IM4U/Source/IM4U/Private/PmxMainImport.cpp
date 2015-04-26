@@ -236,6 +236,9 @@ void ApplyImportUIToImportOptions(
 	InOutImportOptions.bPreserveLocalTransform = ImportUI->bPreserveLocalTransform;
 	InOutImportOptions.bImportCustomAttribute = ImportUI->AnimSequenceImportData->bImportCustomAttribute;
 #endif
+	//add self
+	InOutImportOptions.AnimSequenceAsset = ImportUI->AnimSequenceAsset;
+	InOutImportOptions.MMD2UE4NameTableRow = ImportUI->MMD2UE4NameTableRow;
 }
 
 TSharedPtr<FPmxImporter> FPmxImporter::StaticInstance;

@@ -2,7 +2,7 @@
 
 #include "IM4UPrivatePCH.h"
 #include "PmdImporter.h"
-#include "EncodeHelper.h"
+#include "MMDImportHelper.h"
 
 namespace MMD4UE4
 {
@@ -17,22 +17,6 @@ namespace MMD4UE4
 	PmdMeshInfo::~PmdMeshInfo()
 	{
 	}
-
-
-	FVector PmdMeshInfo::ConvertVectorAsixToUE4FromMMD(FVector vec)
-	{
-#if 1 //For UE4 From MMD
-		FVector temp;
-		temp.Y = vec.Z*(-1);
-		temp.X = vec.X*(1);
-		temp.Z = vec.Y*(1);
-		return temp;
-#else
-		return vec;
-#endif
-	}
-
-
 
 	bool PmdMeshInfo::PMDLoaderBinary(
 		const uint8 *& Buffer,
@@ -206,56 +190,6 @@ namespace MMD4UE4
 		return true;
 	}
 
-	//////////////////////////////////////
-	// from PMD/PMX Binary Buffer To String @ TextBuf
-	// 4 + n: TexBuf
-	// buf : top string (top data)
-	// encodeType : 0 utf-16, 1 utf-8
-	//////////////////////////////////////
-	FString PmdMeshInfo::PMDTexBufferToFString(const uint8 ** buffer, const uint32 size)
-	{
-		FString NewString;
-		//uint32 size = 0;
-		//temp data 
-		TArray<char> RawModData;
-
-		{
-			//FMemory::Memcpy(&size, *buffer, sizeof(uint32));
-			//*buffer += sizeof(uint32);
-			//size = 20;
-			RawModData.Empty(size);
-			RawModData.AddUninitialized(size);
-			FMemory::Memcpy(RawModData.GetData(), *buffer, RawModData.Num());
-			RawModData.Add(0); RawModData.Add(0);
-			NewString.Append(UTF8_TO_TCHAR(encodeHelper.convert_encoding(RawModData.GetData(), "shift-jis", "utf-8").c_str()));
-			//NewString.Append(RawModData.GetData());
-			*buffer += size;
-		}
-		return NewString;
-	}
-	FString PmdMeshInfo::ConvertPMDSJISToFString(
-		uint8 *buffer,
-		const uint32 size
-		)
-	{
-		FString NewString;
-		//uint32 size = 0;
-		//temp data 
-		TArray<char> RawModData;
-
-		{
-			//FMemory::Memcpy(&size, *buffer, sizeof(uint32));
-			//*buffer += sizeof(uint32);
-			//size = 20;
-			RawModData.Empty(size);
-			RawModData.AddUninitialized(size);
-			FMemory::Memcpy(RawModData.GetData(), buffer, RawModData.Num());
-			RawModData.Add(0); RawModData.Add(0);
-			NewString.Append(UTF8_TO_TCHAR(encodeHelper.convert_encoding(RawModData.GetData(), "shift-jis", "utf-8").c_str()));
-			//NewString.Append(RawModData.GetData());
-		}
-		return NewString;
-	}
 	/////////////////////////////////////
 
 	bool PmdMeshInfo::ConvertToPmxFormat(
@@ -267,7 +201,7 @@ namespace MMD4UE4
 		PmdMeshInfo * pmdMeshInfoPtr = this;
 
 		pmxMeshInfoPtr->modelNameJP 
-			= ConvertPMDSJISToFString((uint8 *)&(header.Name), sizeof(header.Name));
+			= ConvertMMDSJISToFString((uint8 *)&(header.Name), sizeof(header.Name));
 
 		pmxMeshInfoPtr->modelNameJP 
 			= pmxMeshInfoPtr->modelNameJP.Replace(TEXT("."), TEXT("_"));// [.] is broken filepath for ue4 
@@ -425,7 +359,7 @@ namespace MMD4UE4
 				FString tempTexPathStr;
 				FString tempShaPathStr;
 				tempTex.TexturePath
-					= ConvertPMDSJISToFString(
+					= ConvertMMDSJISToFString(
 						(uint8 *)pmdMaterialPtr.TextureFileName,
 						sizeof(pmdMaterialPtr.TextureFileName));
 				if (tempTex.TexturePath.Split("/", &tempTexPathStr, &tempShaPathStr))
@@ -489,7 +423,7 @@ namespace MMD4UE4
 
 			// ボーン情報の取得
 			{
-				pmxMeshInfoPtr->boneList[PmxBoneNum].Name = "AllTopRootBone";
+				pmxMeshInfoPtr->boneList[PmxBoneNum].Name = TEXT("ルート");
 				pmxMeshInfoPtr->boneList[PmxBoneNum].NameEng = "AllTopRootBone";
 				pmxMeshInfoPtr->boneList[PmxBoneNum].Position = FVector(0);
 				pmxMeshInfoPtr->boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;
@@ -506,7 +440,7 @@ namespace MMD4UE4
 				PMX_BONE & pmxBonePtr = pmxMeshInfoPtr->boneList[i];
 
 				pmxBonePtr.Name
-					= ConvertPMDSJISToFString((uint8 *)&(pmdBonePtr.Name),sizeof(pmdBonePtr.Name));
+					= ConvertMMDSJISToFString((uint8 *)&(pmdBonePtr.Name),sizeof(pmdBonePtr.Name));
 				pmxBonePtr.NameEng
 					= pmxBonePtr.Name;
 				//
@@ -661,7 +595,7 @@ Buffer += memcopySize;
 				for (i = 0; i < PmxMorphNum; i++)
 				{
 					pmxMeshInfoPtr->morphList[i].Name
-						= ConvertPMDSJISToFString(
+						= ConvertMMDSJISToFString(
 							(uint8 *)&(pmdMeshInfoPtr->skinList[i].Name),
 							sizeof(pmdMeshInfoPtr->skinList[i].Name)
 							);

@@ -4,12 +4,15 @@
 
 #include "Engine.h"
 
+#include "MMDImportHelper.h"
 #include "PmxImportUI.h"
+
 #include "MMDStaticMeshImportData.h"
 
 
 /////////////////////////////////////////////////
 // Copy From DxLib DxModelLoader4.h
+// DX Library Copyright (C) 2001-2008 Takumi Yamada.
 
 //#define BYTE (unsigned char)
 
@@ -22,12 +25,6 @@ namespace MMD4UE4
 
 	// データ型定義 ---------------------------------
 
-	enum PMXEncodeType
-	{
-		PMXEncodeType_UTF16LE = 0,
-		PMXEncodeType_UTF8,
-		PMXEncodeType_ERROR
-	};
 	// PMXファイルの情報を格納する構造体
 	struct PMX_BASEINFO
 	{
@@ -276,42 +273,18 @@ namespace MMD4UE4
 
 	////////////////////////////////////////////////////////////////////
 	// Inport用 meta data 格納クラス
-	class PmxMeshInfo
+	class PmxMeshInfo : public MMDImportHelper
 	{
 	public:
 		PmxMeshInfo();
 		~PmxMeshInfo();
 
-		FVector ConvertVectorAsixToUE4FromMMD(FVector vec);
 		///////////////////////////////////////
 		bool PMXLoaderBinary(
 			const uint8 *& Buffer,
 			const uint8 * BufferEnd
 			);
-		//////////////////////////////////////
-		// from PMD/PMX Binary Buffer To String @ TextBuf
-		// 4 + n: TexBuf
-		// buf : top string (top data)
-		// encodeType : 0 utf-16, 1 utf-8
-		//////////////////////////////////////
-		FString PMXTexBufferToFString(
-			const uint8 ** buffer,
-			PMXEncodeType encodeType
-			);
-		/////////////////////////////////////
-		//
-		//////////////////////////////////////
-		uint32 PMXExtendBufferSizeToUint32(
-			const uint8 ** buffer,
-			const uint8  blockSize
-			);
-		/////////////////////////////////////
-		//
-		//////////////////////////////////////
-		int32 PMXExtendBufferSizeToInt32(
-			const uint8 ** buffer,
-			const uint8  blockSize
-			);
+		
 		///////////////////////////////////////
 
 		char				magic[4];
@@ -396,6 +369,8 @@ struct PMXImportOptions
 	bImportMorph = true;
 	AnimationLengthImportType = FBXALIT_ExportedTime;
 	}*/
+	UAnimSequence* AnimSequenceAsset;
+	UDataTable* MMD2UE4NameTableRow;
 };
 
 PMXImportOptions* GetImportOptions(

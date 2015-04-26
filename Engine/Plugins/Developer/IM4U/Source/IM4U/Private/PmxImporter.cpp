@@ -2,6 +2,7 @@
 
 #include "IM4UPrivatePCH.h"
 #include "PmxImporter.h"
+#include "MMDImportHelper.h"
 
 namespace MMD4UE4
 {
@@ -16,23 +17,7 @@ namespace MMD4UE4
 	PmxMeshInfo::~PmxMeshInfo()
 	{
 	}
-
-
-	FVector PmxMeshInfo::ConvertVectorAsixToUE4FromMMD(FVector vec)
-	{
-#if 1 //For UE4 From MMD
-		FVector temp;
-		temp.Y = vec.Z*(-1);
-		temp.X = vec.X*(1);
-		temp.Z = vec.Y*(1);
-		return temp;
-#else
-		return vec;
-#endif
-	}
-
-
-
+	
 	bool PmxMeshInfo::PMXLoaderBinary(
 		const uint8 *& Buffer,
 		const uint8 * BufferEnd
@@ -150,7 +135,7 @@ namespace MMD4UE4
 				{
 					statics_bdef1++;
 					//BDEF1
-					pmxVertexPtr.BoneIndex[0] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[0] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[0] ++;
 					pmxVertexPtr.BoneWeight[0] = 1.0f;
 				}
@@ -158,9 +143,9 @@ namespace MMD4UE4
 				{
 					statics_bdef2++;
 					//BDEF2
-					pmxVertexPtr.BoneIndex[0] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[0] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[0] ++;
-					pmxVertexPtr.BoneIndex[1] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[1] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[1] ++;
 					//
 					memcopySize = sizeof(pmxVertexPtr.BoneWeight[0]);
@@ -173,13 +158,13 @@ namespace MMD4UE4
 				{
 					statics_bdef4++;
 					//BDEF4
-					pmxVertexPtr.BoneIndex[0] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[0] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[0] ++;
-					pmxVertexPtr.BoneIndex[1] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[1] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[1] ++;
-					pmxVertexPtr.BoneIndex[2] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[2] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[2] ++;
-					pmxVertexPtr.BoneIndex[3] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[3] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[3] ++;
 					for (int bw = 0; bw < 4; ++bw)
 					{
@@ -193,9 +178,9 @@ namespace MMD4UE4
 				{
 					statics_sdef++;
 					//SDEF
-					pmxVertexPtr.BoneIndex[0] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[0] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[0] ++;
-					pmxVertexPtr.BoneIndex[1] = PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+					pmxVertexPtr.BoneIndex[1] = MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					pmxVertexPtr.BoneIndex[1] ++;
 					//
 					memcopySize = sizeof(pmxVertexPtr.BoneWeight[0]);
@@ -269,7 +254,7 @@ namespace MMD4UE4
 				for (int SubNum = 0; SubNum < 3; ++SubNum)
 				{
 					pmxFaseListPtr.VertexIndex[SubNum] 
-						= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.VertexIndexSize);
+						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.VertexIndexSize);
 				}
 			}
 		}
@@ -355,10 +340,10 @@ namespace MMD4UE4
 				Buffer += memcopySize;
 				//通常テクスチャ, テクスチャテーブルの参照Index
 				materialList[i].TextureIndex
-					= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
+					= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
 				//スフィアテクスチャ, テクスチャテーブルの参照Index  ※テクスチャ拡張子の制限なし
 				materialList[i].SphereTextureIndex 
-					= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
+					= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
 				//スフィアモード 0:無効 1:乗算(sph) 2:加算(spa) 
 				//3:サブテクスチャ(追加UV1のx,yをUV参照して通常テクスチャ描画を行う)
 				memcopySize = sizeof(materialList[i].SphereMode);
@@ -372,7 +357,7 @@ namespace MMD4UE4
 				if (materialList[i].ToonFlag == 0)
 				{//Toonテクスチャ, テクスチャテーブルの参照Index
 					materialList[i].ToonTextureIndex 
-						= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
+						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
 				}
 				else
 				{//共有Toonテクスチャ[0～9] -> それぞれ toon01.bmp～toon10.bmp に対応
@@ -403,7 +388,7 @@ namespace MMD4UE4
 
 			// ボーン情報の取得
 			{
-				boneList[PmxBoneNum].Name = "AllTopRootBone";
+				boneList[PmxBoneNum].Name = TEXT("ルート");
 				boneList[PmxBoneNum].NameEng = "AllTopRootBone";
 				boneList[PmxBoneNum].Position = FVector(0);
 				boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;
@@ -432,7 +417,7 @@ namespace MMD4UE4
 				Buffer += memcopySize;
 
 				boneList[i].ParentBoneIndex
-					= PMXExtendBufferSizeToInt32(&Buffer, this->baseHeader.BoneIndexSize) + offsetBoneIndx;
+					= MMDExtendBufferSizeToInt32(&Buffer, this->baseHeader.BoneIndexSize) + offsetBoneIndx;
 				//
 				memcopySize = sizeof(boneList[i].TransformLayer);
 				FMemory::Memcpy(&boneList[i].TransformLayer, Buffer, memcopySize);
@@ -468,13 +453,13 @@ namespace MMD4UE4
 				else
 				{
 					boneList[i].LinkBoneIndex
-						= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 				}
 
 				if (boneList[i].Flag_AddRot == 1 || boneList[i].Flag_AddMov == 1)
 				{
 					boneList[i].AddParentBoneIndex
-						= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					//
 					memcopySize = sizeof(boneList[i].AddRatio);
 					FMemory::Memcpy(&boneList[i].AddRatio, Buffer, memcopySize);
@@ -516,7 +501,7 @@ namespace MMD4UE4
 					PmxIKNum++;
 
 					boneList[i].IKInfo.TargetBoneIndex
-						= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 					//
 					memcopySize = sizeof(boneList[i].IKInfo.LoopNum);
 					FMemory::Memcpy(&boneList[i].IKInfo.LoopNum, Buffer, memcopySize);
@@ -539,7 +524,7 @@ namespace MMD4UE4
 					for (int32 j = 0; j < boneList[i].IKInfo.LinkNum; j++)
 					{
 						boneList[i].IKInfo.Link[j].BoneIndex
-							= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+							= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 						//
 						memcopySize = sizeof(boneList[i].IKInfo.Link[j].RotLockFlag);
 						FMemory::Memcpy(&boneList[i].IKInfo.Link[j].RotLockFlag, Buffer, memcopySize);
@@ -605,7 +590,7 @@ namespace MMD4UE4
 					for (j = 0; j < morphList[i].DataNum; j++)
 					{
 						morphList[i].Group[j].Index =
-							PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.MorphIndexSize);
+							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.MorphIndexSize);
 						//
 						memcopySize = sizeof(morphList[i].Group[j].Ratio);
 						FMemory::Memcpy(&morphList[i].Group[j].Ratio, Buffer, memcopySize);
@@ -620,7 +605,7 @@ namespace MMD4UE4
 					for (j = 0; j < morphList[i].DataNum; j++)
 					{
 						morphList[i].Vertex[j].Index =
-							PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.VertexIndexSize);
+							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.VertexIndexSize);
 						//
 						memcopySize = sizeof(morphList[i].Vertex[j].Offset);
 						FMemory::Memcpy(&morphList[i].Vertex[j].Offset, Buffer, memcopySize);
@@ -635,7 +620,7 @@ namespace MMD4UE4
 					for (j = 0; j < morphList[i].DataNum; j++)
 					{
 						morphList[i].Bone[j].Index =
-							PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
 						//
 						memcopySize = sizeof(morphList[i].Bone[j].Offset);
 						FMemory::Memcpy(&morphList[i].Bone[j].Offset, Buffer, memcopySize);
@@ -658,7 +643,7 @@ namespace MMD4UE4
 					for (j = 0; j < morphList[i].DataNum; j++)
 					{
 						morphList[i].UV[j].Index =
-							PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.VertexIndexSize);
+							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.VertexIndexSize);
 						//
 						memcopySize = sizeof(morphList[i].UV[j].Offset);
 						FMemory::Memcpy(&morphList[i].UV[j].Offset, Buffer, memcopySize);
@@ -672,7 +657,7 @@ namespace MMD4UE4
 					for (j = 0; j < morphList[i].DataNum; j++)
 					{
 						morphList[i].Material[j].Index =
-							PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.MaterialIndexSize);
+							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.MaterialIndexSize);
 						//
 						memcopySize = sizeof(morphList[i].Material[j].CalcType);
 						FMemory::Memcpy(&morphList[i].Material[j].CalcType, Buffer, memcopySize);
@@ -731,94 +716,5 @@ namespace MMD4UE4
 		return true;
 	}
 
-	//////////////////////////////////////
-	// from PMD/PMX Binary Buffer To String @ TextBuf
-	// 4 + n: TexBuf
-	// buf : top string (top data)
-	// encodeType : 0 utf-16, 1 utf-8
-	//////////////////////////////////////
-	FString PmxMeshInfo::PMXTexBufferToFString(const uint8 ** buffer, PMXEncodeType encodeType)
-	{
-		FString NewString;
-		uint32 size = 0;
-		//temp data 
-		TArray<uint8> RawModData;
 
-		if (encodeType == PMXEncodeType_UTF16LE)
-		{
-			FMemory::Memcpy(&size, *buffer, sizeof(uint32));
-			*buffer += sizeof(uint32);
-			RawModData.Empty(size);
-			RawModData.AddUninitialized(size);
-			FMemory::Memcpy(RawModData.GetData(), *buffer, RawModData.Num());
-			RawModData.Add(0); RawModData.Add(0);
-			NewString.Append((TCHAR*)RawModData.GetData());
-			*buffer += size;
-		}
-		else
-		{
-			// this plugin  unsuported encodetype ( utf-8 etc.)
-			// Error ...
-			UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Encode Type : not UTF-16 LE , unload"));
-		}
-		return NewString;
-	}
-
-	/////////////////////////////////////
-	//
-	//////////////////////////////////////
-	uint32 PmxMeshInfo::PMXExtendBufferSizeToUint32(
-		const uint8 ** buffer,
-		const uint8  blockSize
-		)
-	{
-		uint32 retValue = 0;
-
-		switch (blockSize)
-		{
-		case 1:
-			retValue = (uint8)((*buffer)[0]);
-			*buffer += blockSize;
-			break;
-
-		case 2:
-			retValue = (uint16)(((uint16 *)*buffer)[0]);
-			*buffer += blockSize;
-			break;
-
-		case 4:
-			retValue = (uint32)((uint32 *)*buffer)[0];
-			*buffer += blockSize;
-			break;
-		}
-
-		return retValue;
-	}
-	int32 PmxMeshInfo::PMXExtendBufferSizeToInt32(
-		const uint8 ** buffer,
-		const uint8  blockSize
-		)
-	{
-		int32 retValue = 0;
-
-		switch (blockSize)
-		{
-		case 1:
-			retValue = (int8)((*buffer)[0]);
-			*buffer += blockSize;
-			break;
-
-		case 2:
-			retValue = (int16)(((int16 *)*buffer)[0]);
-			*buffer += blockSize;
-			break;
-
-		case 4:
-			retValue = (int32)((int32 *)*buffer)[0];
-			*buffer += blockSize;
-			break;
-		}
-
-		return retValue;
-	}
 }

@@ -1422,7 +1422,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 ///////////////////////////////////////////////////////////////////////////
 
 UPmxImportUI::UPmxImportUI(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
+	: Super(ObjectInitializer)//, MMD2UE4NameTableRow(MMD2UE4NameTableRowDmmy)
 {
 	bCombineMeshes = true;
 

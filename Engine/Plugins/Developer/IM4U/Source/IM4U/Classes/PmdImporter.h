@@ -5,8 +5,10 @@
 #include "Engine.h"
 
 #include "PmxImporter.h"
+#include "MMDImportHelper.h"
 
-// Copy From DxLib DxModelLoader4.h
+// Copy From DxLib DxModelLoader3.h
+// DX Library Copyright (C) 2001-2008 Takumi Yamada.
 
 //#define BYTE (unsigned char)
 
@@ -277,31 +279,16 @@ namespace MMD4UE4
 	DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_PmdMeshInfo, Log, All)
 
 	// Inport—p meta data Ši”[ƒNƒ‰ƒX
-	class PmdMeshInfo
+	class PmdMeshInfo : public MMDImportHelper
 	{
 	public:
 		PmdMeshInfo();
 		~PmdMeshInfo();
 
-		FVector ConvertVectorAsixToUE4FromMMD(FVector vec);
 		///////////////////////////////////////
 		bool PMDLoaderBinary(
 			const uint8 *& Buffer,
 			const uint8 * BufferEnd
-			);
-		//////////////////////////////////////
-		// from PMD/PMX Binary Buffer To String @ TextBuf
-		// 4 + n: TexBuf
-		// buf : top string (top data)
-		// encodeType : SJIS 
-		//////////////////////////////////////
-		FString PMDTexBufferToFString(
-			const uint8 ** buffer,
-			const uint32 size
-			);
-		FString ConvertPMDSJISToFString(
-			uint8 * buffer,
-			const uint32 size
 			);
 		//////////////////////////////////////////
 		bool ConvertToPmxFormat(

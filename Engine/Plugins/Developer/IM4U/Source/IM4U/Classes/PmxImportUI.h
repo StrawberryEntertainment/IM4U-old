@@ -137,6 +137,22 @@ class UPmxImportUI : public UObject
 	//変数名(Import Auto Luminous Materials)を大文字前にスペースが入る模様。
 	UPROPERTY(EditAnywhere, config, Category = MaterialAdvMMD, meta = (OBJRestrict = "true"))
 		uint32 bImportAutoLuminousMaterials : 1;
+
+	/** Skeleton to use for imported asset. When importing a mesh, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (ImportType = "Animation"))
+		class UAnimSequence* AnimSequenceAsset;
+
+	/** Skeleton to use for imported asset. When importing a mesh, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
+	UPROPERTY(EditAnywhere, Category = AnimationList, meta = (ImportType = "Animation"))
+		TArray<class UMMDSkeletalMeshImportData*> TestArrayList;
+	
+	/** MMD2UE4NameTableRow to use for imported asset. When importing a Anim, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
+	UPROPERTY(EditAnywhere, Category = Animation, meta = (ImportType = "Animation"))
+		UDataTable*  MMD2UE4NameTableRow;
+
+
+
+	//struct FTableRowBase MMD2UE4NameTableRowDmmy;
 };
 
 
