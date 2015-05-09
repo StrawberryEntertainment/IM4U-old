@@ -110,14 +110,14 @@ namespace MMD4UE4
 	// IKデータ一つ辺りの情報( ChainBoneIndex を抜いたサイズ 11byte )
 	struct PMD_IK
 	{
-		BYTE	Data[11];						// データ
-		/*
+		/*BYTE	Data[11];						// データ
+		*/
 		WORD	Bone ;								// IKボーン
 		WORD	TargetBone ;						// IKターゲットボーン
 		BYTE	ChainLength ;						// IKチェーンの長さ(子の数)
 		WORD	Iterations ;						// 再起演算回数
-		float	ControlWeight ;						// IKの影響度
-		*/
+		//float	ControlWeight ;						// IKの影響度
+		float	RotLimit;							// 単位制限角[dig] (PMD系のみ該当Boneがひざの場合X軸のみの制限となる)
 		TArray<WORD>	ChainBoneIndexs;	// IK影響下のボーン番号
 		
 	};

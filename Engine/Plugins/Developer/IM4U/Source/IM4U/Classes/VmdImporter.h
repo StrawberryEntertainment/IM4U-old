@@ -58,11 +58,11 @@ namespace MMD4UE4
 	{
 		/*BYTE	Data[61];						// データ
 		*/
-		uint32	FrameNo;							//  4:  0:フレーム番号
+		uint32	Frame;								//  4:  0:フレーム番号
 		float	Length;								//  8:  4: -(距離)
 		float	Location[3];						// 20:  8:位置
 		float	Rotate[3];							// 32: 20:オイラー角 // X軸は符号が反転しているので注意
-		BYTE	Interpolation[24];					// 56: 32:補間情報 // おそらく[6][4](未検証)
+		BYTE	Interpolation[6][2][2];				// 56: 32:補間情報 // [6:X,Y,Z,Rot,Len,View][2:X,Y][2:P1,P2]
 		uint32	ViewingAngle;						// 60: 56:向き
 		BYTE	Perspective;						// 61: 60:射影カメラかどうか 0:射影カメラ 1:正射影カメラ
 		
@@ -154,6 +154,19 @@ namespace MMD4UE4
 		// sort frame num
 		TArray<int32>			sortIndexList;
 	};
+	struct VmdCameraTrackList
+	{
+		// Track Name ( const MMDCAM)
+		FString					TrackName;
+		// min Frame
+		uint32					minFrameCount;
+		// max Frame
+		uint32					maxFrameCount;
+		// Sorted Key Frame Data List
+		TArray<VMD_CAMERA>		keyList;
+		// sort frame num
+		TArray<int32>			sortIndexList;
+	};
 	//
 	DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_VmdMotionInfo, Log, All)
 	// Inport用 meta data 格納クラス
@@ -180,7 +193,7 @@ namespace MMD4UE4
 		{
 			EVMD_KEYBONE,
 			EVMD_KEYFACE,
-			EVMD_KEYCAM //使うか不明、予約
+			EVMD_KEYCAM 
 		};
 		//////////////////////////////////////////
 		// 指定List内で該当するFrame名があればそのIndex値を返す。異常値=-1。
@@ -201,6 +214,8 @@ namespace MMD4UE4
 		TArray<VmdKeyTrackList>	keyBoneList;
 		//Skins
 		TArray<VmdFaceTrackList> keyFaceList;
+		//camera
+		TArray<VmdCameraTrackList> keyCameraList;
 	};
 
 }

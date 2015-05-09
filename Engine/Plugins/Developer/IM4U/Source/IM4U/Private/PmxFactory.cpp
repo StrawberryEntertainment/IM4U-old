@@ -122,9 +122,6 @@ UObject* UPmxFactory::FactoryCreateBinary
 #ifdef DEBUG_MMD_PLUGIN_STATICMESH
 	importAssetTypeMMD = E_MMD_TO_UE4_STATICMESH;
 #endif
-#ifdef DEBUG_MMD_PLUGIN_ANIMATION
-	importAssetTypeMMD = E_MMD_TO_UE4_ANIMATION;
-#endif
 
 	if (bOperationCanceled)
 	{
@@ -224,30 +221,22 @@ UObject* UPmxFactory::FactoryCreateBinary
 			FText::FromString(pmxMeshInfoPtr.modelNameJP), FText::FromString(pmxMeshInfoPtr.modelCommentJP));
 		if (EAppReturnType::Ok != FMessageDialog::Open(EAppMsgType::OkCancel, Message))
 		{
-			//ダイアログボックスをキャンセル（同意できないされた場合は読み込み中止
-			/*FMessageDialog::Open(EAppMsgType::Ok, Message, &TitleStr);
-			FMessageDialog::Open(EAppMsgType::YesNo, Message);
-			FMessageDialog::Open(EAppMsgType::OkCancel, Message);
-			FMessageDialog::Open(EAppMsgType::YesNoCancel, Message);
-			FMessageDialog::Open(EAppMsgType::CancelRetryContinue, Message);
-			FMessageDialog::Open(EAppMsgType::YesNoYesAllNoAll, Message);
-			FMessageDialog::Open(EAppMsgType::YesNoYesAllNoAllCancel, Message);
-			FMessageDialog::Open(EAppMsgType::YesNoYesAll, Message);
-			//
-			FMessageDialog::Debugf(Message);*/
 			FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
 			return NULL;
 		}
 		TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
 		const FText MessageDbg
-			= FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg",
-			"次のImportOption用Slateはまだ実装途中です。\n現時点で有効なパラメータは、\n{0}\nです。"),
-			FText::FromString("・ImportMorphTargets\n"));
+			= FText(LOCTEXT("ImportReadMe_Generic_Dbg",
+			"次のImportOption用Slateはまだ実装途中です。\n\
+			Import対象はSkeletonのみ生成可能。\n\
+			現時点で有効なパラメータは、表示されている項目が有効です。") );
 		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
 	}
 
 	// show Import Option Slate
 	bool bImportAll = false;
+	ImportUI->bIsObjImport = true;//obj mode
+	ImportUI->OriginalImportType = EPMXImportType::PMXIT_SkeletalMesh;
 	PMXImportOptions* ImportOptions
 		= GetImportOptions(
 		PmxImporter,
@@ -256,7 +245,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 		InParent->GetPathName(),
 		bOperationCanceled,
 		bImportAll,
-		bIsPmxFormat,
+		ImportUI->bIsObjImport,//bIsPmxFormat,
 		bIsPmxFormat,
 		ForcedImportType
 		);
@@ -520,21 +509,8 @@ UObject* UPmxFactory::FactoryCreateBinary
 								true
 								);
 							NewObject = NewMesh;
-
-#if 0 //With Animetion
-							if (NewMesh && ImportUI->bImportAnimations)
-							{
-								// We need to remove all scaling from the root node before we set up animation data.
-								// Othewise some of the global transform calculations will be incorrect.
-								FbxImporter->RemoveTransformSettingsFromFbxNode(RootNodeToImport, ImportUI->SkeletalMeshImportData);
-								FbxImporter->SetupAnimationDataFromMesh(NewMesh, InParent, SkelMeshNodeArray, ImportUI->AnimSequenceImportData, OutputName.ToString());
-
-								// Reapply the transforms for the rest of the import
-								FbxImporter->ApplyTransformSettingsToFbxNode(RootNodeToImport, ImportUI->SkeletalMeshImportData);
-							}
-#endif
 						}
-#if 1 //Morth
+
 						// import morph target
 						if (NewObject && ImportUI->SkeletalMeshImportData->bImportMorphTargets)
 						{
@@ -553,8 +529,20 @@ UObject* UPmxFactory::FactoryCreateBinary
 
 							ImportOptions->bImportMaterials = !!bImportMaterials;
 						}
-#endif
 
+						//add self
+						if (NewObject)
+						{
+							//MMD Extend asset
+							CreateMMDExtendFromMMDModel(
+								InParent,
+								FName(*NewObject->GetName()),
+								&pmxMeshInfoPtr
+								);
+
+						}
+
+						//end phese
 						if (NewObject)
 						{
 							NodeIndex++;
@@ -580,16 +568,6 @@ UObject* UPmxFactory::FactoryCreateBinary
 					}
 #endif
 				}
-#ifdef DEBUG_MMD_PLUGIN_ANIMATION
-				else if (importAssetTypeMMD == E_MMD_TO_UE4_ANIMATION)// animation
-				{
-					if (ImportOptions->SkeletonForAnimation)
-					{
-						// will return the last animation sequence that were added
-						NewObject = UEditorEngine::ImportFbxAnimation(ImportOptions->SkeletonForAnimation, InParent, ImportUI->AnimSequenceImportData, *Filename, *Name.ToString(), true);
-					}
-				}
-#endif
 			}
 			else
 			{
@@ -612,9 +590,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 
 		if (NewObject == NULL)
 		{
-#if 1//DEBUG_MMD_UE4_ORIGINAL_CODE
 			AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Error, LOCTEXT("FailedToImport_NoObject", "Import failed.")), FFbxErrors::Generic_ImportingNewObjectFailed);
-#endif
 			Warn->Log(ELogVerbosity::Error, L"PMX Import ERR [NewObject is NULL]...FLT");
 		}
 
@@ -1419,42 +1395,96 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 }
 
 
-///////////////////////////////////////////////////////////////////////////
-
-UPmxImportUI::UPmxImportUI(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)//, MMD2UE4NameTableRow(MMD2UE4NameTableRowDmmy)
+UMMDExtend * UPmxFactory::CreateMMDExtendFromMMDModel(
+	UObject* InParent,
+	const FName& Name,
+	MMD4UE4::PmxMeshInfo * PmxMeshInfo
+	)
 {
-	bCombineMeshes = true;
+	UMMDExtend * NewMMDExtendAsset = NULL;
 
-	StaticMeshImportData = ConstructObject<UMMDStaticMeshImportData>(UMMDStaticMeshImportData::StaticClass(), this);
-	SkeletalMeshImportData = ConstructObject<UMMDSkeletalMeshImportData>(UMMDSkeletalMeshImportData::StaticClass(), this);
-	/*AnimSequenceImportData = ConstructObject<UFbxAnimSequenceImportData>(UFbxAnimSequenceImportData::StaticClass(), this);
-	TextureImportData = ConstructObject<UFbxTextureImportData>(UFbxTextureImportData::StaticClass(), this);
-	*/
-}
+	//MMD Extend asset
 
-
-bool UPmxImportUI::CanEditChange(const UProperty* InProperty) const
-{
-	bool bIsMutable = Super::CanEditChange(InProperty);
-	if (bIsMutable && InProperty != NULL)
+	// TBD::アセット生成関数で既存アセット時の判断ができていないと思われる。
+	// 場合によってはVMDFactoryのアセット生成処理を元に再設計すること
+	FString ObjectName = FString::Printf(TEXT("%s_MMDExtendAsset"), *Name.ToString());
+	NewMMDExtendAsset = CreateAsset<UMMDExtend>(InParent->GetName(), ObjectName, true);
+	if (!NewMMDExtendAsset)
 	{
-		FName PropName = InProperty->GetFName();
 
-		if (PropName == TEXT("StartFrame") || PropName == TEXT("EndFrame"))
-		{
-			//bIsMutable = AnimSequenceImportData->AnimationLength == FBXALIT_SetRange && bImportAnimations;
-		}
-		else if (PropName == TEXT("bImportCustomAttribute") || PropName == TEXT("AnimationLength"))
-		{
-			bIsMutable = bImportAnimations;
-		}
+		// same object exists, try to see if it's asset, if so, load
+		NewMMDExtendAsset = LoadObject<UMMDExtend>(InParent, *ObjectName);
 
-		if (bIsObjImport && InProperty->GetBoolMetaData(TEXT("OBJRestrict")))
+		if (!NewMMDExtendAsset)
 		{
-			bIsMutable = false;
+			AddTokenizedErrorMessage(
+				FTokenizedMessage::Create(
+				EMessageSeverity::Warning,
+				FText::Format(LOCTEXT("CouldNotCreateMMDExtendAsset",
+				"Could not create MMD Extend Asset ('{0}') for '{1}'"),
+				FText::FromString(ObjectName),
+				FText::FromString(Name.ToString()))
+				),
+				FFbxErrors::SkeletalMesh_FailedToCreatePhyscisAsset);
+		}
+		else
+		{
+			NewMMDExtendAsset->IkInfoList.Empty();
 		}
 	}
+	
+	//create asset info
+	if (NewMMDExtendAsset)
+	{
+		if (NewMMDExtendAsset->IkInfoList.Num() > 0)
+		{
+			NewMMDExtendAsset->IkInfoList.Empty();
+		}
+		//create IK
+		//mapping
+		NewMMDExtendAsset->ModelName = PmxMeshInfo->modelNameJP;
+		NewMMDExtendAsset->ModelComment = PmxMeshInfo->modelCommentJP;
+		//
+		for (int boneIdx = 0; boneIdx < PmxMeshInfo->boneList.Num(); ++boneIdx)
+		{
+			//check IK bone 
+			if (PmxMeshInfo->boneList[boneIdx].Flag_IK)
+			{
+				MMD4UE4::PMX_IK * tempPmxIKPtr = &PmxMeshInfo->boneList[boneIdx].IKInfo;
+				FMMD_IKInfo addMMDIkInfo;
 
-	return bIsMutable;
+				addMMDIkInfo.LoopNum = tempPmxIKPtr->LoopNum;
+				//set limit rot[rad]
+				addMMDIkInfo.RotLimit = tempPmxIKPtr->RotLimit;
+				// this bone
+				addMMDIkInfo.IKBoneName = FName(*PmxMeshInfo->boneList[boneIdx].Name);
+				//ik target 
+				addMMDIkInfo.TargetBoneName = FName(*PmxMeshInfo->boneList[tempPmxIKPtr->TargetBoneIndex].Name);
+				//set sub ik
+				addMMDIkInfo.ikLinkList.AddZeroed(tempPmxIKPtr->LinkNum);
+				for (int ikInfoID = 0; ikInfoID < tempPmxIKPtr->LinkNum; ++ikInfoID)
+				{
+					//limit flag
+					addMMDIkInfo.ikLinkList[ikInfoID].BoneName
+						= FName(*PmxMeshInfo->boneList[tempPmxIKPtr->Link[ikInfoID].BoneIndex].Name);
+					//limit flag
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockFlag = tempPmxIKPtr->Link[ikInfoID].RotLockFlag;
+					//min
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockMin.X = tempPmxIKPtr->Link[ikInfoID].RotLockMin[0];
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockMin.Y = tempPmxIKPtr->Link[ikInfoID].RotLockMin[1];
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockMin.Z = tempPmxIKPtr->Link[ikInfoID].RotLockMin[2];
+					//max
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockMax.X = tempPmxIKPtr->Link[ikInfoID].RotLockMax[0];
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockMax.Y = tempPmxIKPtr->Link[ikInfoID].RotLockMax[1];
+					addMMDIkInfo.ikLinkList[ikInfoID].RotLockMax.Z = tempPmxIKPtr->Link[ikInfoID].RotLockMax[2];
+				}
+				//add
+				NewMMDExtendAsset->IkInfoList.Add(addMMDIkInfo);
+			}
+		}
+		// 
+		NewMMDExtendAsset->MarkPackageDirty();
+	}
+
+	return NewMMDExtendAsset;
 }

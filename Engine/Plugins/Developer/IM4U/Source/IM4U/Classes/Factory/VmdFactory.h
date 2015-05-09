@@ -17,6 +17,7 @@
 #include "VmdImporter.h"
 
 #include "MMD2UE4NameTableRow.h"
+#include "MMDExtend.h"
 
 #include "VmdFactory.generated.h"
 
@@ -44,6 +45,9 @@ class IM4U_API UVmdFactory : public UFactory
 		) override;
 	// End UFactory Interface
 
+	/**********************
+	* Create AnimSequence from VMD data.(新規作成用親関数)
+	***********************/
 	UAnimSequence * ImportAnimations(
 		USkeleton* Skeleton, 
 		UObject* Outer,
@@ -51,6 +55,7 @@ class IM4U_API UVmdFactory : public UFactory
 		//UFbxAnimSequenceImportData* TemplateImportData, 
 		//TArray<FbxNode*>& NodeArray
 		UDataTable* ReNameTable,
+		UMMDExtend* mmdExtend,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		);
 	//////////////
@@ -86,6 +91,7 @@ class IM4U_API UVmdFactory : public UFactory
 		UAnimSequence* DestSeq,
 		USkeleton* Skeleton,
 		UDataTable* ReNameTable,
+		UMMDExtend* mmdExtend,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		);
 
@@ -98,5 +104,41 @@ class IM4U_API UVmdFactory : public UFactory
 		UDataTable* ReNameTable,
 		FName mmdName,
 		FName * ue4Name
+		);
+	/*****************
+	* Bone名称からRefSkeltonで一致するBoneIndexを検索し取得する
+	* Return :index, -1 is not found
+	* @param :TargetName is Target Bone Name
+	****************/
+	int32 FindRefBoneInfoIndexFromBoneName(
+		const FReferenceSkeleton & RefSkelton,
+		const FName & TargetName
+		);
+	/*****************
+	* 現在のキーにおける指定BoneのGlb座標を再帰的に算出する
+	* Return :trncform
+	* @param :TargetName is Target Bone Name
+	****************/
+	FTransform CalcGlbTransformFromBoneIndex(
+		UAnimSequence* DestSeq,
+		USkeleton* Skeleton,
+		int32 BoneIndex,
+		int32 keyIndex
+		);
+	////////////////////////////////////////
+	// VMD -> Matinee actor test
+	bool ImportMatineeSequence(
+		AMatineeActor* InMatineeActor,
+		MMD4UE4::VmdMotionInfo* vmdMotionInfo
+		);
+	void ImportCamera(
+		ACameraActor* Actor,
+		UInterpGroupInst* MatineeGroup,
+		MMD4UE4::VmdCameraTrackList* Camera
+		);
+	UInterpGroupInst* CreateMatineeGroup(
+		AMatineeActor* InMatineeActor,
+		AActor* Actor,
+		FString GroupName
 		);
 };

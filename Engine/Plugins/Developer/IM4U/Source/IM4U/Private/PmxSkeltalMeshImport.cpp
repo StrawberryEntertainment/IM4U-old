@@ -549,53 +549,59 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 #if 1 //test Material Textuere
 	////////
 	TArray<UTexture*> textureAssetList;
-	for (int k = 0; k < PmxMeshInfo->textureList.Num(); ++k)
+	if (ImportUI->bImportTextures)
 	{
-		pmxMaterialImportHelper.AssetsCreateTextuer(
-			//InParent,
-			//Flags,
-			//Warn,
-			FPaths::GetPath(GetCurrentFilename()),
-			PmxMeshInfo->textureList[k].TexturePath,
-			textureAssetList
-			);
+		for (int k = 0; k < PmxMeshInfo->textureList.Num(); ++k)
+		{
+			pmxMaterialImportHelper.AssetsCreateTextuer(
+				//InParent,
+				//Flags,
+				//Warn,
+				FPaths::GetPath(GetCurrentFilename()),
+				PmxMeshInfo->textureList[k].TexturePath,
+				textureAssetList
+				);
 
-		//if (NewObject)
-		/*{
-			NodeIndex++;
-			FFormatNamedArguments Args;
-			Args.Add(TEXT("NodeIndex"), NodeIndex);
-			Args.Add(TEXT("ArrayLength"), NodeIndexMax);// SkelMeshArray.Num());
-			GWarn->StatusUpdate(NodeIndex, NodeIndexMax, FText::Format(NSLOCTEXT("UnrealEd", "Importingf", "Importing ({NodeIndex} of {ArrayLength})"), Args));
-		}*/
+			//if (NewObject)
+			/*{
+				NodeIndex++;
+				FFormatNamedArguments Args;
+				Args.Add(TEXT("NodeIndex"), NodeIndex);
+				Args.Add(TEXT("ArrayLength"), NodeIndexMax);// SkelMeshArray.Num());
+				GWarn->StatusUpdate(NodeIndex, NodeIndexMax, FText::Format(NSLOCTEXT("UnrealEd", "Importingf", "Importing ({NodeIndex} of {ArrayLength})"), Args));
+				}*/
+		}
 	}
 	//UE_LOG(LogCategoryPMXFactory, Warning, TEXT("PMX Import Texture Extecd Complete."));
 	////////////////////////////////////////////
 
 	TArray<FString> UVSets;
-	for (int k = 0; k < PmxMeshInfo->materialList.Num(); ++k)
+	if (ImportUI->bImportMaterials)
 	{
-		pmxMaterialImportHelper.CreateUnrealMaterial(
-			//InParent,
-			PmxMeshInfo->materialList[k],
-			Materials,
-			UVSets,
-			textureAssetList);
-		//if (NewObject)
-		/*{
-			NodeIndex++;
-			FFormatNamedArguments Args;
-			Args.Add(TEXT("NodeIndex"), NodeIndex);
-			Args.Add(TEXT("ArrayLength"), NodeIndexMax);// SkelMeshArray.Num());
-			GWarn->StatusUpdate(NodeIndex, NodeIndexMax, FText::Format(NSLOCTEXT("UnrealEd", "Importingf", "Importing ({NodeIndex} of {ArrayLength})"), Args));
-		}*/
+		for (int k = 0; k < PmxMeshInfo->materialList.Num(); ++k)
 		{
-			int ExistingMatIndex = k;
-			int MaterialIndex = k;
-			ImportData.Materials[ExistingMatIndex].MaterialImportName 
-				= "M_" + PmxMeshInfo->materialList[k].Name;
-			ImportData.Materials[ExistingMatIndex].Material
-				= Materials[MaterialIndex];
+			pmxMaterialImportHelper.CreateUnrealMaterial(
+				//InParent,
+				PmxMeshInfo->materialList[k],
+				Materials,
+				UVSets,
+				textureAssetList);
+			//if (NewObject)
+			/*{
+				NodeIndex++;
+				FFormatNamedArguments Args;
+				Args.Add(TEXT("NodeIndex"), NodeIndex);
+				Args.Add(TEXT("ArrayLength"), NodeIndexMax);// SkelMeshArray.Num());
+				GWarn->StatusUpdate(NodeIndex, NodeIndexMax, FText::Format(NSLOCTEXT("UnrealEd", "Importingf", "Importing ({NodeIndex} of {ArrayLength})"), Args));
+				}*/
+			{
+				int ExistingMatIndex = k;
+				int MaterialIndex = k;
+				ImportData.Materials[ExistingMatIndex].MaterialImportName
+					= "M_" + PmxMeshInfo->materialList[k].Name;
+				ImportData.Materials[ExistingMatIndex].Material
+					= Materials[MaterialIndex];
+			}
 		}
 	}
 	///////////////////////////////////////////
@@ -1343,10 +1349,19 @@ public:
 			);
 	}
 
+	//UE4.7ånÇ‹Ç≈
 	static const TCHAR *Name()
 	{
 		return TEXT("FAsyncImportMorphTargetWork");
 	}
+
+	//UE4.8à»ç~Ç≈óòópÇ∑ÇÈèÍçáÇ…ïKóv
+#if 0
+	FORCEINLINE TStatId GetStatId() const
+	{
+		RETURN_QUICK_DECLARE_CYCLE_STAT(FAsyncImportMorphTargetWork, STATGROUP_ThreadPoolAsyncTasks);
+	}
+#endif
 
 private:
 	USkeletalMesh* TempSkeletalMesh;

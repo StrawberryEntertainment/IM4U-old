@@ -49,7 +49,7 @@ namespace MMD4UE4
 		Buffer += memcopySize;
 		// 各データの先頭アドレスをセット
 		{
-
+			//頂点
 			memcopySize = sizeof(PMD_VERTEX_DATA);
 			FMemory::Memcpy(&vertexData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -64,7 +64,7 @@ namespace MMD4UE4
 
 		}
 		{
-
+			//面データ
 			memcopySize = sizeof(PMD_FACE_DATA);
 			FMemory::Memcpy(&faceData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -79,7 +79,7 @@ namespace MMD4UE4
 
 		}
 		{
-
+			//マテリアル
 			memcopySize = sizeof(PMD_MATERIAL_DATA);
 			FMemory::Memcpy(&materialData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -98,7 +98,7 @@ namespace MMD4UE4
 
 		}
 		{
-
+			//ボーン
 			memcopySize = sizeof(PMD_BONE_DATA);
 			FMemory::Memcpy(&boneData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -122,7 +122,7 @@ namespace MMD4UE4
 
 		}
 		{
-
+			//IK
 			memcopySize = sizeof(PMD_IK_DATA);
 			FMemory::Memcpy(&ikData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -132,14 +132,20 @@ namespace MMD4UE4
 			for (int32 i = 0; i < ikData.Count; ++i)
 			{
 				memcopySize = 0
-					+ sizeof(uint16) * 2
-					+ sizeof(BYTE) * 1
-					+ sizeof(uint16) * 1
-					+ sizeof(float) * 1;//Bone --> ControlWeight;
-				FMemory::Memcpy(&ikList[i], Buffer, memcopySize);
+					+ sizeof(uint16) * 2	//Bone,TargetBone
+					+ sizeof(BYTE) * 1;		//ChainLength
+				FMemory::Memcpy(&ikList[i].Bone, Buffer, memcopySize);
 				Buffer += memcopySize;
 
-				BYTE tempChainLength = ikList[i].Data[2 + 2];//Byte ChainLength;
+				memcopySize = 0
+					+ sizeof(uint16) * 1	//Iterations
+					+ sizeof(float) * 1;	//RotLimit
+				FMemory::Memcpy(&ikList[i].Iterations, Buffer, memcopySize);
+				Buffer += memcopySize;
+				//fix : pmd rotlimit (1.0 == 4.0 rad) -> dig
+				ikList[i].RotLimit = FMath::RadiansToDegrees(ikList[i].RotLimit * 4.0);
+
+				BYTE tempChainLength = ikList[i].ChainLength;//Byte ChainLength;
 				ikList[i].ChainBoneIndexs.AddZeroed(tempChainLength);
 				memcopySize = sizeof(uint16);// *tempChainLength;
 				for (int32 k = 0; k < tempChainLength; ++k)
@@ -151,7 +157,7 @@ namespace MMD4UE4
 
 		}
 		{
-
+			//モーフ
 			memcopySize = sizeof(PMD_SKIN_DATA);
 			FMemory::Memcpy(&skinData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -178,15 +184,13 @@ namespace MMD4UE4
 			}
 
 		}
-		/*{
-
-			PmdIKNum = *((WORD *)Src);
-			Src += 2;
-
-			PmdIK = (PMD_IK *)Src;
-			}*/
+		//表示枠（表情、ボーン）
+		//拡張仕様(英名対応)
+		//拡張仕様(ToonTexture)
+		//拡張仕様(物理：剛体)
+		//拡張仕様(物理：Joint)
 		//////////////////////////////////////////////
-		//UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning, TEXT("PMX Importer Class Complete"));
+		UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning, TEXT("PMX Importer Class Complete"));
 		return true;
 	}
 

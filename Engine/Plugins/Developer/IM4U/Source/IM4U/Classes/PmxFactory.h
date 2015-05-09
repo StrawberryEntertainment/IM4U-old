@@ -14,6 +14,7 @@
 #include "PmxImporter.h"
 #include "PmxImportUI.h"
 #include "PmxMaterialImport.h"
+#include "MMDExtend.h"
 #include "PmxFactory.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_PMXFactory, Log, All)
@@ -129,6 +130,11 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 		FName FbxErrorName
 		);
 	//////////////////////
+	UMMDExtend * CreateMMDExtendFromMMDModel(
+		UObject* InParent,
+		const FName& Name,
+		MMD4UE4::PmxMeshInfo * PmxMeshInfo
+		);
 protected:
 
 	bool bDetectImportTypeOnImport;

@@ -18,6 +18,6 @@ struct FMMD2UE4NameTableRow : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere)
-		FString MmdOrignalName;
+		FString MmdOriginalName;
 
 };

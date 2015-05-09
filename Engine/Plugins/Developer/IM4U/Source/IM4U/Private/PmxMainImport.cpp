@@ -75,6 +75,32 @@ PMXImportOptions* GetImportOptions(
 			ImportUI->OriginalImportType = ImportType;
 		}
 
+		//last select asset ref
+		if (ImportOptions->MmdExtendAsset)
+		{
+			ImportUI->MmdExtendAsset = ImportOptions->MmdExtendAsset;
+		}
+		else
+		{
+			ImportUI->MmdExtendAsset = NULL;
+		}
+		if (ImportOptions->MMD2UE4NameTableRow)
+		{
+			ImportUI->MMD2UE4NameTableRow = ImportOptions->MMD2UE4NameTableRow;
+		}
+		else
+		{
+			ImportUI->MMD2UE4NameTableRow = NULL;
+		}
+		if (ImportOptions->AnimSequenceAsset)
+		{
+			ImportUI->AnimSequenceAsset = ImportOptions->AnimSequenceAsset;
+		}
+		else
+		{
+			ImportUI->AnimSequenceAsset = NULL;
+		}
+
 		ImportUI->bImportAsSkeletal = ImportUI->MeshTypeToImport == PMXIT_SkeletalMesh;
 		ImportUI->bIsObjImport = bIsObjFormat;
 
@@ -208,6 +234,8 @@ void ApplyImportUIToImportOptions(
 		InOutImportOptions.ImportUniformScale = AnimData->ImportUniformScale;
 #endif
 	}
+	//add self pre over write..
+	ImportUI->SkeletalMeshImportData->bImportMorphTargets = ImportUI->bImportMorphTargets;
 	// only re-sample if they don't want to use default sample rate
 	InOutImportOptions.bResample = ImportUI->bUseDefaultSampleRate == false;
 	InOutImportOptions.bImportMorph = ImportUI->SkeletalMeshImportData->bImportMorphTargets;
@@ -239,6 +267,7 @@ void ApplyImportUIToImportOptions(
 	//add self
 	InOutImportOptions.AnimSequenceAsset = ImportUI->AnimSequenceAsset;
 	InOutImportOptions.MMD2UE4NameTableRow = ImportUI->MMD2UE4NameTableRow;
+	InOutImportOptions.MmdExtendAsset = ImportUI->MmdExtendAsset;
 }
 
 TSharedPtr<FPmxImporter> FPmxImporter::StaticInstance;
@@ -325,4 +354,44 @@ void FPmxImporter::CleanUp()
 PMXImportOptions* FPmxImporter::GetImportOptions() const
 {
 	return ImportOptions;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+UPmxImportUI::UPmxImportUI(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)//, MMD2UE4NameTableRow(MMD2UE4NameTableRowDmmy)
+{
+	bCombineMeshes = true;
+
+	StaticMeshImportData = ConstructObject<UMMDStaticMeshImportData>(UMMDStaticMeshImportData::StaticClass(), this);
+	SkeletalMeshImportData = ConstructObject<UMMDSkeletalMeshImportData>(UMMDSkeletalMeshImportData::StaticClass(), this);
+	/*AnimSequenceImportData = ConstructObject<UFbxAnimSequenceImportData>(UFbxAnimSequenceImportData::StaticClass(), this);
+	TextureImportData = ConstructObject<UFbxTextureImportData>(UFbxTextureImportData::StaticClass(), this);
+	*/
+}
+
+
+bool UPmxImportUI::CanEditChange(const UProperty* InProperty) const
+{
+	bool bIsMutable = Super::CanEditChange(InProperty);
+	if (bIsMutable && InProperty != NULL)
+	{
+		FName PropName = InProperty->GetFName();
+
+		if (PropName == TEXT("StartFrame") || PropName == TEXT("EndFrame"))
+		{
+			//bIsMutable = AnimSequenceImportData->AnimationLength == FBXALIT_SetRange && bImportAnimations;
+		}
+		else if (PropName == TEXT("bImportCustomAttribute") || PropName == TEXT("AnimationLength"))
+		{
+			bIsMutable = bImportAnimations;
+		}
+
+		if (bIsObjImport == false && InProperty->GetBoolMetaData(TEXT("OBJRestrict")))
+		{
+			bIsMutable = false;
+		}
+	}
+
+	return bIsMutable;
 }

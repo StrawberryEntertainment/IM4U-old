@@ -222,11 +222,11 @@ namespace MMD4UE4
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
 				TEXT("PMX Import [Vertex:: statics bone type, bdef1 = %u] Complete"), statics_bdef1);
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
-				TEXT("PMX Import [Vertex:: statics bone type, bdef1 = %u] Complete"), statics_bdef2);
+				TEXT("PMX Import [Vertex:: statics bone type, bdef2 = %u] Complete"), statics_bdef2);
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
-				TEXT("PMX Import [Vertex:: statics bone type, bdef1 = %u] Complete"), statics_bdef4);
+				TEXT("PMX Import [Vertex:: statics bone type, bdef3 = %u] Complete"), statics_bdef4);
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
-				TEXT("PMX Import [Vertex:: statics bone type, bdef1 = %u] Complete"), statics_sdef);
+				TEXT("PMX Import [Vertex:: statics bone type, sdef = %u] Complete"), statics_sdef);
 		}
 		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [Vertex] Complete"));
 		////////////////////////////////////////////
@@ -501,7 +501,7 @@ namespace MMD4UE4
 					PmxIKNum++;
 
 					boneList[i].IKInfo.TargetBoneIndex
-						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize) + offsetBoneIndx;
 					//
 					memcopySize = sizeof(boneList[i].IKInfo.LoopNum);
 					FMemory::Memcpy(&boneList[i].IKInfo.LoopNum, Buffer, memcopySize);
@@ -511,6 +511,8 @@ namespace MMD4UE4
 					memcopySize = sizeof(boneList[i].IKInfo.RotLimit);
 					FMemory::Memcpy(&boneList[i].IKInfo.RotLimit, Buffer, memcopySize);
 					Buffer += memcopySize;
+					//fix to Dig From rad(pmx) for vmd ik
+					boneList[i].IKInfo.RotLimit = FMath::RadiansToDegrees(boneList[i].IKInfo.RotLimit);
 
 					//
 					memcopySize = sizeof(boneList[i].IKInfo.LinkNum);
@@ -524,7 +526,7 @@ namespace MMD4UE4
 					for (int32 j = 0; j < boneList[i].IKInfo.LinkNum; j++)
 					{
 						boneList[i].IKInfo.Link[j].BoneIndex
-							= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+							= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize) + offsetBoneIndx;
 						//
 						memcopySize = sizeof(boneList[i].IKInfo.Link[j].RotLockFlag);
 						FMemory::Memcpy(&boneList[i].IKInfo.Link[j].RotLockFlag, Buffer, memcopySize);
@@ -532,14 +534,41 @@ namespace MMD4UE4
 
 						if (boneList[i].IKInfo.Link[j].RotLockFlag == 1)
 						{
+							FVector tempVecRot;
 							//
 							memcopySize = sizeof(boneList[i].IKInfo.Link[j].RotLockMin);
 							FMemory::Memcpy(&boneList[i].IKInfo.Link[j].RotLockMin[0], Buffer, memcopySize);
 							Buffer += memcopySize;
+							tempVecRot = FVector(
+								boneList[i].IKInfo.Link[j].RotLockMin[0],
+								boneList[i].IKInfo.Link[j].RotLockMin[1],
+								boneList[i].IKInfo.Link[j].RotLockMin[2]
+								);
+							tempVecRot = ConvertVectorAsixToUE4FromMMD(tempVecRot);
+							//fix to Dig From rad(pmx) for vmd ik
+							boneList[i].IKInfo.Link[j].RotLockMin[0]
+								= FMath::RadiansToDegrees(tempVecRot.X);
+							boneList[i].IKInfo.Link[j].RotLockMin[1]
+								= FMath::RadiansToDegrees(tempVecRot.Y);
+							boneList[i].IKInfo.Link[j].RotLockMin[2]
+								= FMath::RadiansToDegrees(tempVecRot.Z);
 							//
 							memcopySize = sizeof(boneList[i].IKInfo.Link[j].RotLockMax);
 							FMemory::Memcpy(&boneList[i].IKInfo.Link[j].RotLockMax[0], Buffer, memcopySize);
 							Buffer += memcopySize;
+							tempVecRot = FVector(
+								boneList[i].IKInfo.Link[j].RotLockMax[0],
+								boneList[i].IKInfo.Link[j].RotLockMax[1],
+								boneList[i].IKInfo.Link[j].RotLockMax[2]
+								);
+							tempVecRot = ConvertVectorAsixToUE4FromMMD(tempVecRot);
+							//fix to Dig From rad(pmx) for vmd ik
+							boneList[i].IKInfo.Link[j].RotLockMax[0]
+								= FMath::RadiansToDegrees(tempVecRot.X);
+							boneList[i].IKInfo.Link[j].RotLockMax[1]
+								= FMath::RadiansToDegrees(tempVecRot.Y);
+							boneList[i].IKInfo.Link[j].RotLockMax[2]
+								= FMath::RadiansToDegrees(tempVecRot.Z);
 						}
 					}
 				}
@@ -552,6 +581,7 @@ namespace MMD4UE4
 			int32 i, j;
 			// ÉÇÅ[ÉtèÓïÒÇÃêîÇéÊìæ
 			int32 PmxMorphNum = 0;
+			uint32 offsetBoneIndx = 1;
 			//
 			memcopySize = sizeof(PmxMorphNum);
 			FMemory::Memcpy(&PmxMorphNum, Buffer, memcopySize);
@@ -620,7 +650,7 @@ namespace MMD4UE4
 					for (j = 0; j < morphList[i].DataNum; j++)
 					{
 						morphList[i].Bone[j].Index =
-							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
+							MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize) + offsetBoneIndx;
 						//
 						memcopySize = sizeof(morphList[i].Bone[j].Offset);
 						FMemory::Memcpy(&morphList[i].Bone[j].Offset, Buffer, memcopySize);

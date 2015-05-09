@@ -3,7 +3,7 @@
 	
 	"FriendlyName" : "Import MMD Model&Motion file For UE4. (IM4U)",
 	"Version" : 1,
-	"VersionName" : "0.6.5",
+	"VersionName" : "0.6.6",
 	"CreatedBy" : "bm9",
 	"CreatedByURL" : "",
 	"EngineVersion" : "4.7.0",

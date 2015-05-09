@@ -6,6 +6,7 @@
 
 #include "MMDImportHelper.h"
 #include "PmxImportUI.h"
+#include "MMDExtend.h"
 
 #include "MMDStaticMeshImportData.h"
 
@@ -371,6 +372,7 @@ struct PMXImportOptions
 	}*/
 	UAnimSequence* AnimSequenceAsset;
 	UDataTable* MMD2UE4NameTableRow;
+	UMMDExtend* MmdExtendAsset;
 };
 
 PMXImportOptions* GetImportOptions(
