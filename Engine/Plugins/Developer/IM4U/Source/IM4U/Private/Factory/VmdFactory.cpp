@@ -79,7 +79,12 @@ UObject* UVmdFactory::FactoryCreateBinary
 {
 	MMD4UE4::VmdMotionInfo vmdMotionInfo;
 
-	vmdMotionInfo.VMDLoaderBinary(Buffer, BufferEnd);
+	if (vmdMotionInfo.VMDLoaderBinary(Buffer, BufferEnd) == false)
+	{
+		UE_LOG(LogMMD4UE4_VMDFactory, Error,
+			TEXT("VMD Import Cancel:: vmd data load faile."));
+		return NULL;
+	}
 
 	/////////////////////////////////////////
 	UAnimSequence* LastCreatedAnim = NULL;
@@ -110,6 +115,7 @@ UObject* UVmdFactory::FactoryCreateBinary
 		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
 	}
 
+	//Test VMD Slate（現在はコメントアウト。削除予定）
 	if(false)
 	{
 		TSharedPtr<SWindow> ParentWindow;
@@ -135,7 +141,13 @@ UObject* UVmdFactory::FactoryCreateBinary
 		FSlateApplication::Get().AddModalWindow(Window, ParentWindow, false);
 
 	}
+	/////////////////////////////////////
+	// factory animation asset from vmd data.
+	////////////////////////////////////
+	//if (vmdMotionInfo.keyCameraList.Num() == 0)
+	if (true) //test mode
 	{
+		//カメラアニメーションでない場合
 		FPmxImporter* PmxImporter = FPmxImporter::GetInstance();
 
 		EPMXImportType ForcedImportType = PMXIT_StaticMesh;
@@ -189,6 +201,34 @@ UObject* UVmdFactory::FactoryCreateBinary
 			UE_LOG(LogMMD4UE4_VMDFactory, Warning, 
 				TEXT("VMD Import Cancel"));
 		}
+	}
+	else
+	{
+		//カメラアニメーションのインポート処理
+		//今後実装予定？
+		UE_LOG(LogMMD4UE4_VMDFactory, Warning,
+			TEXT("VMD Import Cancel::Camera root... not impl"));
+
+		LastCreatedAnim = NULL;
+		//未実装なのでコメントアウト
+#ifdef IM4U_FACTORY_MATINEEACTOR_VMD
+		////////////////////////
+		// Import Optionを設定するslateに関しては必要ない認識。
+		//
+
+		// アセットの生成
+		//AMatineeActor* InMatineeActor = NULL;
+		//ここにアセットの基本生成処理もしくは既存アセットの再利用処理を実装すること。
+
+		//targetのアセットに対しカメラアニメーションをインポートさせる
+		if (ImportMatineeSequence(
+			InMatineeActor,
+			vmdMotionInfo
+			) == false)
+		{
+			//import error
+		}
+#endif 
 	}
 	return LastCreatedAnim;
 };

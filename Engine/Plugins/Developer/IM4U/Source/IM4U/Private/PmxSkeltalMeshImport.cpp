@@ -1198,23 +1198,103 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 		}
 	}
 #else
-	//For mmd
-	// test
+	//For mmd. skining
 	if (PmxMeshInfo->boneList.Num() > 0)
 	{
-
 		// create influences for each cluster
-//		int32 ClusterIndex;
 		//	for each vertex index in the cluster
 		for (int32 ControlPointIndex = 0;
 			ControlPointIndex < PmxMeshInfo->vertexList.Num();
 			++ControlPointIndex)
 		{
-			ImportData.Influences.AddUninitialized();
-			ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[0];
-			ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[0];
-			ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+			int32 multiBone = 0;
+			switch (PmxMeshInfo->vertexList[ControlPointIndex].WeightType)
+			{
+			case 0://0:BDEF1
+				{
+					ImportData.Influences.AddUninitialized();
+					ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[0];
+					ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[0];
+					ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+				}
+				break;
+			case 1:// 1:BDEF2
+				{
+					for (multiBone = 0; multiBone < 2; ++multiBone)
+					{
+						ImportData.Influences.AddUninitialized();
+						ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[multiBone];
+						ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[multiBone];
+						ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+					}
+					//UE_LOG(LogMMD4UE4_PMXFactory, Log, TEXT("BDEF2"), "");
+				}
+				break;
+			case 2: //2:BDEF4
+				{
+					for ( multiBone = 0; multiBone < 4; ++multiBone)
+					{
+						ImportData.Influences.AddUninitialized();
+						ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[multiBone];
+						ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[multiBone];
+						ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+					}
+				}
+				break;
+			case 3: //3:SDEF
+				{
+					//制限事項：SDEF
+					//SDEFに関してはBDEF2に変換して扱うとする。
+					//これは、SDEF_C、SDEF_R0、SDEF_R1に関するパラメータを設定する方法が不明なため。
+					//別PF(ex.MMD4MecanimやDxlib)での実装例を元に解析及び情報収集し、
+					//かつ、MMDでのSDEF動作の仕様を満たす方法を見つけられるまで保留、
+					//SDEFの仕様（MMD）に関しては以下のページを参考にすること。
+					//Ref :： みくだん 各ソフトによるSDEF変形の差異 - FC2
+					// http://mikudan.blog120.fc2.com/blog-entry-339.html
+
+					/////////////////////////////////////
+					for ( multiBone = 0; multiBone < 2; ++multiBone)
+					{
+						ImportData.Influences.AddUninitialized();
+						ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[multiBone];
+						ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[multiBone];
+						ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+					}
+				}
+				break;
+#if 0 //for pmx ver 2.1 formnat
+			case 4:
+				// 制限事項：QDEF
+				// QDEFに関して、MMDでの仕様を調べる事。
+				{
+					for (multiBone = 0; multiBone < 4; ++multiBone)
+					{
+						ImportData.Influences.AddUninitialized();
+						ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[multiBone];
+						ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[multiBone];
+						ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+					}
+				}
+				break;
+#endif
+			default:
+				{
+					//異常系
+					//0:BDEF1 形式と同じ手法で暫定対応する
+					ImportData.Influences.AddUninitialized();
+					ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[0];
+					ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[0];
+					ImportData.Influences.Last().VertexIndex = ExistPointNum + ControlPointIndex;
+					UE_LOG(LogMMD4UE4_PMXFactory, Error, 
+						TEXT("Unkown Weight Type :: type = %d , vertex index = %d "), 
+						PmxMeshInfo->vertexList[ControlPointIndex].WeightType
+						, ControlPointIndex
+						);
+				}
+				break;
+			}
 		}
+
 	}
 #endif
 	else // for rigid mesh
@@ -1516,7 +1596,7 @@ void UPmxFactory::ImportMorphTargetsInternal(
 
 		GWarn->StatusUpdate(ShapeIndex + 1, TotalShapeCount, StatusUpate);
 
-		UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%s"), *(StatusUpate.ToString()) );
+		UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%d_%s"),__LINE__, *(StatusUpate.ToString()) );
 
 		FSkeletalMeshImportData ImportData;
 
@@ -1718,6 +1798,6 @@ void UPmxFactory::AddTokenizedErrorMessage(
 	else*/
 	{
 		// if not found, use normal log
-		UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%s"), *(Error->ToText().ToString()));
+		UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%d_%s"),__LINE__, *(Error->ToText().ToString()));
 	}
 }

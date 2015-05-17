@@ -19,6 +19,8 @@
 #include "MMD2UE4NameTableRow.h"
 #include "MMDExtend.h"
 
+#include "Matinee/InterpTrackMoveAxis.h"
+
 #include "VmdFactory.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_VMDFactory, Log, All)
@@ -126,6 +128,7 @@ class IM4U_API UVmdFactory : public UFactory
 		int32 keyIndex
 		);
 	////////////////////////////////////////
+
 	// VMD -> Matinee actor test
 	bool ImportMatineeSequence(
 		AMatineeActor* InMatineeActor,
@@ -136,9 +139,57 @@ class IM4U_API UVmdFactory : public UFactory
 		UInterpGroupInst* MatineeGroup,
 		MMD4UE4::VmdCameraTrackList* Camera
 		);
+	void ImportAnimatedProperty(
+		float* Value,
+		const TCHAR* ValueName,
+		UInterpGroupInst* MatineeGroup,
+		const float FbxValue,
+		//FbxProperty InProperty,
+		bool bImportFOV,
+		MMD4UE4::VmdCameraTrackList * Camera
+		);
 	UInterpGroupInst* CreateMatineeGroup(
 		AMatineeActor* InMatineeActor,
 		AActor* Actor,
 		FString GroupName
 		);
+	/**
+	* Imports a FBX scene node into a Matinee actor group.
+	*/
+	float ImportMatineeActor(
+		MMD4UE4::VmdCameraTrackList* CameraNode,
+		//FbxNode* Node,
+		//上記に該当するデータを調査すること
+		UInterpGroupInst* MatineeGroup
+		);
+	//
+	void ConsolidateMovementTrackInterpModes(
+		UInterpTrackMove* MovementTrack
+		);
+	//この関数の戻り値はMMDのカーブ特性に合わせて固定値を変えさせるように修正する
+	EInterpCurveMode GetUnrealInterpMode(
+		//FbxAnimCurveKey FbxKey
+		);
+	//この関数が必要か不明。SubTrackの存在について調査が必要。
+	void ImportMoveSubTrack(
+		//FbxAnimCurve* FbxCurve,
+		int32 FbxDimension,
+		UInterpTrackMoveAxis* SubTrack,
+		int32 CurveIndex,
+		bool bNegative,
+		//FbxAnimCurve* RealCurve,
+		float DefaultVal
+		);
+	//この関数が必要か不明。MatineeAnimatedがどの部分に該当するかについて調査が必要。
+	void ImportMatineeAnimated(
+		MMD4UE4::VmdCameraTrackList * VmdCurve,
+		//FbxAnimCurve* FbxCurve,
+		FInterpCurveVector& Curve,
+		int32 CurveIndex,
+		bool bNegative,
+		//FbxAnimCurve* RealCurve,
+		float DefaultVal
+		);
+	//base flame rate [ms]
+	float baseFrameRate;
 };

@@ -294,7 +294,8 @@ namespace MMD4UE4
 			for (uint32 i = 0; i < PmxMaterialNum; i++)
 			{
 				// 材質名の取得
-				materialList[i].Name = PMXTexBufferToFString(&Buffer, pmxEncodeType);
+				//materialList[i].Name = PMXTexBufferToFString(&Buffer, pmxEncodeType);
+				materialList[i].Name = FString::Printf(TEXT("%d_%s"), i, *PMXTexBufferToFString(&Buffer, pmxEncodeType));
 				materialList[i].NameEng = PMXTexBufferToFString(&Buffer, pmxEncodeType);
 
 				//Diffuse (R,G,B,A)
@@ -376,7 +377,6 @@ namespace MMD4UE4
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [materialList] Complete"));
 		}
 		////////////////////////////////////////////
-#if 1
 		{
 			// すべての親BoneをUE4向けに追加
 			// ボーンデータを格納するメモリ領域の確保
@@ -575,8 +575,6 @@ namespace MMD4UE4
 			}
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [BoneList] Complete"));
 		}
-#endif
-#if 1
 		{
 			int32 i, j;
 			// モーフ情報の数を取得
@@ -740,7 +738,6 @@ namespace MMD4UE4
 			}
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [MorphList] Complete"));
 		}
-#endif
 		//////////////////////////////////////////////
 		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Importer Class Complete"));
 		return true;

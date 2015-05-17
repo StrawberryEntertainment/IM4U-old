@@ -107,28 +107,31 @@ namespace MMD4UE4
 				FMemory::Memcpy(&readData.vmdCameraCount, Buffer, memcopySize);
 				Buffer += memcopySize;
 
-				//memcopySize = sizeof(VMD_CAMERA);//61
-				readData.vmdCameraList.AddZeroed(readData.vmdCameraCount);
-				for (int32 i = 0; i < readData.vmdCameraCount; ++i)
+				if (readData.vmdCameraCount > 0)
 				{
-					VMD_CAMERA * vmdCameraPtr = &readData.vmdCameraList[i];
+					//memcopySize = sizeof(VMD_CAMERA);//61
+					readData.vmdCameraList.AddZeroed(readData.vmdCameraCount);
+					for (int32 i = 0; i < readData.vmdCameraCount; ++i)
+					{
+						VMD_CAMERA * vmdCameraPtr = &readData.vmdCameraList[i];
 
-					//Freme No
-					memcopySize = sizeof(uint32)*(1) //FrameNo
-						+ sizeof(float)*(1+3+3);	//Length + Location + Rotate
-					FMemory::Memcpy(&vmdCameraPtr->Frame, Buffer, memcopySize);
-					Buffer += memcopySize;
+						//Freme No
+						memcopySize = sizeof(uint32)*(1) //FrameNo
+							+ sizeof(float)*(1 + 3 + 3);	//Length + Location + Rotate
+						FMemory::Memcpy(&vmdCameraPtr->Frame, Buffer, memcopySize);
+						Buffer += memcopySize;
 
-					//Interpolation[6][4]
-					memcopySize = sizeof(BYTE) * (6 * 4);
-					FMemory::Memcpy(&vmdCameraPtr->Interpolation[0][0][0], Buffer, memcopySize);
-					Buffer += memcopySize;
+						//Interpolation[6][4]
+						memcopySize = sizeof(BYTE) * (6 * 4);
+						FMemory::Memcpy(&vmdCameraPtr->Interpolation[0][0][0], Buffer, memcopySize);
+						Buffer += memcopySize;
 
-					//ViewingAngle + Perspective
-					memcopySize = sizeof(uint32) * (1)	//ViewingAngle
-						+ sizeof(BYTE)* (1);			//Perspective
-					FMemory::Memcpy(&vmdCameraPtr->ViewingAngle, Buffer, memcopySize);
-					Buffer += memcopySize;
+						//ViewingAngle + Perspective
+						memcopySize = sizeof(uint32) * (1)	//ViewingAngle
+							+ sizeof(BYTE)* (1);			//Perspective
+						FMemory::Memcpy(&vmdCameraPtr->ViewingAngle, Buffer, memcopySize);
+						Buffer += memcopySize;
+					}
 				}
 			}
 		}

@@ -28,6 +28,9 @@
 * and restrictions as described herein.
 */
 
+// add : vmd to matinee camera for im4u plugin.
+// Copyright 2015 BlackMa9. All Rights Reserved.
+
 #include "../IM4UPrivatePCH.h"
 
 //ここの関数を使ってVMDのカメラモーションをMatineeAnimにインポートさせたい予定
@@ -46,10 +49,10 @@
 #include "Matinee/InterpTrackInstFloatProp.h"
 
 //#include "FbxImporter.h"
-//#include "VmdFactory.h"
+#include "Factory/VmdFactory.h"
 #include "Camera/CameraActor.h"
 
-namespace TESTIM4U {
+//namespace TESTIM4U {
 #if 0
 	/**
 	* Retrieves whether there are any unknown camera instances within the FBX document that the camera is not in Unreal scene.
@@ -93,7 +96,7 @@ namespace TESTIM4U {
 		return false;
 	}
 
-	bool FFbxImporter::HasUnknownCameras(AMatineeActor* InMatineeActor) const
+	bool UVmdFactory::HasUnknownCameras(AMatineeActor* InMatineeActor) const
 	{
 		if (Scene == NULL)
 		{
@@ -126,7 +129,7 @@ namespace TESTIM4U {
 		return false;
 	}
 
-	bool FFbxImporter::IsNodeAnimated(FbxNode* Node, FbxAnimLayer* AnimLayer)
+	bool UVmdFactory::IsNodeAnimated(FbxNode* Node, FbxAnimLayer* AnimLayer)
 	{
 		if (!AnimLayer)
 		{
@@ -187,7 +190,7 @@ namespace TESTIM4U {
 	}
 #endif
 	// 最上位関数：ただし、InMatineeActorを事前に生成していること
-	bool FVmdFactory::ImportMatineeSequence(
+	bool UVmdFactory::ImportMatineeSequence(
 		AMatineeActor* InMatineeActor,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		)
@@ -238,7 +241,7 @@ namespace TESTIM4U {
 			else
 			{
 				// Check to see if the scene node name matches a Matinee group name
-				FoundGroupInst = InMatineeActor->FindFirstGroupInstByName(FString(Node->GetName()));
+				FoundGroupInst = InMatineeActor->FindFirstGroupInstByName(CamNode->TrackName);
 			}
 
 			if (FoundGroupInst != NULL)
@@ -252,7 +255,7 @@ namespace TESTIM4U {
 			if (Actor == NULL)
 			{
 				//Actor = FindObject<AActor>(ANY_PACKAGE, ANSI_TO_TCHAR(Node->GetName()));
-				Actor = FindObject<AActor>(ANY_PACKAGE, ANSI_TO_TCHAR(CamNode->TrackName));
+				Actor = FindObject<AActor>(ANY_PACKAGE,*(CamNode->TrackName));
 			}
 
 			//FbxCamera* CameraNode = NULL;
@@ -275,7 +278,8 @@ namespace TESTIM4U {
 					InMatineeActor->GetWorld()->GetCurrentLevel(),
 					ACameraActor::StaticClass(), 
 					FTransform::Identity);
-				Actor->SetActorLabel(ANSI_TO_TCHAR(CamNode->TrackName));
+				//Actor->SetActorLabel(ANSI_TO_TCHAR(FName(CamNode->TrackName)));
+				Actor->SetActorLabel(CamNode->TrackName);
 #endif
 			}
 
@@ -296,10 +300,11 @@ namespace TESTIM4U {
 				}
 				else if (bIsCameraAnim) //?
 				{
-					MatineeGroup->Group->GroupName = CamNode->TrackName;
+					MatineeGroup->Group->GroupName = FName(*CamNode->TrackName);
 				}
 
-				float TimeLength = ImportMatineeActor(Node, MatineeGroup);
+				//float TimeLength = ImportMatineeActor(Node, MatineeGroup);
+				float TimeLength = ImportMatineeActor(CamNode, MatineeGroup);
 				InterpLength = FMath::Max(InterpLength, TimeLength);
 			}
 
@@ -307,21 +312,21 @@ namespace TESTIM4U {
 			if (Actor->IsA(ACameraActor::StaticClass()))
 			{
 				// there is a pivot node between the FbxNode and node attribute
-				if (!CameraNode)
+				/*if (!CameraNode)
 				{
 					CameraNode = FindCamera(Node);
-				}
+				}*/
 
-				if (CameraNode)
+				if (CamNode)
 				{
 					if (MatineeGroup == NULL)
 					{
 						MatineeGroup = CreateMatineeGroup(
-							InMatineeActor, Actor, FString(CamNode->TrackName));
+							InMatineeActor, Actor, (CamNode->TrackName));
 					}
 					else if (bIsCameraAnim)
 					{
-						MatineeGroup->Group->GroupName = CamNode->TrackName;
+						MatineeGroup->Group->GroupName = FName(*CamNode->TrackName);
 					}
 
 					ImportCamera((ACameraActor*)Actor, MatineeGroup, CamNode);
@@ -344,7 +349,7 @@ namespace TESTIM4U {
 		//}
 	}
 
-	void FFbxImporter::ImportCamera(
+	void UVmdFactory::ImportCamera(
 		ACameraActor* Actor, 
 		UInterpGroupInst* MatineeGroup,
 		MMD4UE4::VmdCameraTrackList* Camera)
@@ -378,6 +383,7 @@ namespace TESTIM4U {
 
 		ImportAnimatedProperty(&Actor->GetCameraComponent()->FieldOfView, TEXT("FOVAngle"), MatineeGroup, AperatureModeProperty.Get(), AperatureModeProperty, true, Camera);
 #else
+		/* コンパイルエラー回避策
 		//mmd mode :該当する箇所を再調査する
 		if (Camera->FocalLength.IsValid() 
 			&& Camera->GetApertureMode() == FbxCamera::eFocalLength)
@@ -394,17 +400,19 @@ namespace TESTIM4U {
 
 			AperatureModeProperty = Camera->FieldOfView;
 		}
+		*/
 #endif
 	}
 
-	void FFbxImporter::ImportAnimatedProperty(
+	void UVmdFactory::ImportAnimatedProperty(
 		float* Value, 
 		const TCHAR* ValueName, 
 		UInterpGroupInst* MatineeGroup, 
 		const float FbxValue, 
-		FbxProperty InProperty, 
+		//FbxProperty InProperty, 
 		bool bImportFOV, 
-		MMD4UE4::VmdCameraTrackList * Camera )
+		MMD4UE4::VmdCameraTrackList * Camera 
+		)
 		//FbxCamera* Camera)
 	{
 #if ORIGINAL_FBX_MATINEE_IMPORT
@@ -521,7 +529,7 @@ namespace TESTIM4U {
 #endif
 	}
 	//この関数は特に変更なしの予定
-	UInterpGroupInst* FFbxImporter::CreateMatineeGroup(
+	UInterpGroupInst* UVmdFactory::CreateMatineeGroup(
 		AMatineeActor* InMatineeActor, 
 		AActor* Actor, 
 		FString GroupName
@@ -543,11 +551,14 @@ namespace TESTIM4U {
 	}
 
 
+#if 0 //Test Build
+	//TBD::おそらくこの関数が一番コアになっていると推測。処理内容を調査すること。
 	/**
 	* Imports a FBX scene node into a Matinee actor group.
 	*/
-	float FFbxImporter::ImportMatineeActor(
-		FbxNode* Node,
+	float UVmdFactory::ImportMatineeActor(
+		//FbxNode* Node,
+		MMD4UE4::VmdCameraTrackList* CameraNode,
 		UInterpGroupInst* MatineeGroup
 		)
 	{
@@ -555,6 +566,8 @@ namespace TESTIM4U {
 
 		if (Scene == NULL || Node == NULL || MatineeGroup == NULL) return -1.0f;
 
+		//一先ずFBX専用の事前準備と思われる為、カット
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		// Bake the pivots.
 		// Based in sample code in kfbxnode.h, re: Pivot Management
 		{
@@ -635,8 +648,8 @@ namespace TESTIM4U {
 				FbxTime::GetFrameRate(Scene->GetGlobalSettings().GetTimeMode()),	// Resampling frame rate in frames per second
 				false);																// Do not apply key reducing filter
 		}
-
-
+#endif
+		//メモ：ここはこのままでOK。CAST失敗ならNULLで変える為、
 		// Search for a Movement track in the Matinee group.
 		UInterpTrackMove* MovementTrack = NULL;
 		int32 TrackCount = MatineeGroup->Group->InterpTracks.Num();
@@ -645,6 +658,8 @@ namespace TESTIM4U {
 			MovementTrack = Cast<UInterpTrackMove>(MatineeGroup->Group->InterpTracks[TrackIndex]);
 		}
 
+		//アニメーション判定のFBX専用処理のためカット。
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		// Check whether the actor should be pivoted in the FBX document.
 
 		AActor* Actor = MatineeGroup->GetGroupActor();
@@ -664,13 +679,22 @@ namespace TESTIM4U {
 
 		bool bNodeAnimated = IsNodeAnimated(Node, AnimLayer);
 		bool ForceImportSampling = false;
-
+#else
+		// 暫定対処としてtrue固定
+		bool bNodeAnimated = true;
+#endif
 		// Add a Movement track if the node is animated and the group does not already have one.
 		if (MovementTrack == NULL && bNodeAnimated)
 		{
-			MovementTrack = ConstructObject<UInterpTrackMove>(UInterpTrackMove::StaticClass(), MatineeGroup->Group, NAME_None, RF_Transactional);
+			MovementTrack
+				= ConstructObject<UInterpTrackMove>(
+					UInterpTrackMove::StaticClass(),
+					MatineeGroup->Group, NAME_None, RF_Transactional);
 			MatineeGroup->Group->InterpTracks.Add(MovementTrack);
-			UInterpTrackInstMove* MovementTrackInst = ConstructObject<UInterpTrackInstMove>(UInterpTrackInstMove::StaticClass(), MatineeGroup, NAME_None, RF_Transactional);
+			UInterpTrackInstMove* MovementTrackInst
+				= ConstructObject<UInterpTrackInstMove>(
+					UInterpTrackInstMove::StaticClass(), 
+					MatineeGroup, NAME_None, RF_Transactional);
 			MatineeGroup->TrackInst.Add(MovementTrackInst);
 			MovementTrackInst->InitTrackInst(MovementTrack);
 		}
@@ -689,7 +713,9 @@ namespace TESTIM4U {
 			{
 				for (int32 SubTrackIndex = 0; SubTrackIndex < MovementTrack->SubTracks.Num(); ++SubTrackIndex)
 				{
-					UInterpTrackMoveAxis* SubTrack = CastChecked<UInterpTrackMoveAxis>(MovementTrack->SubTracks[SubTrackIndex]);
+					UInterpTrackMoveAxis* SubTrack
+						= CastChecked<UInterpTrackMoveAxis>(
+							MovementTrack->SubTracks[SubTrackIndex]);
 					SubTrack->FloatTrack.Reset();
 					SubTrack->LookupTrack.Points.Reset();
 					SubTracks.Add(SubTrack);
@@ -702,6 +728,11 @@ namespace TESTIM4U {
 		// Fill in the Movement track with the FBX keys
 		if (bNodeAnimated)
 		{
+			//メモ：VMDの位置と回転のカーブを作成する（TransがデータからRealがMatinee向けかと推測）
+			//メモ：Realカーブに関するリサンプリングの必要判定処理。
+			//VMDに関しては離散でキーが打たれているため、サンプリングは必須と推測、
+			//したがって、下記の判定書は不要で、固定Trueとして検討する、。
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 			// Check: The position and rotation tracks must have the same number of keys, the same key timings and
 			// the same segment interpolation types.
 			FbxAnimCurve *TransCurves[6], *RealCurves[6];
@@ -737,6 +768,7 @@ namespace TESTIM4U {
 						break;
 					}
 				}
+
 				// check key time for each key
 				for (int32 KeyIndex = 0; !bResample && KeyIndex < KeyCount; KeyIndex++)
 				{
@@ -810,8 +842,17 @@ namespace TESTIM4U {
 				}
 
 			}
+#else
+			//vmdに置いてはキーの打たれる箇所が離散であるため
+			//サンプリングありとする。
+			//ただし、カーブ生成時に既に全てのキーを統一している場合は不要と思われる。
+#endif
+			//メモ：ここまでが事前のカーブ作成処理と推測
 
 
+			//基本位置と回転の設定
+			//UEの右手系への変換も実施ししている模様
+#ifdef ORIGINAL_FBX_MATINEE_IMPORT
 			FbxAMatrix Matrix = ComputeTotalMatrix(Node);
 			FbxVector4 DefaultPos = Node->LclTranslation.Get();
 			FbxVector4 DefaultRot = Node->LclRotation.Get();
@@ -824,7 +865,9 @@ namespace TESTIM4U {
 			bool bIsCamera = false;
 			if (!Node->GetCamera())
 			{
-				Actor->SetActorRotation(FRotator::MakeFromEuler(FVector(DefaultRot[0], -DefaultRot[1], -DefaultRot[2])));
+				Actor->SetActorRotation(
+					FRotator::MakeFromEuler(FVector(DefaultRot[0], -DefaultRot[1], -DefaultRot[2]))
+					);
 			}
 			else
 			{
@@ -861,6 +904,22 @@ namespace TESTIM4U {
 				Actor->SetActorRotation(FRotator::MakeFromEuler(FVector(UnrealCameraRotationEuler[0], UnrealCameraRotationEuler[1], UnrealCameraRotationEuler[2])));
 				bIsCamera = true;
 			}
+#else
+			//暫定固定
+			bool bIsCamera = true;
+			//vmd 向けに初期位置と回転を取得
+			//その際に座標系変換の計算を行うこと
+			Actor->SetActorLocation(FVector(-DefaultPos[1], -DefaultPos[0], DefaultPos[2]), false);
+			Actor->SetActorRotation(
+				FRotator::MakeFromEuler(
+					FVector(UnrealCameraRotationEuler[0], UnrealCameraRotationEuler[1], UnrealCameraRotationEuler[2])
+				));
+
+#endif
+
+			///////////////////////////////////////////////////////////////////////
+			//メモ：ここまで机上で解析済み
+			///////////////////////////////////////////////////////////////////////
 
 			if (MovementTrack->SubTracks.Num() > 0)
 			{
@@ -990,8 +1049,12 @@ namespace TESTIM4U {
 
 		return TimeLength;
 	}
+#endif //Build Error
 
-	void FFbxImporter::ConsolidateMovementTrackInterpModes(UInterpTrackMove* MovementTrack)
+	//この関数に関しては修正不要と思われる
+	void UVmdFactory::ConsolidateMovementTrackInterpModes(
+		UInterpTrackMove* MovementTrack
+		)
 	{
 		check(MovementTrack->EulerTrack.Points.Num() == MovementTrack->PosTrack.Points.Num());
 		for (int32 KeyIndex = 0; KeyIndex < MovementTrack->PosTrack.Points.Num(); KeyIndex++)
@@ -1000,10 +1063,17 @@ namespace TESTIM4U {
 		}
 	}
 
-#if ORIGINAL_FBX_MATINEE_IMPORT //この関数は不要
-	EInterpCurveMode FFbxImporter::GetUnrealInterpMode(FbxAnimCurveKey FbxKey)
+	//この関数の戻り値はMMDのカーブ特性に合わせて固定値を変えさせるように修正する
+	EInterpCurveMode UVmdFactory::GetUnrealInterpMode(
+		//FbxAnimCurveKey FbxKey
+		)
 	{
+		//TBD::固定値に検討に関してはカーブ特性を調査すること->暫定でCurveAutoClampedにする。
+		EInterpCurveMode Mode = CIM_CurveAutoClamped;
+
+#if ORIGINAL_FBX_MATINEE_IMPORT
 		EInterpCurveMode Mode = CIM_CurveUser;
+
 		// Convert the interpolation type from FBX to Unreal.
 		switch (FbxKey.GetInterpolation())
 		{
@@ -1052,10 +1122,20 @@ namespace TESTIM4U {
 			Mode = CIM_Linear;
 			break;
 		}
+#endif
 		return Mode;
 	}
-#endif
-	void FFbxImporter::ImportMoveSubTrack(FbxAnimCurve* FbxCurve, int32 FbxDimension, UInterpTrackMoveAxis* SubTrack, int32 CurveIndex, bool bNegative, FbxAnimCurve* RealCurve, float DefaultVal)
+	
+	//この関数が必要か不明。SubTrackの存在について調査が必要。
+	void UVmdFactory::ImportMoveSubTrack(
+		FbxAnimCurve* FbxCurve, 
+		int32 FbxDimension, 
+		UInterpTrackMoveAxis* SubTrack,
+		int32 CurveIndex, 
+		bool bNegative, 
+		FbxAnimCurve* RealCurve, 
+		float DefaultVal
+		)
 	{
 		if (CurveIndex >= 3) return;
 
@@ -1128,11 +1208,21 @@ namespace TESTIM4U {
 		}
 	}
 
-	void FFbxImporter::ImportMatineeAnimated(FbxAnimCurve* FbxCurve, FInterpCurveVector& Curve, int32 CurveIndex, bool bNegative, FbxAnimCurve* RealCurve, float DefaultVal)
+	//この関数が必要か不明。MatineeAnimatedがどの部分に該当するかについて調査が必要。
+	void UVmdFactory::ImportMatineeAnimated(
+		MMD4UE4::VmdCameraTrackList * VmdCurve,
+		//FbxAnimCurve* FbxCurve,
+		FInterpCurveVector& Curve, 
+		int32 CurveIndex, 
+		bool bNegative, 
+		//FbxAnimCurve* RealCurve,
+		float DefaultVal
+		)
 	{
 		if (CurveIndex >= 3) return;
 
 		// the FBX curve has no valid keys, so fake the Unreal Matinee curve
+#if 0 //test
 		if (FbxCurve == NULL || FbxCurve->KeyGetCount() < 2)
 		{
 			int32 KeyIndex;
@@ -1172,18 +1262,21 @@ namespace TESTIM4U {
 			}
 		}
 		else
+#endif
 		{
-			int32 KeyCount = (int32)FbxCurve->KeyGetCount();
+			int32 KeyCount = (int32)VmdCurve->keyList.Num();
 
 			for (int32 KeyIndex = Curve.Points.Num(); KeyIndex < KeyCount; ++KeyIndex)
 			{
-				FbxAnimCurveKey CurKey = FbxCurve->KeyGet(KeyIndex);
+				//FbxAnimCurveKey CurKey = FbxCurve->KeyGet(KeyIndex);
+				MMD4UE4::VMD_CAMERA* CurKeyPtr = VmdCurve->keyList[VmdCurve->sortIndexList[KeyIndex]];
 
 				// Create the curve keys
 				FInterpCurvePoint<FVector> Key;
-				Key.InVal = CurKey.GetTime().GetSecondDouble();
+				//Key.InVal = CurKey.GetTime().GetSecondDouble();
+				Key.InVal = (float)(CurKeyPtr->Frame) * this->baseFrameRate;
 
-				Key.InterpMode = GetUnrealInterpMode(CurKey);
+				Key.InterpMode = GetUnrealInterpMode(/*CurKey*/);
 
 				// Add this new key to the curve
 				Curve.Points.Add(Key);
@@ -1192,21 +1285,25 @@ namespace TESTIM4U {
 			// Fill in the curve keys with the correct data for this dimension.
 			for (int32 KeyIndex = 0; KeyIndex < KeyCount; ++KeyIndex)
 			{
-				FbxAnimCurveKey CurKey = FbxCurve->KeyGet(KeyIndex);
+				//FbxAnimCurveKey CurKey = FbxCurve->KeyGet(KeyIndex);
+				MMD4UE4::VMD_CAMERA* CurKeyPtr = VmdCurve->keyList[VmdCurve->sortIndexList[KeyIndex]];
 				FInterpCurvePoint<FVector>& UnrealKey = Curve.Points[KeyIndex];
 
 				// Prepare the FBX values to import into the track key.
 				// Convert the Bezier control points, if available, into Hermite tangents
-				float OutVal = (bNegative ? -CurKey.GetValue() : CurKey.GetValue());
+				//float OutVal = (bNegative ? -CurKey.GetValue() : CurKey.GetValue());
+				
+				float OutVal = CurKeyPtr->Location[CurveIndex];
 
 				float ArriveTangent = 0.0f;
 				float LeaveTangent = 0.0f;
 
+				/* fbx
 				if (CurKey.GetInterpolation() == FbxAnimCurveDef::eInterpolationCubic)
 				{
 					ArriveTangent = bNegative ? -FbxCurve->KeyGetLeftDerivative(KeyIndex) : FbxCurve->KeyGetLeftDerivative(KeyIndex);
 					LeaveTangent = bNegative ? -FbxCurve->KeyGetRightDerivative(KeyIndex) : FbxCurve->KeyGetRightDerivative(KeyIndex);
-				}
+				}*/
 
 				// Fill in the track key with the prepared values
 				switch (CurveIndex)
@@ -1232,6 +1329,7 @@ namespace TESTIM4U {
 		}
 	}
 
-} // namespace UnFBX
+//} // namespace UnFBX
+
 
 #endif

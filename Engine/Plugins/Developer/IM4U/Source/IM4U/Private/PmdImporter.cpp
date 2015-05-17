@@ -211,6 +211,10 @@ namespace MMD4UE4
 			= pmxMeshInfoPtr->modelNameJP.Replace(TEXT("."), TEXT("_"));// [.] is broken filepath for ue4 
 
 		{
+			//統計
+			uint32 statics_bdef1 = 0;
+			uint32 statics_bdef2 = 0;
+
 			pmxMeshInfoPtr->vertexList.AddZeroed(vertexData.Count);
 			for (int32 VertexIndex = 0; VertexIndex < vertexData.Count; ++VertexIndex)
 			{
@@ -236,21 +240,42 @@ namespace MMD4UE4
 				//追加UV(x,y,z,w)  PMXヘッダの追加UV数による	n:追加UV数 0～4
 
 				// ウェイト変形方式 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF
-				pmxVertexPtr.WeightType = 0;
-				//
-				if (true)
+				//pmxVertexPtr.WeightType = 0;
+				// ボーンIndexが同じ場合はBDEF1としてあつかう
+				/*
+				if (pmdVertexPtr.BoneNo[0] != pmdVertexPtr.BoneNo[1]
+					|| (pmdVertexPtr.BoneNo[1] == 0 && pmdVertexPtr.BoneWeight == 100))
 				{
+					//bdef1
+					pmxVertexPtr.WeightType = 0;
 					pmxVertexPtr.BoneIndex[0] = pmdVertexPtr.BoneNo[0]+1;
 					pmxVertexPtr.BoneIndex[1] = pmdVertexPtr.BoneNo[1]+1;
-					pmxVertexPtr.BoneWeight[0] = pmdVertexPtr.BoneWeight;
-					pmxVertexPtr.BoneWeight[1] = 1 - pmdVertexPtr.BoneWeight;
+					pmxVertexPtr.BoneWeight[0] = pmdVertexPtr.BoneWeight/100.0f;
+					pmxVertexPtr.BoneWeight[1] = (100 - pmdVertexPtr.BoneWeight)/100.0f;
+					//
+					statics_bdef1++;
 				}
-				else
+				else*/
 				{
-					UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Import FALSE/Return /UnCorrect EncodeType"));
+					//BUG::
+					//BDEF1との混在だと何故かウェイト設定が異常であるとMake時に警告が出るため、
+					//暫定対処として、PMD形式では一律BDEF2形式とする。データが多くなるよりかは正しく動作することを優先。
+					//bdef2
+					pmxVertexPtr.WeightType = 1;
+					pmxVertexPtr.BoneIndex[0] = pmdVertexPtr.BoneNo[0] + 1;
+					pmxVertexPtr.BoneIndex[1] = pmdVertexPtr.BoneNo[1] + 1;
+					pmxVertexPtr.BoneWeight[0] = pmdVertexPtr.BoneWeight / 100.0f;
+					pmxVertexPtr.BoneWeight[1] = (100 - pmdVertexPtr.BoneWeight) / 100.0f;
+					//
+					statics_bdef2++;
 				}
 				//エッジ倍率  材質のエッジサイズに対しての倍率値
 			}
+			UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning,
+				TEXT("PMX convert [Vertex:: statics bone type, bdef1 = %u] Complete"), statics_bdef1);
+			UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning,
+				TEXT("PMX convert [Vertex:: statics bone type, bdef2 = %u] Complete"), statics_bdef2);
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [VertexList] Complete"));
 		}
 		{
 			/*
@@ -277,6 +302,7 @@ namespace MMD4UE4
 						= pmdFaceListPtr.VertexIndx[SubNum];
 				}
 			}
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [faceList] Complete"));
 		}
 		/*
 		{
@@ -414,7 +440,7 @@ namespace MMD4UE4
 				//材質に対応する面(頂点)数 (必ず3の倍数になる)
 				pmxMaterialPtr.MaterialFaceNum = pmdMaterialPtr.FaceVertexCount;
 			}
-			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [materialList] Complete"));
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [materialList] Complete"));
 		}
 		{
 			// すべての親BoneをUE4向けに追加
@@ -438,13 +464,13 @@ namespace MMD4UE4
 
 			// ボーン情報の取得
 			uint32 PmxIKNum = 0;
-			for (uint32 i = 1; i < PmxBoneNum + offsetBoneIndx; i++)
+			for (uint32 i = offsetBoneIndx; i < PmxBoneNum + offsetBoneIndx; i++)
 			{
-				PMD_BONE & pmdBonePtr = boneList[i-1];
+				PMD_BONE & pmdBonePtr = boneList[i - 1];
 				PMX_BONE & pmxBonePtr = pmxMeshInfoPtr->boneList[i];
 
 				pmxBonePtr.Name
-					= ConvertMMDSJISToFString((uint8 *)&(pmdBonePtr.Name),sizeof(pmdBonePtr.Name));
+					= ConvertMMDSJISToFString((uint8 *)&(pmdBonePtr.Name), sizeof(pmdBonePtr.Name));
 				pmxBonePtr.NameEng
 					= pmxBonePtr.Name;
 				//
@@ -454,6 +480,48 @@ namespace MMD4UE4
 
 				pmxBonePtr.ParentBoneIndex
 					= pmdBonePtr.Parent + offsetBoneIndx;
+
+				//
+				if (pmdBonePtr.TailPosBone != -1)
+				{
+					pmxBonePtr.LinkBoneIndex
+						= pmdBonePtr.TailPosBone + offsetBoneIndx;
+				}
+				else
+				{
+					pmxBonePtr.LinkBoneIndex = -1;
+				}
+
+				//bone type
+				switch (pmdBonePtr.Type)
+				{
+				case 0://0 : 回転
+					pmxBonePtr.Flag_EnableRot = 1;
+					break;
+				case 1: //1:回転と移動
+					pmxBonePtr.Flag_EnableRot = 1;
+					pmxBonePtr.Flag_EnableMov = 1;
+					break;
+				case 2: //2:IK
+					pmxBonePtr.Flag_IK = 1;
+					break;
+				case 3: //3:不明？
+					break;
+				case 4: //4:IK影響下
+					break;
+				case 5: //5:回転影響下
+					break;
+				case 6: //6:IK接続先
+					break;
+				case 7: //7:非表示
+					break;
+				case 8: //8:捻り
+					break;
+				case 9: //9:回転運動 
+					break;
+				default:
+					break;
+				}
 #if 0
 				//
 				memcopySize = sizeof(pmxBonePtr.TransformLayer);
@@ -482,10 +550,10 @@ namespace MMD4UE4
 				if (pmxBonePtr.Flag_LinkDest == 0)
 				{
 					//
-memcopySize = sizeof(pmxBonePtr.OffsetPosition);
-FMemory::Memcpy(&pmxBonePtr.OffsetPosition, Buffer, memcopySize);
-pmxBonePtr.OffsetPosition = ConvertVectorAsixToUE4FromMMD(pmxBonePtr.OffsetPosition) *modelScale;
-Buffer += memcopySize;
+					memcopySize = sizeof(pmxBonePtr.OffsetPosition);
+					FMemory::Memcpy(&pmxBonePtr.OffsetPosition, Buffer, memcopySize);
+					pmxBonePtr.OffsetPosition = ConvertVectorAsixToUE4FromMMD(pmxBonePtr.OffsetPosition) *modelScale;
+					Buffer += memcopySize;
 				}
 				else
 				{
@@ -532,111 +600,129 @@ Buffer += memcopySize;
 					FMemory::Memcpy(&pmxBonePtr.OutParentTransformKey, Buffer, memcopySize);
 					Buffer += memcopySize;
 				}
-
+#endif
+#if 1
 				if (pmxBonePtr.Flag_IK == 1)
 				{
-					PmxIKNum++;
 
-					pmxBonePtr.IKInfo.TargetBoneIndex
-						= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
-					//
-					memcopySize = sizeof(pmxBonePtr.IKInfo.LoopNum);
-					FMemory::Memcpy(&pmxBonePtr.IKInfo.LoopNum, Buffer, memcopySize);
-					Buffer += memcopySize;
-
-					//
-					memcopySize = sizeof(pmxBonePtr.IKInfo.RotLimit);
-					FMemory::Memcpy(&pmxBonePtr.IKInfo.RotLimit, Buffer, memcopySize);
-					Buffer += memcopySize;
-
-					//
-					memcopySize = sizeof(pmxBonePtr.IKInfo.LinkNum);
-					FMemory::Memcpy(&pmxBonePtr.IKInfo.LinkNum, Buffer, memcopySize);
-					Buffer += memcopySize;
-					if (pmxBonePtr.IKInfo.LinkNum >= PMX_MAX_IKLINKNUM)
+					//search ik-list from pmd data.
+					PMD_IK * tempPmdIKPtr = NULL;
+					for (int32 listIKIndx = 0; listIKIndx < pmdMeshInfoPtr->ikData.Count; ++listIKIndx)
 					{
-						return false;
-					}
-
-					for (int32 j = 0; j < pmxBonePtr.IKInfo.LinkNum; j++)
-					{
-						pmxBonePtr.IKInfo.Link[j].BoneIndex
-							= PMXExtendBufferSizeToUint32(&Buffer, this->baseHeader.BoneIndexSize);
-						//
-						memcopySize = sizeof(pmxBonePtr.IKInfo.Link[j].RotLockFlag);
-						FMemory::Memcpy(&pmxBonePtr.IKInfo.Link[j].RotLockFlag, Buffer, memcopySize);
-						Buffer += memcopySize;
-
-						if (pmxBonePtr.IKInfo.Link[j].RotLockFlag == 1)
+						if (pmdMeshInfoPtr->ikList[listIKIndx].Bone == (i - 1))
 						{
-							//
-							memcopySize = sizeof(pmxBonePtr.IKInfo.Link[j].RotLockMin);
-							FMemory::Memcpy(&pmxBonePtr.IKInfo.Link[j].RotLockMin[0], Buffer, memcopySize);
-							Buffer += memcopySize;
-							//
-							memcopySize = sizeof(pmxBonePtr.IKInfo.Link[j].RotLockMax);
-							FMemory::Memcpy(&pmxBonePtr.IKInfo.Link[j].RotLockMax[0], Buffer, memcopySize);
-							Buffer += memcopySize;
+							tempPmdIKPtr = &(pmdMeshInfoPtr->ikList[listIKIndx]);
+						}
+					}
+					if (tempPmdIKPtr)
+					{
+						PmxIKNum++;
+
+						pmxBonePtr.IKInfo.TargetBoneIndex
+							= tempPmdIKPtr->TargetBone + offsetBoneIndx;
+						//
+						pmxBonePtr.IKInfo.LoopNum = tempPmdIKPtr->Iterations; //const 40?
+
+						//
+						pmxBonePtr.IKInfo.RotLimit = tempPmdIKPtr->RotLimit;
+
+						//
+						pmxBonePtr.IKInfo.LinkNum = tempPmdIKPtr->ChainLength;
+						if (pmxBonePtr.IKInfo.LinkNum >= PMX_MAX_IKLINKNUM)
+						{
+							return false;
+						}
+
+						for (int32 j = 0; j < pmxBonePtr.IKInfo.LinkNum; j++)
+						{
+							pmxBonePtr.IKInfo.Link[j].BoneIndex
+								= tempPmdIKPtr->ChainBoneIndexs[j] + offsetBoneIndx;
+
+							FString tempChldBoneName
+								= ConvertMMDSJISToFString((uint8 *)&(boneList[tempPmdIKPtr->ChainBoneIndexs[j]].Name),
+								sizeof(boneList[tempPmdIKPtr->ChainBoneIndexs[j]].Name));
+							const char hiza[20] = "ひざ";
+							FString tempHizaName
+								= ConvertMMDSJISToFString((uint8 *)&(hiza),
+								sizeof(hiza));
+							//膝の場合、X軸(MMD)で軸制限を書ける
+							if (tempChldBoneName.Find(tempHizaName) != -1)
+							{
+								pmxBonePtr.IKInfo.Link[j].RotLockFlag = 1;
+
+								pmxBonePtr.IKInfo.Link[j].RotLockMin[0] = -180;//x
+								pmxBonePtr.IKInfo.Link[j].RotLockMin[1] = 0;//y
+								pmxBonePtr.IKInfo.Link[j].RotLockMin[2] = 0;//z
+								//
+								pmxBonePtr.IKInfo.Link[j].RotLockMax[0] = -0.5;//x
+								pmxBonePtr.IKInfo.Link[j].RotLockMax[1] = 0;//y
+								pmxBonePtr.IKInfo.Link[j].RotLockMax[2] = 0;//z
+							}
+							else
+							{
+
+								pmxBonePtr.IKInfo.Link[j].RotLockFlag = 0;
+							}
 						}
 					}
 				}
 #endif
 			}
-			{
-				//IK
-			}
-			{
-				int32 i, j;
-				// モーフ情報の数を取得
-				int32 PmxMorphNum = 0;
-				PmxMorphNum = pmdMeshInfoPtr->skinData.Count;
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [BoneList] Complete"));
+		}
+		{
+			//IK
+		}
+		{
+			int32 i, j;
+			// モーフ情報の数を取得
+			int32 PmxMorphNum = 0;
+			PmxMorphNum = pmdMeshInfoPtr->skinData.Count;
 
-				// モーフデータを格納するメモリ領域の確保
-				pmxMeshInfoPtr->morphList.AddZeroed(PmxMorphNum);
+			// モーフデータを格納するメモリ領域の確保
+			pmxMeshInfoPtr->morphList.AddZeroed(PmxMorphNum);
 
-				// モーフ情報の読み込み
-				int32 PmxSkinNum = 0;
-				for (i = 0; i < PmxMorphNum; i++)
+			// モーフ情報の読み込み
+			int32 PmxSkinNum = 0;
+			for (i = 0; i < PmxMorphNum; i++)
+			{
+				pmxMeshInfoPtr->morphList[i].Name
+					= ConvertMMDSJISToFString(
+						(uint8 *)&(pmdMeshInfoPtr->skinList[i].Name),
+						sizeof(pmdMeshInfoPtr->skinList[i].Name)
+						);
+				pmxMeshInfoPtr->morphList[i].NameEng
+					= pmxMeshInfoPtr->morphList[i].Name;
+
+				//
+				pmxMeshInfoPtr->morphList[i].ControlPanel = pmdMeshInfoPtr->skinList[i].SkinType;
+				//
+				pmxMeshInfoPtr->morphList[i].Type = 1;//頂点固定
+				//
+				pmxMeshInfoPtr->morphList[i].DataNum = pmdMeshInfoPtr->skinList[i].VertexCount;
+
+				switch (pmxMeshInfoPtr->morphList[i].Type)
 				{
-					pmxMeshInfoPtr->morphList[i].Name
-						= ConvertMMDSJISToFString(
-							(uint8 *)&(pmdMeshInfoPtr->skinList[i].Name),
-							sizeof(pmdMeshInfoPtr->skinList[i].Name)
-							);
-					pmxMeshInfoPtr->morphList[i].NameEng
-						= pmxMeshInfoPtr->morphList[i].Name;
+				case 1:	// 頂点
+					PmxSkinNum++;
+					pmxMeshInfoPtr->morphList[i].Vertex.AddZeroed(pmxMeshInfoPtr->morphList[i].DataNum);
 
-					//
-					pmxMeshInfoPtr->morphList[i].ControlPanel = pmdMeshInfoPtr->skinList[i].SkinType;
-					//
-					pmxMeshInfoPtr->morphList[i].Type = 1;//頂点固定
-					//
-					pmxMeshInfoPtr->morphList[i].DataNum = pmdMeshInfoPtr->skinList[i].VertexCount;
-
-					switch (pmxMeshInfoPtr->morphList[i].Type)
+					for (j = 0; j < pmxMeshInfoPtr->morphList[i].DataNum; j++)
 					{
-					case 1:	// 頂点
-						PmxSkinNum++;
-						pmxMeshInfoPtr->morphList[i].Vertex.AddZeroed(pmxMeshInfoPtr->morphList[i].DataNum);
-
-						for (j = 0; j < pmxMeshInfoPtr->morphList[i].DataNum; j++)
-						{
-							pmxMeshInfoPtr->morphList[i].Vertex[j].Index =
-								pmdMeshInfoPtr->skinList[i].Vertex[j].TargetVertexIndex;
-							//
-							memcopySize = sizeof(pmxMeshInfoPtr->morphList[i].Vertex[j].Offset);
-							FMemory::Memcpy(&pmxMeshInfoPtr->morphList[i].Vertex[j].Offset, 
-								pmdMeshInfoPtr->skinList[i].Vertex[j].Position, memcopySize);
-						}
-						break;
-					default:
-						//un support ppmd
-						break;
+						pmxMeshInfoPtr->morphList[i].Vertex[j].Index =
+							pmdMeshInfoPtr->skinList[i].Vertex[j].TargetVertexIndex;
+						//
+						memcopySize = sizeof(pmxMeshInfoPtr->morphList[i].Vertex[j].Offset);
+						FMemory::Memcpy(&pmxMeshInfoPtr->morphList[i].Vertex[j].Offset, 
+							pmdMeshInfoPtr->skinList[i].Vertex[j].Position, memcopySize);
 					}
+					break;
+				default:
+					//un support ppmd
+					break;
 				}
-				UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [MorphList] Complete"));
 			}
-			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [bonelList] Complete"));
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [MorphList] Complete"));
 		}
 		return true;
 	}
