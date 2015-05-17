@@ -210,6 +210,10 @@ namespace MMD4UE4
 		pmxMeshInfoPtr->modelNameJP 
 			= pmxMeshInfoPtr->modelNameJP.Replace(TEXT("."), TEXT("_"));// [.] is broken filepath for ue4 
 
+
+		pmxMeshInfoPtr->modelCommentJP
+			= ConvertMMDSJISToFString((uint8 *)&(header.Comment), sizeof(header.Comment));
+
 		{
 			//統計
 			uint32 statics_bdef1 = 0;
@@ -369,7 +373,8 @@ namespace MMD4UE4
 				0x10:エッジ描画
 				*/
 				tempAlphaStr = FString::Printf(TEXT("%.03f"), pmdMaterialPtr.Alpha);
-				pmxMaterialPtr.CullingOff = (pmdMaterialPtr.Alpha < 1.0f ) ? 1 : 0;
+				//pmxMaterialPtr.CullingOff = (pmdMaterialPtr.Alpha < 1.0f) ? 1 : 0;//本来の仕様のはず？だが裏地に黒エッジ出来ないので1.0fだと透ける
+				pmxMaterialPtr.CullingOff = 1;//上記理由からPMDの場合両面にする。あとで適宜片面にするなどドローコールを減らしてもらいたい。。。
 				pmxMaterialPtr.GroundShadow = (0) ? 1 : 0;
 				pmxMaterialPtr.SelfShadowMap = tempAlphaStr.Equals("0.980") ? 1 : 0;
 				pmxMaterialPtr.SelfShadowDraw = tempAlphaStr.Equals( "0.980") ? 1 : 0;
@@ -384,6 +389,10 @@ namespace MMD4UE4
 				//エッジサイズ
 				pmxMaterialPtr.EdgeSize = 0;
 
+
+				//スフィアモード 0:無効 1:乗算(sph) 2:加算(spa) 
+				//3:サブテクスチャ(追加UV1のx,yをUV参照して通常テクスチャ描画を行う)
+				pmxMaterialPtr.SphereMode = 0;//初期値
 				
 				PMX_TEXTURE tempTex;
 				FString tempTexPathStr;
@@ -394,34 +403,114 @@ namespace MMD4UE4
 						sizeof(pmdMaterialPtr.TextureFileName));
 				if (tempTex.TexturePath.Split("/", &tempTexPathStr, &tempShaPathStr))
 				{
+					//サブフォルダにマテリアルがない前提
 					tempTex.TexturePath = tempTexPathStr;
-					pmxMaterialPtr.SphereMode = 2;
+					if (tempTex.TexturePath.Find(".spa") != -1)
+					{
+						//加算でない場合
+						pmxMaterialPtr.SphereMode = 1;
+						UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
+							TEXT("PMX convert [materialList] multi texture[%s] / sphere[%s]")
+							, *tempTex.TexturePath
+							, *tempShaPathStr);
+					}
+					else
+					{
+						pmxMaterialPtr.SphereMode = 2;
+						UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
+							TEXT("PMX convert [materialList] add texture[%s] / sphere[%s]")
+							, *tempTex.TexturePath
+							, *tempShaPathStr);
+					}
 				}
 				else if (tempTex.TexturePath.Split("*", &tempTexPathStr, &tempShaPathStr))
 				{
-
 					tempTex.TexturePath = tempTexPathStr;
-					pmxMaterialPtr.SphereMode = 1;
+					if (tempTex.TexturePath.Find(".spa") != -1)
+					{
+						//加算でない場合
+						pmxMaterialPtr.SphereMode = 1;
+						UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
+							TEXT("PMX convert [materialList] multi texture[%s] / sphere[%s]")
+							, *tempTex.TexturePath
+							, *tempShaPathStr);
+					}
+					else
+					{
+						pmxMaterialPtr.SphereMode = 2;
+						UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
+							TEXT("PMX convert [materialList] add texture[%s] / sphere[%s]")
+							, *tempTex.TexturePath
+							, *tempShaPathStr);
+					}
 				}
 				else
 				{
+					//テクスチャが一つのみ
+					if (tempTex.TexturePath.Find(".sp") != -1)
+					{
+						//スフィアのみ
+						tempShaPathStr = tempTex.TexturePath;
+						tempTex.TexturePath = "";
+						if (tempTex.TexturePath.Find(".spa") != -1)
+						{
+							//加算でない場合
+							pmxMaterialPtr.SphereMode = 1;
+						}
+						else
+						{
+							pmxMaterialPtr.SphereMode = 2;
+						}
+					}
+					else
+					{
+						//スフィアなし
+						tempShaPathStr = "";
+					}
+					UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
+						TEXT("PMX convert [materialList] texture[%s] mono sphere[%s]")
+						, *tempTex.TexturePath
+						, *tempShaPathStr);
 					//tempTex.TexturePath = tempTexPathStr;
-					tempShaPathStr = "";
 				}
 				//通常テクスチャ, テクスチャテーブルの参照Index
-				pmxMaterialPtr.TextureIndex
-					= tempTexPathList.AddUnique(pmdMaterialPtr.TextureFileName);
-					//pmxMeshInfoPtr->textureList.Add/*Unique*/(tempTex);
-				if (pmxMaterialPtr.TextureIndex > pmxMeshInfoPtr->textureList.Num() - 1)
+				if (tempTex.TexturePath.Equals(""))
 				{
-					pmxMeshInfoPtr->textureList.Add(tempTex);
+					//not
+					pmxMaterialPtr.TextureIndex = -1;
 				}
-				//スフィアテクスチャ, テクスチャテーブルの参照Index  ※テクスチャ拡張子の制限なし
-				pmxMaterialPtr.SphereTextureIndex
-					= 0;
-				//スフィアモード 0:無効 1:乗算(sph) 2:加算(spa) 
-				//3:サブテクスチャ(追加UV1のx,yをUV参照して通常テクスチャ描画を行う)
-				pmxMaterialPtr.SphereMode = 0;
+				else
+				{
+					pmxMaterialPtr.TextureIndex
+						//= tempTexPathList.AddUnique(pmdMaterialPtr.TextureFileName);
+						= tempTexPathList.AddUnique(tempTex.TexturePath);
+					//pmxMeshInfoPtr->textureList.Add/*Unique*/(tempTex);
+					if (pmxMaterialPtr.TextureIndex > pmxMeshInfoPtr->textureList.Num() - 1)
+					{
+						pmxMeshInfoPtr->textureList.Add(tempTex);
+					}
+				}
+				if (tempShaPathStr.Equals(""))
+				{
+					//not
+					//スフィアテクスチャ, テクスチャテーブルの参照Index  ※テクスチャ拡張子の制限なし
+					pmxMaterialPtr.SphereTextureIndex
+						= -1;
+				}
+				else
+				{
+
+					PMX_TEXTURE tempSphTex;
+					tempSphTex.TexturePath = tempShaPathStr;
+					pmxMaterialPtr.SphereTextureIndex
+						//= tempTexPathList.AddUnique(pmdMaterialPtr.TextureFileName);
+						= tempTexPathList.AddUnique(tempSphTex.TexturePath);
+					//pmxMeshInfoPtr->textureList.Add/*Unique*/(tempTex);
+					if (pmxMaterialPtr.SphereTextureIndex > pmxMeshInfoPtr->textureList.Num() - 1)
+					{
+						pmxMeshInfoPtr->textureList.Add(tempSphTex);
+					}
+				}
 				//共有Toonフラグ 0:継続値は個別Toon 1 : 継続値は共有Toon
 				pmxMaterialPtr.ToonFlag = 1;
 
@@ -677,49 +766,87 @@ namespace MMD4UE4
 			int32 i, j;
 			// モーフ情報の数を取得
 			int32 PmxMorphNum = 0;
-			PmxMorphNum = pmdMeshInfoPtr->skinData.Count;
+			TArray<int32> pmdMorphIndexList;
+			PMD_SKIN * basePmdMorphPtr = NULL; //base
+			PMD_SKIN * targetPmdMorphPtr = NULL; //モーフ変換時の変換元モーフ情報
 
-			// モーフデータを格納するメモリ領域の確保
-			pmxMeshInfoPtr->morphList.AddZeroed(PmxMorphNum);
-
-			// モーフ情報の読み込み
-			int32 PmxSkinNum = 0;
-			for (i = 0; i < PmxMorphNum; i++)
+			for (i = 0; i < pmdMeshInfoPtr->skinData.Count; i++)
 			{
-				pmxMeshInfoPtr->morphList[i].Name
-					= ConvertMMDSJISToFString(
-						(uint8 *)&(pmdMeshInfoPtr->skinList[i].Name),
-						sizeof(pmdMeshInfoPtr->skinList[i].Name)
-						);
-				pmxMeshInfoPtr->morphList[i].NameEng
-					= pmxMeshInfoPtr->morphList[i].Name;
-
-				//
-				pmxMeshInfoPtr->morphList[i].ControlPanel = pmdMeshInfoPtr->skinList[i].SkinType;
-				//
-				pmxMeshInfoPtr->morphList[i].Type = 1;//頂点固定
-				//
-				pmxMeshInfoPtr->morphList[i].DataNum = pmdMeshInfoPtr->skinList[i].VertexCount;
-
-				switch (pmxMeshInfoPtr->morphList[i].Type)
+				if (0 < pmdMeshInfoPtr->skinList[i].SkinType
+					&&  pmdMeshInfoPtr->skinList[i].SkinType < 4)
 				{
-				case 1:	// 頂点
-					PmxSkinNum++;
-					pmxMeshInfoPtr->morphList[i].Vertex.AddZeroed(pmxMeshInfoPtr->morphList[i].DataNum);
+					//type 0: base除外。それ以外の有効Skinなら加算
+					//1: まゆ
+					//2: 目
+					//3: リップ
+					//4: その他
+					PmxMorphNum++;
+					pmdMorphIndexList.Add(i);
+				}
+				else if (0 == pmdMeshInfoPtr->skinList[i].SkinType && basePmdMorphPtr == NULL)
+				{
+					//もし既にBaseが登録されている場合(PMDフォーマットとして異常)は上書きしない
+					basePmdMorphPtr = &pmdMeshInfoPtr->skinList[i];
+				}
+				else
+				{
+					//Err
+				}
+			}
+			// モーフありかつBaseモーフありの場合、モーフ登録をする
+			if (PmxMorphNum > 0 && basePmdMorphPtr )
+			{
+				// モーフデータを格納するメモリ領域の確保
+				pmxMeshInfoPtr->morphList.AddZeroed(PmxMorphNum);
 
-					for (j = 0; j < pmxMeshInfoPtr->morphList[i].DataNum; j++)
+				// モーフ情報の読み込み
+				int32 PmxSkinNum = 0;
+				FVector tempVec;
+				for (i = 0; i < PmxMorphNum; i++)
+				{
+					// target morph ptr 参照
+					targetPmdMorphPtr = &pmdMeshInfoPtr->skinList[pmdMorphIndexList[i]];
+					//
+					pmxMeshInfoPtr->morphList[i].Name
+						= ConvertMMDSJISToFString(
+							(uint8 *)&(targetPmdMorphPtr->Name),
+							sizeof(targetPmdMorphPtr->Name)
+							);
+					pmxMeshInfoPtr->morphList[i].NameEng
+						= pmxMeshInfoPtr->morphList[i].Name;
+
+					//
+					pmxMeshInfoPtr->morphList[i].ControlPanel = targetPmdMorphPtr->SkinType;
+					//
+					pmxMeshInfoPtr->morphList[i].Type = 1;//頂点固定
+					//
+					pmxMeshInfoPtr->morphList[i].DataNum = targetPmdMorphPtr->VertexCount;
+
+					switch (pmxMeshInfoPtr->morphList[i].Type)
 					{
-						pmxMeshInfoPtr->morphList[i].Vertex[j].Index =
-							pmdMeshInfoPtr->skinList[i].Vertex[j].TargetVertexIndex;
-						//
-						memcopySize = sizeof(pmxMeshInfoPtr->morphList[i].Vertex[j].Offset);
-						FMemory::Memcpy(&pmxMeshInfoPtr->morphList[i].Vertex[j].Offset, 
-							pmdMeshInfoPtr->skinList[i].Vertex[j].Position, memcopySize);
+					case 1:	// 頂点
+						PmxSkinNum++;
+						pmxMeshInfoPtr->morphList[i].Vertex.AddZeroed(pmxMeshInfoPtr->morphList[i].DataNum);
+
+						for (j = 0; j < pmxMeshInfoPtr->morphList[i].DataNum; j++)
+						{
+							pmxMeshInfoPtr->morphList[i].Vertex[j].Index =
+								basePmdMorphPtr->Vertex[targetPmdMorphPtr->Vertex[j].TargetVertexIndex].TargetVertexIndex;
+							//
+							tempVec.X = targetPmdMorphPtr->Vertex[j].Position[0];
+							tempVec.Y = targetPmdMorphPtr->Vertex[j].Position[1];
+							tempVec.Z = targetPmdMorphPtr->Vertex[j].Position[2];
+							tempVec = ConvertVectorAsixToUE4FromMMD(tempVec)*modelScale;
+
+							pmxMeshInfoPtr->morphList[i].Vertex[j].Offset[0] = tempVec.X;
+							pmxMeshInfoPtr->morphList[i].Vertex[j].Offset[1] = tempVec.Y;
+							pmxMeshInfoPtr->morphList[i].Vertex[j].Offset[2] = tempVec.Z;
+						}
+						break;
+					default:
+						//un support ppmd
+						break;
 					}
-					break;
-				default:
-					//un support ppmd
-					break;
 				}
 			}
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [MorphList] Complete"));
