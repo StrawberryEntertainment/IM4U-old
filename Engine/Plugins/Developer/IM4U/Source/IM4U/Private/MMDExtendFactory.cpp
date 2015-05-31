@@ -3,21 +3,21 @@
 #include "IM4UPrivatePCH.h"
 
 #include "MMDExtendFactory.h"
-#include "MMDExtend.h"
+#include "MMDExtendAsset.h"
 
 UMMDExtendFactory::UMMDExtendFactory(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	SupportedClass = UMMDExtend::StaticClass();
+	SupportedClass = UMMDExtendAsset::StaticClass();
 	bCreateNew = true; //for editor create flag
 }
 bool UMMDExtendFactory::DoesSupportClass(UClass* Class)
 {
-	return (Class == UMMDExtend::StaticClass());
+	return (Class == UMMDExtendAsset::StaticClass());
 }
 UClass* UMMDExtendFactory::ResolveSupportedClass()
 {
-	return UMMDExtend::StaticClass();
+	return UMMDExtendAsset::StaticClass();
 }
 
 UObject* UMMDExtendFactory::FactoryCreateNew(
@@ -29,7 +29,7 @@ UObject* UMMDExtendFactory::FactoryCreateNew(
 	FFeedbackContext* Warn
 	)
 {
-	UMMDExtend* NewAsset =
-		CastChecked<UMMDExtend>(StaticConstructObject(InClass, InParent, InName, Flags));
+	UMMDExtendAsset* NewAsset =
+		CastChecked<UMMDExtendAsset>(StaticConstructObject(InClass, InParent, InName, Flags));
 	return NewAsset;
 }

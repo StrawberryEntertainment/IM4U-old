@@ -11,7 +11,7 @@
 #include "SkelImport.h"
 
 
-#include "MMDExtend.generated.h"
+#include "MMDExtendAsset.generated.h"
 
 
 
@@ -24,7 +24,8 @@ struct FMMD_IKLINK
 {
 	GENERATED_USTRUCT_BODY()
 
-	int		BoneIndex;							// Link bone index ( for skeleton bone index ,use ik func)
+	UPROPERTY(EditAnywhere, Category = "MMD", meta = (ToolTip = "ue4 link bone index"))
+	int32		BoneIndex;							// Link bone index ( for skeleton bone index ,use ik func)
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MMD", meta = (ToolTip = "ue4 link bone name") )
 	FName	BoneName;							// Link Bone Name
@@ -55,7 +56,9 @@ struct FMMD_IKInfo
 	bool	checkIKIndex;
 
 	int		IKBoneIndexVMDKey;			// IK target bone index vmd key index
-	int		IKBoneIndex;					// IK target bone index ( use ik func. ref skeleton.)
+
+	UPROPERTY(EditAnywhere, Category = "MMD", meta = (ToolTip = "ue4 IK bone index"))
+	int32		IKBoneIndex;					// IK target bone index ( use ik func. ref skeleton.)
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "ue4 IK (this) bone name"))
 	FName	IKBoneName;
@@ -91,7 +94,7 @@ struct FMMD_IKInfo
 ***********************/
 //UCLASS(hidecategories = Object)
 UCLASS()
-class UMMDExtend : public UObject
+class UMMDExtendAsset : public UObject
 {
 	GENERATED_UCLASS_BODY()
 
@@ -102,8 +105,8 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Header)
 		FString ModelName;
 	// mmd model comment 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Header)
-		FString ModelComment;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Header, meta = (MultiLine = "true"))
+		FText ModelComment;
 
 	////////////////////////////////////
 	// MMD-IK-Info is used to generate the AnimSequence form VMD file.

@@ -14,7 +14,7 @@
 #include "PmxImporter.h"
 #include "PmxImportUI.h"
 #include "PmxMaterialImport.h"
-#include "MMDExtend.h"
+#include "MMDExtendAsset.h"
 #include "PmxFactory.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_PMXFactory, Log, All)
@@ -130,9 +130,9 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 		FName FbxErrorName
 		);
 	//////////////////////
-	UMMDExtend * CreateMMDExtendFromMMDModel(
+	UMMDExtendAsset * CreateMMDExtendFromMMDModel(
 		UObject* InParent,
-		const FName& Name,
+		USkeletalMesh* SkeletalMesh, // issue #2: fix param use skeleton mesh
 		MMD4UE4::PmxMeshInfo * PmxMeshInfo
 		);
 protected:

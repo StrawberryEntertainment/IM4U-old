@@ -17,7 +17,7 @@
 #include "VmdImporter.h"
 
 #include "MMD2UE4NameTableRow.h"
-#include "MMDExtend.h"
+#include "MMDExtendAsset.h"
 
 #include "Matinee/InterpTrackMoveAxis.h"
 
@@ -57,7 +57,7 @@ class IM4U_API UVmdFactory : public UFactory
 		//UFbxAnimSequenceImportData* TemplateImportData, 
 		//TArray<FbxNode*>& NodeArray
 		UDataTable* ReNameTable,
-		UMMDExtend* mmdExtend,
+		UMMDExtendAsset* mmdExtend,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		);
 	//////////////
@@ -93,7 +93,7 @@ class IM4U_API UVmdFactory : public UFactory
 		UAnimSequence* DestSeq,
 		USkeleton* Skeleton,
 		UDataTable* ReNameTable,
-		UMMDExtend* mmdExtend,
+		UMMDExtendAsset* mmdExtend,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		);
 

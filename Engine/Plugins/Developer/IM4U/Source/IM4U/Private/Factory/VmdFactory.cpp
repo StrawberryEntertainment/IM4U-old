@@ -144,8 +144,7 @@ UObject* UVmdFactory::FactoryCreateBinary
 	/////////////////////////////////////
 	// factory animation asset from vmd data.
 	////////////////////////////////////
-	//if (vmdMotionInfo.keyCameraList.Num() == 0)
-	if (true) //test mode
+	if (vmdMotionInfo.keyCameraList.Num() == 0)
 	{
 		//カメラアニメーションでない場合
 		FPmxImporter* PmxImporter = FPmxImporter::GetInstance();
@@ -240,7 +239,7 @@ UAnimSequence * UVmdFactory::ImportAnimations(
 	//UFbxAnimSequenceImportData* TemplateImportData, 
 	//TArray<FbxNode*>& NodeArray
 	UDataTable* ReNameTable,
-	UMMDExtend* mmdExtend,
+	UMMDExtendAsset* mmdExtend,
 	MMD4UE4::VmdMotionInfo* vmdMotionInfo
 	)
 {
@@ -553,7 +552,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 	UAnimSequence* DestSeq,
 	USkeleton* Skeleton,
 	UDataTable* ReNameTable,
-	UMMDExtend* mmdExtend,
+	UMMDExtendAsset* mmdExtend,
 	MMD4UE4::VmdMotionInfo* vmdMotionInfo
 	)
 {

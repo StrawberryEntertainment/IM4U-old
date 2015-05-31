@@ -157,7 +157,7 @@ class UPmxImportUI : public UObject
 
 	/** mmd extend assset to use for calc ik . */
 	//UPROPERTY(EditAnywhere, Category = Animation, meta = (OBJRestrict = "false"))
-		class UMMDExtend*  MmdExtendAsset;
+		class UMMDExtendAsset*  MmdExtendAsset;
 
 	//struct FTableRowBase MMD2UE4NameTableRowDmmy;
 };

@@ -371,6 +371,7 @@ namespace MMD4UE4
 			}
 			keyFaceList = tempKeyFaceList;
 		}
+		if (readData->vmdCameraCount > 0)
 		{
 			//Keys
 			TArray<VmdCameraTrackList>	tempKeyCamList;

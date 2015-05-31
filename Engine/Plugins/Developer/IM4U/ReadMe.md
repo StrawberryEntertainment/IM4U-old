@@ -277,4 +277,19 @@ IK情報は、VMDデータインポート時にIK情報を設定した本アセ�
 - VMDのファイル読み込み時にMMDExtendAssetを指定した状態でインポートすると、IK計算でクラッシュする場合があるためSlateに表示しないように変更。  
 　→現時点で内部でのIK計算にバグが有り、誤ってアセット指定したことによるクラッシュ発生を避けるための暫定対処。  
 
+
+## ver 0.6.10 15/05/31
+
+- UE4エンジンビルドで本プラグインをビルドした場合にビルドエラーになる問題を修正  
+　→Pull Request #1 (Ref: https://github.com/bm9/UnrealEngine_IM4UPlugin/pull/1)  
+- MMDExtend Assetのクラス名をMMDExtendからMMDExtendAssetに変更  
+　クラス名変更に合わせ、MMDExtendのヘッダー/ソースファイル名をMMDExtendAssetに変更。  
+　→issue #1 (Ref: https://github.com/bm9/IM4U/issues/1 )  
+- MMDExtendAssetでIKBoneIndexとBoneIndexをアセットの詳細パネルに表示し、  
+　MMDのモデルインポート時に該当BoneNameからIndexを参照するように追加  
+　→issue #2 (Ref: https://github.com/bm9/IM4U/issues/2 )  
+- UE4本体のエンジンソースはリポジトリから除外  
+　→以降、エンジンでのプラグインビルド確認は実施しない  
+
+
 以上

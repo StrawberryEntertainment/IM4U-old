@@ -536,7 +536,8 @@ UObject* UPmxFactory::FactoryCreateBinary
 							//MMD Extend asset
 							CreateMMDExtendFromMMDModel(
 								InParent,
-								FName(*NewObject->GetName()),
+								//FName(*NewObject->GetName()),
+								Cast<USkeletalMesh>(NewObject),
 								&pmxMeshInfoPtr
 								);
 
@@ -1395,25 +1396,29 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 }
 
 
-UMMDExtend * UPmxFactory::CreateMMDExtendFromMMDModel(
+UMMDExtendAsset * UPmxFactory::CreateMMDExtendFromMMDModel(
 	UObject* InParent,
-	const FName& Name,
+	USkeletalMesh* SkeletalMesh, // issue #2: fix param use skeleton mesh
 	MMD4UE4::PmxMeshInfo * PmxMeshInfo
 	)
 {
-	UMMDExtend * NewMMDExtendAsset = NULL;
+	UMMDExtendAsset * NewMMDExtendAsset = NULL;
+
+	//issue #2 : Fix MMDExtend IK Index
+	const FReferenceSkeleton ReferenceSkeleton = SkeletalMesh->Skeleton->GetReferenceSkeleton();
+	const FName& Name = FName(*SkeletalMesh->GetName());
 
 	//MMD Extend asset
 
 	// TBD::アセット生成関数で既存アセット時の判断ができていないと思われる。
 	// 場合によってはVMDFactoryのアセット生成処理を元に再設計すること
 	FString ObjectName = FString::Printf(TEXT("%s_MMDExtendAsset"), *Name.ToString());
-	NewMMDExtendAsset = CreateAsset<UMMDExtend>(InParent->GetName(), ObjectName, true);
+	NewMMDExtendAsset = CreateAsset<UMMDExtendAsset>(InParent->GetName(), ObjectName, true);
 	if (!NewMMDExtendAsset)
 	{
 
 		// same object exists, try to see if it's asset, if so, load
-		NewMMDExtendAsset = LoadObject<UMMDExtend>(InParent, *ObjectName);
+		NewMMDExtendAsset = LoadObject<UMMDExtendAsset>(InParent, *ObjectName);
 
 		if (!NewMMDExtendAsset)
 		{
@@ -1443,7 +1448,7 @@ UMMDExtend * UPmxFactory::CreateMMDExtendFromMMDModel(
 		//create IK
 		//mapping
 		NewMMDExtendAsset->ModelName = PmxMeshInfo->modelNameJP;
-		NewMMDExtendAsset->ModelComment = PmxMeshInfo->modelCommentJP;
+		NewMMDExtendAsset->ModelComment = FText::FromString( PmxMeshInfo->modelCommentJP);
 		//
 		for (int boneIdx = 0; boneIdx < PmxMeshInfo->boneList.Num(); ++boneIdx)
 		{
@@ -1458,15 +1463,22 @@ UMMDExtend * UPmxFactory::CreateMMDExtendFromMMDModel(
 				addMMDIkInfo.RotLimit = tempPmxIKPtr->RotLimit;
 				// this bone
 				addMMDIkInfo.IKBoneName = FName(*PmxMeshInfo->boneList[boneIdx].Name);
+				//issue #2: Fix IK bone index 
+				//this bone(ik-bone) index, from skeleton.
+				addMMDIkInfo.IKBoneIndex = ReferenceSkeleton.FindBoneIndex(addMMDIkInfo.IKBoneName);
 				//ik target 
 				addMMDIkInfo.TargetBoneName = FName(*PmxMeshInfo->boneList[tempPmxIKPtr->TargetBoneIndex].Name);
 				//set sub ik
 				addMMDIkInfo.ikLinkList.AddZeroed(tempPmxIKPtr->LinkNum);
 				for (int ikInfoID = 0; ikInfoID < tempPmxIKPtr->LinkNum; ++ikInfoID)
 				{
-					//limit flag
+					//link bone index
 					addMMDIkInfo.ikLinkList[ikInfoID].BoneName
 						= FName(*PmxMeshInfo->boneList[tempPmxIKPtr->Link[ikInfoID].BoneIndex].Name);
+					//issue #2: Fix link bone index
+					//link bone index from skeleton.
+					addMMDIkInfo.ikLinkList[ikInfoID].BoneIndex
+						= ReferenceSkeleton.FindBoneIndex(addMMDIkInfo.ikLinkList[ikInfoID].BoneName);
 					//limit flag
 					addMMDIkInfo.ikLinkList[ikInfoID].RotLockFlag = tempPmxIKPtr->Link[ikInfoID].RotLockFlag;
 					//min

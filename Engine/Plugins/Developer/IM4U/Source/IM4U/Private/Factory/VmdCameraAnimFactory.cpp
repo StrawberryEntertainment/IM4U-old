@@ -1126,14 +1126,15 @@
 		return Mode;
 	}
 	
+#if 0 //test build 2
 	//この関数が必要か不明。SubTrackの存在について調査が必要。
 	void UVmdFactory::ImportMoveSubTrack(
-		FbxAnimCurve* FbxCurve, 
+//		FbxAnimCurve* FbxCurve, 
 		int32 FbxDimension, 
 		UInterpTrackMoveAxis* SubTrack,
 		int32 CurveIndex, 
 		bool bNegative, 
-		FbxAnimCurve* RealCurve, 
+//		FbxAnimCurve* RealCurve, 
 		float DefaultVal
 		)
 	{
@@ -1207,6 +1208,7 @@
 			}
 		}
 	}
+#endif
 
 	//この関数が必要か不明。MatineeAnimatedがどの部分に該当するかについて調査が必要。
 	void UVmdFactory::ImportMatineeAnimated(
@@ -1269,7 +1271,7 @@
 			for (int32 KeyIndex = Curve.Points.Num(); KeyIndex < KeyCount; ++KeyIndex)
 			{
 				//FbxAnimCurveKey CurKey = FbxCurve->KeyGet(KeyIndex);
-				MMD4UE4::VMD_CAMERA* CurKeyPtr = VmdCurve->keyList[VmdCurve->sortIndexList[KeyIndex]];
+				MMD4UE4::VMD_CAMERA* CurKeyPtr = & VmdCurve->keyList[VmdCurve->sortIndexList[KeyIndex]];
 
 				// Create the curve keys
 				FInterpCurvePoint<FVector> Key;
@@ -1286,7 +1288,7 @@
 			for (int32 KeyIndex = 0; KeyIndex < KeyCount; ++KeyIndex)
 			{
 				//FbxAnimCurveKey CurKey = FbxCurve->KeyGet(KeyIndex);
-				MMD4UE4::VMD_CAMERA* CurKeyPtr = VmdCurve->keyList[VmdCurve->sortIndexList[KeyIndex]];
+				MMD4UE4::VMD_CAMERA* CurKeyPtr = & VmdCurve->keyList[VmdCurve->sortIndexList[KeyIndex]];
 				FInterpCurvePoint<FVector>& UnrealKey = Curve.Points[KeyIndex];
 
 				// Prepare the FBX values to import into the track key.
