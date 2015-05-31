@@ -26,16 +26,16 @@ struct FMMD_IKLINK
 
 	int		BoneIndex;							// Link bone index ( for skeleton bone index ,use ik func)
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "ue4 link bone name") )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MMD", meta = (ToolTip = "ue4 link bone name") )
 	FName	BoneName;							// Link Bone Name
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "If enabled, rotation limite, 0:OFF, 1:ON "))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "If enabled, rotation limite, 0:OFF, 1:ON "))
 	uint32	RotLockFlag:1;						// âÒì]êßå¿( 0:OFF 1:ON )
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] min"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] min"))
 	FVector	RotLockMin;							// âÒì]êßå¿ÅAâ∫å¿[x,y,z]
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] max"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] max"))
 	FVector	RotLockMax;							// âÒì]êßå¿ÅAè„å¿[x,y,z]
 
 	FMMD_IKLINK()
@@ -57,21 +57,21 @@ struct FMMD_IKInfo
 	int		IKBoneIndexVMDKey;			// IK target bone index vmd key index
 	int		IKBoneIndex;					// IK target bone index ( use ik func. ref skeleton.)
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "ue4 IK (this) bone name"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "ue4 IK (this) bone name"))
 	FName	IKBoneName;
 
 	int		TargetBoneIndex;					// IK target bone index ( use ik func. ref skeleton.)
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "ue4 target bone name"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "ue4 target bone name"))
 	FName	TargetBoneName;						// IK Target Bone Name 
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "CCD-IK loop count") )
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "CCD-IK loop count"))
 	int32		LoopNum;							// IKåvéZÇÃÉãÅ[ÉvâÒêî
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "CCD-IK unit angle[dig]"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "CCD-IK unit angle[dig]"))
 	float	RotLimit;							// åvéZàÍâÒï”ÇËÇÃêßå¿äpìx
 
-	UPROPERTY(EditAnywhere, meta = (ToolTip = "CCD-IK link IK info"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "CCD-IK link IK info"))
 	TArray<FMMD_IKLINK> ikLinkList;				// ÇhÇjÉäÉìÉNèÓïÒ
 
 	FMMD_IKInfo()
@@ -99,10 +99,10 @@ public:
 
 	////////////////////////////////////
 	// mmd target model name
-	UPROPERTY(EditAnywhere, Category = Header )
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Header)
 		FString ModelName;
 	// mmd model comment 
-	UPROPERTY(EditAnywhere, Category = Header)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Header)
 		FString ModelComment;
 
 	////////////////////////////////////
