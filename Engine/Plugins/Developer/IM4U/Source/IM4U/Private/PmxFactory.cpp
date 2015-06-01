@@ -1468,6 +1468,9 @@ UMMDExtendAsset * UPmxFactory::CreateMMDExtendFromMMDModel(
 				addMMDIkInfo.IKBoneIndex = ReferenceSkeleton.FindBoneIndex(addMMDIkInfo.IKBoneName);
 				//ik target 
 				addMMDIkInfo.TargetBoneName = FName(*PmxMeshInfo->boneList[tempPmxIKPtr->TargetBoneIndex].Name);
+				//issue #2: Fix Target Bone Index 
+				//target bone(ik-target bone) index, from skeleton.
+				addMMDIkInfo.TargetBoneIndex = ReferenceSkeleton.FindBoneIndex(addMMDIkInfo.TargetBoneName);
 				//set sub ik
 				addMMDIkInfo.ikLinkList.AddZeroed(tempPmxIKPtr->LinkNum);
 				for (int ikInfoID = 0; ikInfoID < tempPmxIKPtr->LinkNum; ++ikInfoID)
