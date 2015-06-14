@@ -1446,7 +1446,7 @@ public:
 	}
 
 	//UE4.8ˆÈ~‚Å—˜—p‚·‚éê‡‚É•K—v
-#if 0
+#if 1
 	FORCEINLINE TStatId GetStatId() const
 	{
 		RETURN_QUICK_DECLARE_CYCLE_STAT(FAsyncImportMorphTargetWork, STATGROUP_ThreadPoolAsyncTasks);
