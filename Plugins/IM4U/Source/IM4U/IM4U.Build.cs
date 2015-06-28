@@ -14,7 +14,7 @@ namespace UnrealBuildTool.Rules
 
 			PrivateIncludePaths.AddRange(
 				new string[] {
-					"Developer/IM4U/Private",
+					"IM4U/Private",
 					// ... add other private include paths required here ...
 				}
 				);
