@@ -55,9 +55,7 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateNew(
 	FFeedbackContext* Warn
 	)
 {
-	UMyUObjectTestCls* NewMyAsset =
-		CastChecked<UMyUObjectTestCls>(StaticConstructObject(InClass, InParent, InName, Flags));
-	return NewMyAsset;
+	return NewObject<UMyUObjectTestCls>(InParent, InClass, InName, Flags);;
 }
 
 UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
@@ -81,8 +79,7 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 	UMyUObjectTestCls* NewMyAsset = NULL;
 	
 	
-	NewMyAsset =
-		CastChecked<UMyUObjectTestCls>(StaticConstructObject(InClass, InParent, InName, Flags));
+	NewMyAsset = NewObject<UMyUObjectTestCls>(InParent, InClass, InName, Flags);
 
 	//PMXEncodeType pmxEncodeType = PMXEncodeType_ERROR;
 	pmxMaterialImport.InitializeBaseValue(InParent);
@@ -1702,7 +1699,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 				OutMesh.WedgeIndices.Add(pmxMeshInfoPtr->faseList[i].VertexIndex[k]);
 				OutMesh.WedgeTexCoords[0].Add(pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].UV);
 				FVector TangentZ = pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].Normal;
-				OutMesh.WedgeTangentZ.Add(TangentZ.SafeNormal());
+				OutMesh.WedgeTangentZ.Add(TangentZ.GetSafeNormal());
 				facecount++;
 			}
 		}
@@ -1713,7 +1710,7 @@ void UMyUObjectTestClsFactory::GetBrushMesh(
 				OutMesh.WedgeIndices.Add(pmxMeshInfoPtr->faseList[i].VertexIndex[k]);
 				OutMesh.WedgeTexCoords[0].Add(pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].UV);
 				FVector TangentZ = pmxMeshInfoPtr->vertexList[pmxMeshInfoPtr->faseList[i].VertexIndex[k]].Normal;
-				OutMesh.WedgeTangentZ.Add(TangentZ.SafeNormal());
+				OutMesh.WedgeTangentZ.Add(TangentZ.GetSafeNormal());
 				facecount++;
 			}
 		}
@@ -1749,7 +1746,7 @@ UStaticMesh* UMyUObjectTestClsFactory::CreateStaticMesh(
 {
 	// Create the UStaticMesh object.
 	//FStaticMeshComponentRecreateRenderStateContext RecreateRenderStateContext(FindObject<UStaticMesh>(InOuter, *InName.ToString()));
-	UStaticMesh* StaticMesh = new(InOuter, InName, RF_Public | RF_Standalone) UStaticMesh(FObjectInitializer());
+	auto StaticMesh = NewObject<UStaticMesh>(InOuter, InName, RF_Public | RF_Standalone);
 
 	FEditorDelegates::OnAssetPostImport.Broadcast(this, StaticMesh);
 

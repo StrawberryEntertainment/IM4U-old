@@ -76,9 +76,15 @@ UPmxFactory::UPmxFactory(const FObjectInitializer& ObjectInitializer)
 	bOperationCanceled = false;
 	bDetectImportTypeOnImport = false;
 
-	ImportUI = ConstructObject<UPmxImportUI>(UPmxImportUI::StaticClass(), this, NAME_None, RF_NoFlags);
+	//ImportUI = NewObject<UPmxImportUI>(this, NAME_None, RF_NoFlags);
 }
 
+void UPmxFactory::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	ImportUI = NewObject<UPmxImportUI>(this, NAME_None, RF_NoFlags);
+}
 
 bool UPmxFactory::DoesSupportClass(UClass* Class)
 {
@@ -1019,7 +1025,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	}
 
 	// [from USkeletalMeshFactory::FactoryCreateBinary]
-	USkeletalMesh* SkeletalMesh = CastChecked<USkeletalMesh>(StaticConstructObject(USkeletalMesh::StaticClass(), InParent, Name, Flags));
+	USkeletalMesh* SkeletalMesh = NewObject<USkeletalMesh>(InParent, Name, Flags);
 
 	SkeletalMesh->PreEditChange(NULL);
 
@@ -1303,7 +1309,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	if (InParent != GetTransientPackage())
 	{
 		// Create PhysicsAsset if requested and if physics asset is null
-		//if (ImportOptions->bCreatePhysicsAsset )
+		if (ImportUI->bCreatePhysicsAsset)
 		{
 			if (SkeletalMesh->PhysicsAsset == NULL)
 			{

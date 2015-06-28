@@ -48,10 +48,14 @@ UVmdFactory::UVmdFactory(const FObjectInitializer& ObjectInitializer)
 	bText = false;
 	bEditorImport = true;
 
-
-	ImportUI = ConstructObject<UPmxImportUI>(UPmxImportUI::StaticClass(), this, NAME_None, RF_NoFlags);
 }
 
+void UVmdFactory::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	ImportUI = NewObject<UPmxImportUI>(this, NAME_None, RF_NoFlags);
+}
 
 bool UVmdFactory::DoesSupportClass(UClass* Class)
 {
@@ -140,6 +144,28 @@ UObject* UVmdFactory::FactoryCreateBinary
 
 		FSlateApplication::Get().AddModalWindow(Window, ParentWindow, false);
 
+	}
+	/***************************************
+	* VMD取り込み時の警告表示
+	****************************************/
+	if (true)
+	{
+		//モデル読み込み後の警告文表示：コメント欄
+		FText TitleStr = FText(LOCTEXT("ImportVMD_TargetModelInfo", "警告[ImportVMD_TargetModelInfo]"));
+		const FText MessageDbg
+			= FText::Format(LOCTEXT("ImportVMD_TargetModelInfo_Comment",
+			"注意：モーションデータ取り込み情報：：\n\
+			\n\
+			本VMDは、「{0}」用に作成されたファイルです。\n\
+			\n\
+			モデル向けモーションの場合、同じボーン名のデータのみ取り込まれます。\n\
+			モデル側のボーン名と異なる名称の同一ボーンが含まれる場合、\n\
+			事前に変換テーブル(MMD2UE4NameTableRow)を作成し、\n\
+			InportOption画面にて指定することで取り込むことが可能です。"
+			)
+			, FText::FromString(vmdMotionInfo.ModelName)
+			);
+		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
 	}
 	/////////////////////////////////////
 	// factory animation asset from vmd data.
@@ -281,7 +307,7 @@ UAnimSequence * UVmdFactory::ImportAnimations(
 		// If not, create new one now.
 		if (!DestSeq)
 		{
-			DestSeq = ConstructObject<UAnimSequence>(UAnimSequence::StaticClass(), ParentPackage, *SequenceName, RF_Public | RF_Standalone);
+			DestSeq = NewObject<UAnimSequence>( ParentPackage, *SequenceName, RF_Public | RF_Standalone);
 
 			// Notify the asset registry
 			FAssetRegistryModule::AssetCreated(DestSeq);
@@ -643,6 +669,13 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			int nextKeyFrame = vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Frame;
 			int baseKeyFrame = 0;
 
+			{
+				UE_LOG(LogMMD4UE4_VMDFactory, Log,
+					TEXT("ImportVMDToAnimSequence Target Bone Found...Name[%s]-KeyNum[%d]"),
+					*targetName.ToString(),
+					vmdMotionInfo->keyBoneList[vmdKeyListIndex].sortIndexList.Num() );
+			}
+
 			//事前に各Trackに対し親Bone抜きにLocal座標で全登録予定のフレーム計算しておく（もっと良い処理があれば…検討）
 			//90度以上の軸回転が入るとクォータニオンの為か処理に誤りがあるかで余計な回転が入ってしまう。
 			//→上記により、単にZ回転（ターンモーション）で下半身と上半身の軸が物理的にありえない回転の組み合わせになる。バグ。
@@ -705,7 +738,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					{
 						MMD4UE4::VMD_KEY & PreKey = vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[preKeyIndex];
 						MMD4UE4::VMD_KEY & NextKey = vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex];
-						if (NextKey.Frame < (uint32)i)
+						if (NextKey.Frame <= (uint32)i)
 						{
 							blendRate = 1.0f;
 						}
@@ -731,20 +764,26 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						NowTranc.SetLocation(
 							FVector(
 							interpolateBezier(
-							NextKey.Bezier[0][0][0] / 127.0f, NextKey.Bezier[0][1][0] / 127.0f,
-							NextKey.Bezier[1][0][0] / 127.0f, NextKey.Bezier[1][1][0] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_X] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_X] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_X] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_X] / 127.0f,
 							blendRate
 							)*(NextTranc.GetTranslation().X - PreTranc.GetTranslation().X) + PreTranc.GetTranslation().X
 							,
 							interpolateBezier(
-							NextKey.Bezier[0][0][2] / 127.0f, NextKey.Bezier[0][1][2] / 127.0f,
-							NextKey.Bezier[1][0][2] / 127.0f, NextKey.Bezier[1][1][2] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_Z] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_Z] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_Z] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_Z] / 127.0f,
 							blendRate
 							)*(NextTranc.GetTranslation().Y - PreTranc.GetTranslation().Y) + PreTranc.GetTranslation().Y
 							,
 							interpolateBezier(
-							NextKey.Bezier[0][0][1] / 127.0f, NextKey.Bezier[0][1][1] / 127.0f,
-							NextKey.Bezier[1][0][1] / 127.0f, NextKey.Bezier[1][1][1] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_Y] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_Y] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_Y] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_Y] / 127.0f,
 							blendRate
 							)*(NextTranc.GetTranslation().Z - PreTranc.GetTranslation().Z) + PreTranc.GetTranslation().Z
 							)
@@ -764,33 +803,63 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							PreKey.Quaternion[1],
 							PreKey.Quaternion[3]
 							));
+#if 0
+						float tempBezR[4];
 						NowTranc.SetRotation(
 							FQuat(
-							interpolateBezier(
-							NextKey.Bezier[0][0][0] / 127.0f, NextKey.Bezier[0][1][0] / 127.0f,
-							NextKey.Bezier[1][0][0] / 127.0f, NextKey.Bezier[1][1][0] / 127.0f,
+							tempBezR[0] = interpolateBezier(
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
 							blendRate
 							)*(NextTranc.GetRotation().X - PreTranc.GetRotation().X) + PreTranc.GetRotation().X
 							,
-							interpolateBezier(
-							NextKey.Bezier[0][0][2] / 127.0f, NextKey.Bezier[0][1][2] / 127.0f,
-							NextKey.Bezier[1][0][2] / 127.0f, NextKey.Bezier[1][1][2] / 127.0f,
+							tempBezR[1] = interpolateBezier(
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
 							blendRate
 							)*(NextTranc.GetRotation().Y - PreTranc.GetRotation().Y) + PreTranc.GetRotation().Y
 							,
-							interpolateBezier(
-							NextKey.Bezier[0][0][1] / 127.0f, NextKey.Bezier[0][1][1] / 127.0f,
-							NextKey.Bezier[1][0][1] / 127.0f, NextKey.Bezier[1][1][1] / 127.0f,
+							tempBezR[2] = interpolateBezier(
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
 							blendRate
 							)*(NextTranc.GetRotation().Z - PreTranc.GetRotation().Z) + PreTranc.GetRotation().Z
 							,
-							interpolateBezier(
-							NextKey.Bezier[0][0][3] / 127.0f, NextKey.Bezier[0][1][3] / 127.0f,
-							NextKey.Bezier[1][0][3] / 127.0f, NextKey.Bezier[1][1][3] / 127.0f,
+							tempBezR[3] = interpolateBezier(
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
 							blendRate
 							)*(NextTranc.GetRotation().W - PreTranc.GetRotation().W) + PreTranc.GetRotation().W
 							)
 							);
+						UE_LOG(LogMMD4UE4_VMDFactory, Warning,
+							TEXT("interpolateBezier Rot:[%s],F[%d/%d],BLD[%.2f],BEZ[%.3f][%.3f][%.3f][%.3f]"),
+							*targetName.ToString(), i, NextKey.Frame, blendRate, tempBezR[0], tempBezR[1], tempBezR[2], tempBezR[3]
+							);
+#else
+						float bezirT = interpolateBezier(
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_0][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_X][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							NextKey.Bezier[D_VMD_KEY_BEZIER_AR_0_BEZ_1][D_VMD_KEY_BEZIER_AR_1_BEZ_Y][D_VMD_KEY_BEZIER_AR_2_KND_R] / 127.0f,
+							blendRate
+							);
+						NowTranc.SetRotation(
+							FQuat::Slerp(PreTranc.GetRotation(), NextTranc.GetRotation(), bezirT)
+							);
+						/*UE_LOG(LogMMD4UE4_VMDFactory, Warning,
+							TEXT("interpolateBezier Rot:[%s],F[%d/%d],BLD[%.2f],biz[%.2f]BEZ[%s]"),
+							*targetName.ToString(), i, NextKey.Frame, blendRate, bezirT,*NowTranc.GetRotation().ToString()
+							);*/
+#endif
 					}
 					else
 					{

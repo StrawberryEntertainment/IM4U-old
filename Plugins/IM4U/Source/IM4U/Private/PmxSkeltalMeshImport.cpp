@@ -956,7 +956,7 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 
 					Triangle.TangentX[NormalIndex] = FVector::ZeroVector;
 					Triangle.TangentY[NormalIndex] = FVector::ZeroVector;
-					Triangle.TangentZ[NormalIndex] = TangentZ.SafeNormal();
+					Triangle.TangentZ[NormalIndex] = TangentZ.GetSafeNormal();
 				}
 			}
 			else
@@ -1387,7 +1387,7 @@ UObject* UPmxFactory::CreateAssetOfClass(
 	{
 		// add it to the set
 		// do not add to the set, now create independent asset
-		Object = StaticConstructObject(AssetClass, Parent, *ObjectName, RF_Public | RF_Standalone);
+		Object = NewObject<UObject>(Parent, AssetClass, *ObjectName, RF_Public | RF_Standalone);
 		Object->MarkPackageDirty();
 		// Notify the asset registry
 		FAssetRegistryModule::AssetCreated(Object);
@@ -1617,7 +1617,7 @@ void UPmxFactory::ImportMorphTargetsInternal(
 		{
 			if (LODIndex == 0)
 			{
-				Result = NewNamedObject<UMorphTarget>(BaseSkelMesh, FName(*ShapeName));
+				Result = NewObject<UMorphTarget>(BaseSkelMesh, FName(*ShapeName));
 			}
 			else
 			{

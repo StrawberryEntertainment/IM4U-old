@@ -298,7 +298,7 @@ FPmxImporter::FPmxImporter()
 	CurPhase = NOTSTARTED;
 #endif
 	ImportOptions = new PMXImportOptions();
-	FMemory::MemZero(*ImportOptions);
+	FMemory::Memzero(*ImportOptions);
 
 }
 
@@ -363,10 +363,10 @@ UPmxImportUI::UPmxImportUI(const FObjectInitializer& ObjectInitializer)
 {
 	bCombineMeshes = true;
 
-	StaticMeshImportData = ConstructObject<UMMDStaticMeshImportData>(UMMDStaticMeshImportData::StaticClass(), this);
-	SkeletalMeshImportData = ConstructObject<UMMDSkeletalMeshImportData>(UMMDSkeletalMeshImportData::StaticClass(), this);
-	/*AnimSequenceImportData = ConstructObject<UFbxAnimSequenceImportData>(UFbxAnimSequenceImportData::StaticClass(), this);
-	TextureImportData = ConstructObject<UFbxTextureImportData>(UFbxTextureImportData::StaticClass(), this);
+	StaticMeshImportData = CreateDefaultSubobject<UMMDStaticMeshImportData>(TEXT("StaticMeshImportData"));
+	SkeletalMeshImportData = CreateDefaultSubobject<UMMDSkeletalMeshImportData>(TEXT("SkeletalMeshImportData"));
+	/*AnimSequenceImportData = CreateDefaultSubobject<UFbxAnimSequenceImportData>(TEXT("AnimSequenceImportData"));
+	TextureImportData = CreateDefaultSubobject<UFbxTextureImportData>(TEXT("TextureImportData"));
 	*/
 }
 

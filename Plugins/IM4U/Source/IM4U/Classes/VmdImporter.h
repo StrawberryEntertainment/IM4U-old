@@ -24,6 +24,14 @@ namespace MMD4UE4
 		char modelName[20];	// Target Model Name
 	};
 
+#define D_VMD_KEY_BEZIER_AR_0_BEZ_0		0		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_0_BEZ_1		1		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_1_BEZ_X		0		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_1_BEZ_Y		1		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_2_KND_X		0		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_2_KND_Y		1		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_2_KND_Z		2		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
+#define D_VMD_KEY_BEZIER_AR_2_KND_R		3		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
 	// VMDキーデータ( 111byte )
 	struct VMD_KEY
 	{
@@ -53,6 +61,16 @@ namespace MMD4UE4
 		
 	};
 
+#define D_VMD_CAMERA_INTERPOLATION_AR_0_X		0	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_0_Y		1	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_0_Z		2	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_0_ROT		3	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_0_LEN		4	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_0_VIEW	5	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_1_X		0	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_1_Y		1	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_2_X		0	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
+#define D_VMD_CAMERA_INTERPOLATION_AR_2_Y		1	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
 	// VMDカメラキーデータ
 	struct VMD_CAMERA
 	{

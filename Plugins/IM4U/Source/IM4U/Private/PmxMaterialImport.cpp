@@ -431,7 +431,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty(
 
 						//Multipule
 						UMaterialExpressionMultiply* MulExpression
-							= ConstructObject< UMaterialExpressionMultiply >(UMaterialExpressionMultiply::StaticClass(), UnrealMaterial);
+							= NewObject< UMaterialExpressionMultiply >( UnrealMaterial);
 						UnrealMaterial->Expressions.Add(MulExpression);
 						UnrealMaterial->BaseColor.Expression = MulExpression;
 						MulExpression->MaterialExpressionEditorX = -250;
@@ -442,7 +442,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty(
 
 						//Multipule
 						UMaterialExpressionMultiply* MulExpression_2
-							= ConstructObject< UMaterialExpressionMultiply >(UMaterialExpressionMultiply::StaticClass(), UnrealMaterial);
+							= NewObject< UMaterialExpressionMultiply >( UnrealMaterial);
 						UnrealMaterial->Expressions.Add(MulExpression_2);
 						UnrealMaterial->OpacityMask.Expression = MulExpression_2;
 						MulExpression_2->MaterialExpressionEditorX = -250;
@@ -460,7 +460,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty(
 						// A
 						// and link it to the material 
 						UMaterialExpressionTextureSample* UnrealTextureExpression
-							= ConstructObject<UMaterialExpressionTextureSample>(UMaterialExpressionTextureSample::StaticClass(), UnrealMaterial);
+							= NewObject<UMaterialExpressionTextureSample>(UnrealMaterial);
 						UnrealMaterial->Expressions.Add(UnrealTextureExpression);
 						//MaterialInput.Expression = UnrealTextureExpression;
 						MulExpression->A.Expression = UnrealTextureExpression;
@@ -477,7 +477,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty(
 
 						//B 
 						UMaterialExpressionVectorParameter* MyColorExpression
-							= ConstructObject<UMaterialExpressionVectorParameter>(UMaterialExpressionVectorParameter::StaticClass(), UnrealMaterial);
+							= NewObject<UMaterialExpressionVectorParameter>(UnrealMaterial);
 						UnrealMaterial->Expressions.Add(MyColorExpression);
 						//UnrealMaterial->BaseColor.Expression = MyColorExpression;
 						//MulExpression->B.Expression = MyColorExpression;
@@ -546,7 +546,7 @@ void UPmxMaterialImport::FixupMaterial(
 		//FbxDouble3 DiffuseColor;
 
 		UMaterialExpressionVectorParameter* MyColorExpression
-			= ConstructObject<UMaterialExpressionVectorParameter>(UMaterialExpressionVectorParameter::StaticClass(), UnrealMaterial);
+			= NewObject<UMaterialExpressionVectorParameter>(UnrealMaterial);
 		UnrealMaterial->Expressions.Add(MyColorExpression);
 		UnrealMaterial->BaseColor.Expression = MyColorExpression;
 		UnrealMaterial->OpacityMask.Connect(4, MyColorExpression);
@@ -599,7 +599,7 @@ void UPmxMaterialImport::FixupMaterial(
 		//FbxDouble3 DiffuseColor;
 
 		UMaterialExpressionVectorParameter* MyColorExpression
-			= ConstructObject<UMaterialExpressionVectorParameter>(UMaterialExpressionVectorParameter::StaticClass(), UnrealMaterial);
+			= NewObject<UMaterialExpressionVectorParameter>(UnrealMaterial);
 		UnrealMaterial->Expressions.Add(MyColorExpression);
 		UnrealMaterial->AmbientOcclusion.Expression = MyColorExpression;
 		MyColorExpression->MaterialExpressionEditorX = -500;
@@ -724,7 +724,7 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 
 
 	// create an unreal material asset
-	UMaterialFactoryNew* MaterialFactory = new UMaterialFactoryNew(FObjectInitializer());
+	auto MaterialFactory = NewObject<UMaterialFactoryNew>();
 
 	UMaterial* UnrealMaterial = (UMaterial*)MaterialFactory->FactoryCreateNew(
 		UMaterial::StaticClass(), Package, *MaterialFullName, RF_Standalone | RF_Public, NULL, GWarn);
@@ -836,7 +836,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 
 				//Multipule
 				UMaterialExpressionMultiply* MulExpression
-					= ConstructObject< UMaterialExpressionMultiply >(UMaterialExpressionMultiply::StaticClass(), UnrealMaterial);
+					= NewObject< UMaterialExpressionMultiply >(UnrealMaterial);
 				UnrealMaterial->Expressions.Add(MulExpression);
 				UnrealMaterial->BaseColor.Expression = MulExpression; //test
 				MulExpression->MaterialExpressionEditorX = -250;
@@ -847,7 +847,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 
 				//Multipule
 				UMaterialExpressionMultiply* MulExpression_2
-					= ConstructObject< UMaterialExpressionMultiply >(UMaterialExpressionMultiply::StaticClass(), UnrealMaterial);
+					= NewObject< UMaterialExpressionMultiply >(UnrealMaterial);
 				UnrealMaterial->Expressions.Add(MulExpression_2);
 				//UnrealMaterial->OpacityMask.Expression = MulExpression_2;
 				MulExpression_2->MaterialExpressionEditorX = -250;
@@ -864,7 +864,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 
 				//Multipule
 				UMaterialExpressionMultiply* MulExpression_3
-					= ConstructObject< UMaterialExpressionMultiply >(UMaterialExpressionMultiply::StaticClass(), UnrealMaterial);
+					= NewObject< UMaterialExpressionMultiply >( UnrealMaterial);
 				UnrealMaterial->Expressions.Add(MulExpression_3);
 				//UnrealMaterial->EmissiveColor.Expression = MulExpression_3; //TES: lighting EmmisicveColor For AutoLuminous 
 				MulExpression_3->MaterialExpressionEditorX = -250;
@@ -882,7 +882,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 				// A
 				// and link it to the material 
 				UMaterialExpressionTextureSample* UnrealTextureExpression
-					= ConstructObject<UMaterialExpressionTextureSample>(UMaterialExpressionTextureSample::StaticClass(), UnrealMaterial);
+					= NewObject<UMaterialExpressionTextureSample>(UnrealMaterial);
 				UnrealMaterial->Expressions.Add(UnrealTextureExpression);
 				//MaterialInput.Expression = UnrealTextureExpression;
 				MulExpression->A.Expression = UnrealTextureExpression;
@@ -900,7 +900,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 
 				//B 
 				UMaterialExpressionVectorParameter* MyColorExpression
-					= ConstructObject<UMaterialExpressionVectorParameter>(UMaterialExpressionVectorParameter::StaticClass(), UnrealMaterial);
+					= NewObject<UMaterialExpressionVectorParameter>(UnrealMaterial);
 				UnrealMaterial->Expressions.Add(MyColorExpression);
 				//UnrealMaterial->BaseColor.Expression = MyColorExpression;
 				//MulExpression->B.Expression = MyColorExpression;
@@ -915,8 +915,7 @@ bool UPmxMaterialImport::CreateAndLinkExpressionForMaterialProperty_ForMmdAutolu
 
 				//const 
 				UMaterialExpressionConstant* MyConstExpression
-					= ConstructObject<UMaterialExpressionConstant>
-						(UMaterialExpressionConstant::StaticClass(), UnrealMaterial);
+					= NewObject<UMaterialExpressionConstant>(UnrealMaterial);
 				UnrealMaterial->Expressions.Add(MyConstExpression);
 				//UnrealMaterial->BaseColor.Expression = MyColorExpression;
 				//MulExpression->B.Expression = MyColorExpression;

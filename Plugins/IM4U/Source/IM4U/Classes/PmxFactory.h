@@ -31,6 +31,7 @@ class IM4U_API UPmxFactory : public UFactory // public UFbxFactory
 
 	class UPmxImportUI* ImportUI;
 	// Begin UFactory Interface
+	virtual void PostInitProperties() override;
 	virtual bool DoesSupportClass(UClass * Class) override;
 	virtual UClass* ResolveSupportedClass() override;
 	virtual UObject* FactoryCreateBinary(

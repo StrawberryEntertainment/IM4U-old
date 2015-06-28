@@ -65,7 +65,7 @@ class UPmxImportUI : public UObject
 	class USkeleton* Skeleton;
 
 	/** If checked, create new PhysicsAsset if it doesn't have it */
-	//UPROPERTY(EditAnywhere, AdvancedDisplay, config, Category = Mesh, meta = (ImportType = "SkeletalMesh"))
+	UPROPERTY(EditAnywhere, AdvancedDisplay, config, Category = Mesh, meta = (OBJRestrict = "true", ImportType = "SkeletalMesh"))
 		uint32 bCreatePhysicsAsset : 1;
 
 	/** If this is set, use this PhysicsAsset. It is possible bCreatePhysicsAsset == false, and PhysicsAsset == NULL. It is possible they do not like to create anything. */

@@ -29,7 +29,5 @@ UObject* UMMDExtendFactory::FactoryCreateNew(
 	FFeedbackContext* Warn
 	)
 {
-	UMMDExtendAsset* NewAsset =
-		CastChecked<UMMDExtendAsset>(StaticConstructObject(InClass, InParent, InName, Flags));
-	return NewAsset;
+	return NewObject<UMMDExtendAsset>(InParent, InClass, InName, Flags);
 }

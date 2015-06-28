@@ -23,7 +23,7 @@ UMMDStaticMeshImportData* UMMDStaticMeshImportData::GetImportDataForStaticMesh(U
 	UMMDStaticMeshImportData* ImportData = Cast<UMMDStaticMeshImportData>(StaticMesh->AssetImportData);
 	if ( !ImportData )
 	{
-		ImportData = ConstructObject<UMMDStaticMeshImportData>(UMMDStaticMeshImportData::StaticClass(), StaticMesh, NAME_None, RF_NoFlags, TemplateForCreation);
+		ImportData = NewObject<UMMDStaticMeshImportData>(StaticMesh, NAME_None, RF_NoFlags, TemplateForCreation);
 
 		// Try to preserve the source file path if possible
 		if ( StaticMesh->AssetImportData != NULL )

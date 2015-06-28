@@ -17,7 +17,7 @@ UMMDSkeletalMeshImportData* UMMDSkeletalMeshImportData::GetImportDataForSkeletal
 	UMMDSkeletalMeshImportData* ImportData = Cast<UMMDSkeletalMeshImportData>(SkeletalMesh->AssetImportData);
 	if ( !ImportData )
 	{
-		ImportData = ConstructObject<UMMDSkeletalMeshImportData>(UMMDSkeletalMeshImportData::StaticClass(), SkeletalMesh, NAME_None, RF_NoFlags, TemplateForCreation);
+		ImportData = NewObject<UMMDSkeletalMeshImportData>(SkeletalMesh, NAME_None, RF_NoFlags, TemplateForCreation);
 
 		// Try to preserve the source file path if possible
 		if ( SkeletalMesh->AssetImportData != NULL )
