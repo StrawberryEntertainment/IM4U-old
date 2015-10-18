@@ -28,8 +28,7 @@ UMMDStaticMeshImportData* UMMDStaticMeshImportData::GetImportDataForStaticMesh(U
 		// Try to preserve the source file path if possible
 		if ( StaticMesh->AssetImportData != NULL )
 		{
-			ImportData->SourceFilePath = StaticMesh->AssetImportData->SourceFilePath;
-			ImportData->SourceFileTimestamp = StaticMesh->AssetImportData->SourceFileTimestamp;
+			ImportData->SourceData = StaticMesh->AssetImportData->SourceData;
 		}
 
 		StaticMesh->AssetImportData = ImportData;

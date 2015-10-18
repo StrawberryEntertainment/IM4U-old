@@ -176,8 +176,10 @@ void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalM
 		Materials.Add( FSkeletalMaterial( Material, bEnableShadowCasting ) );
 	}
 
-	// Pad the material pointers.
-	while( ImportedMaterials.Num() > Materials.Num() )
+	int32 NumMaterialsToAdd = FMath::Max<int32>( ImportedMaterials.Num(), ImportData.MaxMaterialIndex + 1 );
+
+	// Pad the material pointers
+	while( NumMaterialsToAdd > Materials.Num() )
 	{
 		Materials.Add( FSkeletalMaterial( NULL, true ) );
 	}
@@ -701,6 +703,7 @@ ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
 
 		ExistingMeshDataPtr->ExistingSockets = ExistingSkelMesh->GetMeshOnlySocketList();
 		ExistingMeshDataPtr->ExistingMaterials = ExistingSkelMesh->Materials;
+		ExistingMeshDataPtr->ExistingRetargetBasePose = ExistingSkelMesh->RetargetBasePose;
 
 		if( ImportedResource->LODModels.Num() > 0 &&
 			ExistingSkelMesh->LODInfo.Num() == ImportedResource->LODModels.Num() )
@@ -717,15 +720,8 @@ ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
 				LODModel.LegacyRawPointIndices.Lock( LOCK_READ_ONLY );
 			}
 			ExistingMeshDataPtr->ExistingLODModels = ImportedResource->LODModels;
-			#if PLATFORM_COMPILER_HAS_RANGED_FOR_LOOP
 			for ( auto& LODModel : ImportedResource->LODModels )
 			{
-			#else
-			for ( int32 LODModelIndex = 0 ; LODModelIndex < ImportedResource->LODModels.Num() ; ++LODModelIndex )
-			{
-
-				FStaticLODModel& LODModel = ImportedResource->LODModels[LODModelIndex];
-			#endif
 				LODModel.RawPointIndices.Unlock();
 				LODModel.LegacyRawPointIndices.Unlock();
 
@@ -783,6 +779,13 @@ void RestoreExistingSkelMeshData(ExistingSkelMeshData* MeshData, USkeletalMesh* 
 		}
 
 		SkeletalMesh->Materials = MeshData->ExistingMaterials;
+
+		// this is not ideal. Ideally we'll have to save only diff with indicating which joints, 
+		// but for now, we allow them to keep the previous pose IF the element count is same
+		if (MeshData->ExistingRetargetBasePose.Num() == SkeletalMesh->RefSkeleton.GetNum())
+		{
+			SkeletalMesh->RetargetBasePose = MeshData->ExistingRetargetBasePose;
+		}
 
 		// Assign sockets from old version of this SkeletalMesh.
 		// Only copy ones for bones that exist in the new mesh.

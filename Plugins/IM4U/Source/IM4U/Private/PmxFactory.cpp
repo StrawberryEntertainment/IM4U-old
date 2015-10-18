@@ -1410,6 +1410,13 @@ UMMDExtendAsset * UPmxFactory::CreateMMDExtendFromMMDModel(
 {
 	UMMDExtendAsset * NewMMDExtendAsset = NULL;
 
+	//Add UE4.9
+	if (SkeletalMesh->Skeleton == NULL)
+	{
+		return NULL;
+	}
+	check(SkeletalMesh->Skeleton);
+
 	//issue #2 : Fix MMDExtend IK Index
 	const FReferenceSkeleton ReferenceSkeleton = SkeletalMesh->Skeleton->GetReferenceSkeleton();
 	const FName& Name = FName(*SkeletalMesh->GetName());
