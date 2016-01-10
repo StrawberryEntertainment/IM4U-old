@@ -1290,6 +1290,8 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		SkeletalMesh->AssetImportData->SourceFileTimestamp = IFileManager::Get().GetTimeStamp(*UFactory::CurrentFilename).ToString();
 		SkeletalMesh->AssetImportData->bDirty = false;
 		*/
+		SkeletalMesh->AssetImportData->Update(UFactory::CurrentFilename);
+
 		SkeletalMesh->CalculateInvRefMatrices();
 		SkeletalMesh->PostEditChange();
 		SkeletalMesh->MarkPackageDirty();
@@ -1374,24 +1376,31 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		// merge bones to the selected skeleton
 		if ( !Skeleton->MergeAllBonesToBoneTree( SkeletalMesh ) )
 		{
-			if ( EAppReturnType::Yes == FMessageDialog::Open( EAppMsgType::YesNo, 
-										LOCTEXT("SkeletonFailed_BoneMerge", "FAILED TO MERGE BONES:\n\n This could happen if significant hierarchical change has been made\n - i.e. inserting bone between nodes\n Would you like to regenerate Skeleton from this mesh? \n\n ***WARNING: THIS WILL REQUIRE RECOMPRESS ALL ANIMATION DATA AND POTENTIALLY INVALIDATE***\n") ) ) 
+			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo,
+				LOCTEXT("SkeletonFailed_BoneMerge", "FAILED TO MERGE BONES:\n\n This could happen if significant hierarchical change has been made\n - i.e. inserting bone between nodes\n Would you like to regenerate Skeleton from this mesh? \n\n ***WARNING: THIS WILL REQUIRE RECOMPRESS ALL ANIMATION DATA AND POTENTIALLY INVALIDATE***\n")))
+			{
+				if (Skeleton->RecreateBoneTree(SkeletalMesh))
 				{
-					if ( Skeleton->RecreateBoneTree( SkeletalMesh ) )
-					{
-						FAssetNotifications::SkeletonNeedsToBeSaved(Skeleton);
-					}
+					FAssetNotifications::SkeletonNeedsToBeSaved(Skeleton);
 				}
+			}
 		}
-		/*else
+		else
 		{
+			/*
 			// ask if they'd like to update their position form this mesh
 			if ( ImportOptions->SkeletonForAnimation && ImportOptions->bUpdateSkeletonReferencePose ) 
 			{
 				Skeleton->UpdateReferencePoseFromMesh(SkeletalMesh);
 				FAssetNotifications::SkeletonNeedsToBeSaved(Skeleton);
 			}
-		}*/
+			*/
+		}
+		if (SkeletalMesh->Skeleton != Skeleton)
+		{
+			SkeletalMesh->Skeleton = Skeleton;
+			SkeletalMesh->MarkPackageDirty();
+		}
 	}
 #endif
 #if WITH_APEX_CLOTHING

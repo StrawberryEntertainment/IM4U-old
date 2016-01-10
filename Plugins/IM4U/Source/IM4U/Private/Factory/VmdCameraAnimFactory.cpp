@@ -34,7 +34,7 @@
 #include "../IM4UPrivatePCH.h"
 
 //ここの関数を使ってVMDのカメラモーションをMatineeAnimにインポートさせたい予定
-#if 0 //all
+#if 1 //all
 
 #include "UnrealEd.h"
 #include "Matinee/MatineeActor.h"

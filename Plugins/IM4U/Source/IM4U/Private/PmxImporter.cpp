@@ -1,11 +1,14 @@
 // Copyright 2015 BlackMa9. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
+
 #include "PmxImporter.h"
 #include "MMDImportHelper.h"
 
 namespace MMD4UE4
 {
+
+#define LOCTEXT_NAMESPACE "PMXLoader"
 
 	DEFINE_LOG_CATEGORY(LogMMD4UE4_PmxMeshInfo)
 
@@ -738,10 +741,72 @@ namespace MMD4UE4
 			}
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [MorphList] Complete"));
 		}
+
+		/*ボーンIndex修正*/
+		if(false == FixSortParentBoneIndex())
+		{
+			/*BoneIndexSort NG*/
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Importer Class FAULT: Bone Index NG?"));
+
+			//モデル読み込み後の警告文表示：コメント欄
+			const FText MessageDbg
+				= FText(LOCTEXT("PMX_FormatNG_Dbg_Msg",
+					"[Restriction]::IM4U Plugin / Bone Index Sort NG.\n\
+					読み込み対象のPMXデータのBone構造が想定外かもしれません。\n\
+					現PluginVerではエディタクラッシュが発生可能性が高い為、読み込み処理を中断を推奨します。\n\
+					(原因例：Boneの親子構成のIndex宣言順が逆転している? etc.)\n\
+					\n\
+					Do you want to abort(Press Yes)? Or, continue(Press No)?"));
+			if (EAppReturnType::Yes != FMessageDialog::Open(EAppMsgType::YesNo, MessageDbg))
+			{
+				return false;
+			}
+		}
 		//////////////////////////////////////////////
-		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Importer Class Complete"));
+		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Importer Class Complete: PMXLoaderBinary"));
 		return true;
 	}
 
+	bool PmxMeshInfo::FixSortParentBoneIndex()
+	{
+		bool bRet = true;
+		//////////////////////////////////////////////
+		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Importer Class Start: FixSortParentBoneIndex"));
 
+		/////
+		int32 i;// , j;
+		// モーフ情報の数を取得
+		int32 boneNum = boneList.Num();
+
+		// init
+		fixedHierarchyBone.AddZeroed(boneNum);
+
+		for (i = 0; i < boneNum; i++)
+		{
+			// ベースのBoneIndexを保持
+			fixedHierarchyBone[i].originalBoneIndex = i;
+
+			//親ボーンの順番判定：ok is, parent index < self
+			if (boneList[i].ParentBoneIndex < i)
+			{
+				fixedHierarchyBone[i].fixFlag_Parent = false;
+			}
+			else
+			{
+				//NG
+				fixedHierarchyBone[i].fixFlag_Parent = true;
+				UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
+					TEXT("PMX Importer : FixSortParentBoneIndex : parent ng. P:%u > S:%u")
+					, boneList[i].ParentBoneIndex, i);
+				bRet = false;
+			}
+		}
+		if (bRet == false)
+		{
+			UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Importer Class Error: FixSortParentBoneIndex NG?"));
+		}
+		//////////////////////////////////////////////
+		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Importer Class Complete: FixSortParentBoneIndex"));
+		return bRet;
+	}
 }

@@ -264,9 +264,12 @@ namespace MMD4UE4
 	};
 	//////////////////////////////////////////////////////////////
 
-	struct PMX_BONE_HIERARCKY
+	struct PMX_BONE_HIERARCHY
 	{
-
+		int		originalBoneIndex;
+		int		fixedBoneIndex;
+		bool	fixFlag_Parent;
+		//bool	fixFlag_Target;
 	};
 	//////////////////////////////////////////////////////////////
 
@@ -276,6 +279,16 @@ namespace MMD4UE4
 	// Inport用 meta data 格納クラス
 	class PmxMeshInfo : public MMDImportHelper
 	{
+		//////////////////////////////////////
+		// Sort Parent Bone ( sort tree bones)
+		// memo: ボーンの配列で子->親の順の場合、
+		//       ProcessImportMeshSkeleton内部のcheckに引っかかりクラッシュするため。
+		// how to: after PMXLoaderBinary func.
+		//////////////////////////////////////
+		bool FixSortParentBoneIndex();
+
+		TArray<PMX_BONE_HIERARCHY>	fixedHierarchyBone;
+
 	public:
 		PmxMeshInfo();
 		~PmxMeshInfo();
