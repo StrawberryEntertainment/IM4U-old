@@ -756,9 +756,11 @@ namespace MMD4UE4
 					現PluginVerではエディタクラッシュが発生可能性が高い為、読み込み処理を中断を推奨します。\n\
 					(原因例：Boneの親子構成のIndex宣言順が逆転している? etc.)\n\
 					\n\
+					中断しますか(Yes)?\n\
 					Do you want to abort(Press Yes)? Or, continue(Press No)?"));
-			if (EAppReturnType::Yes != FMessageDialog::Open(EAppMsgType::YesNo, MessageDbg))
+			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, MessageDbg))
 			{
+				UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Importer Class STOP"));
 				return false;
 			}
 		}
