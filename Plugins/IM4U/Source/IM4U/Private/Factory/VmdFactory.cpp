@@ -507,7 +507,7 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 			}
 		}
 		FSmartNameMapping* NameMapping 
-			= Skeleton->SmartNames.GetContainer(USkeleton::AnimCurveMappingName);
+			= const_cast<FSmartNameMapping*>(Skeleton->GetSmartNameContainer(USkeleton::AnimCurveMappingName));
 		/**********************************/
 		//self
 		UMorphTarget * morphTargetPtr = mesh->FindMorphTarget(Name);

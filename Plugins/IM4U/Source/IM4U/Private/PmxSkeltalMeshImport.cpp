@@ -1434,8 +1434,7 @@ public:
 			LODWedges, 
 			LODFaces,
 			LODPoints,
-			LODPointToRawMap, 
-			bKeepOverlappingVertices
+			LODPointToRawMap
 			);
 	}
 
