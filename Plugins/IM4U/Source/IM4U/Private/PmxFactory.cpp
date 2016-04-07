@@ -1003,7 +1003,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 	if (true /*!FbxShapeArray*/)
 	{
-		UObject* ExistingObject = StaticFindObjectFast(UObject::StaticClass(), InParent, *Name.ToString(), false, false, RF_PendingKill);
+		UObject* ExistingObject = StaticFindObjectFast(UObject::StaticClass(), InParent, *Name.ToString(), false, false, EObjectFlags::RF_NoFlags, EInternalObjectFlags::PendingKill);
 		USkeletalMesh* ExistingSkelMesh = Cast<USkeletalMesh>(ExistingObject);
 
 		if (ExistingSkelMesh)
@@ -1239,12 +1239,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 			LODWedges,
 			LODFaces,
 			LODPoints, 
-			LODPointToRawMap,
-			false,//ImportOptions->bKeepOverlappingVertices, 
-			bShouldComputeNormals, 
-			bShouldComputeTangents,
-			&WarningMessages, 
-			&WarningNames)
+			LODPointToRawMap)
 			)
 		{
 			if (WarningNames.Num() == WarningMessages.Num())
