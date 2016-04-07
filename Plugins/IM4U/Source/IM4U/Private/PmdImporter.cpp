@@ -88,7 +88,7 @@ namespace MMD4UE4
 			materialList.AddZeroed(materialData.Count);
 			for (int32 i = 0; i < materialData.Count; ++i)
 			{
-				memcopySize = sizeof(float) * 11 + sizeof(BYTE) * 2;//DiffuseR --> Edge;
+				memcopySize = sizeof(float) * 11 + sizeof(uint8) * 2;//DiffuseR --> Edge;
 				FMemory::Memcpy(&materialList[i], Buffer, memcopySize);
 				Buffer += memcopySize;
 				memcopySize = sizeof(int) * 1 + sizeof(char) * 20;//FaceVertexCount --> TextureFileName[20];
@@ -110,7 +110,7 @@ namespace MMD4UE4
 				memcopySize =
 					sizeof(char) * 20
 					+ sizeof(uint16) * 2
-					+ sizeof(BYTE) * 1
+					+ sizeof(uint8) * 1
 					+ sizeof(uint16) * 1;//name --> IkParent;
 				FMemory::Memcpy(&boneList[i], Buffer, memcopySize);
 				Buffer += memcopySize;
@@ -133,7 +133,7 @@ namespace MMD4UE4
 			{
 				memcopySize = 0
 					+ sizeof(uint16) * 2	//Bone,TargetBone
-					+ sizeof(BYTE) * 1;		//ChainLength
+					+ sizeof(uint8) * 1;		//ChainLength
 				FMemory::Memcpy(&ikList[i].Bone, Buffer, memcopySize);
 				Buffer += memcopySize;
 
@@ -145,7 +145,7 @@ namespace MMD4UE4
 				//fix : pmd rotlimit (1.0 == 4.0 rad) -> dig
 				ikList[i].RotLimit = FMath::RadiansToDegrees(ikList[i].RotLimit * 4.0);
 
-				BYTE tempChainLength = ikList[i].ChainLength;//Byte ChainLength;
+				uint8 tempChainLength = ikList[i].ChainLength;//Byte ChainLength;
 				ikList[i].ChainBoneIndexs.AddZeroed(tempChainLength);
 				memcopySize = sizeof(uint16);// *tempChainLength;
 				for (int32 k = 0; k < tempChainLength; ++k)
@@ -169,7 +169,7 @@ namespace MMD4UE4
 				memcopySize = 0
 					+ sizeof(char) * 20
 					+ sizeof(int) * 1
-					+ sizeof(BYTE) * 1;//Name --> SkinType;
+					+ sizeof(uint8) * 1;//Name --> SkinType;
 				FMemory::Memcpy(&skinList[i], Buffer, memcopySize);
 				Buffer += memcopySize;
 
@@ -617,7 +617,7 @@ namespace MMD4UE4
 				FMemory::Memcpy(&pmxBonePtr.TransformLayer, Buffer, memcopySize);
 				Buffer += memcopySize;
 
-				WORD Flag;
+				uint16 Flag;
 				//
 				memcopySize = sizeof(Flag);
 				FMemory::Memcpy(&Flag, Buffer, memcopySize);

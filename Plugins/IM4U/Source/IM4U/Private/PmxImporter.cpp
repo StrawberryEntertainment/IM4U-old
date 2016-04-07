@@ -47,7 +47,7 @@ namespace MMD4UE4
 		FMemory::Memcpy(&this->formatVer, Buffer, sizeof(this->formatVer));
 		Buffer += sizeof(this->formatVer);
 
-		Buffer += sizeof(BYTE);
+		Buffer += sizeof(uint8);
 		/*
 		バイト列 - byte
 		[0] - エンコード方式  | 0:UTF16 1:UTF8
@@ -365,7 +365,7 @@ namespace MMD4UE4
 				}
 				else
 				{//共有Toonテクスチャ[0～9] -> それぞれ toon01.bmp～toon10.bmp に対応
-					memcopySize = sizeof(BYTE);
+					memcopySize = sizeof(uint8);
 					FMemory::Memcpy(&materialList[i].ToonTextureIndex, Buffer, memcopySize);
 					Buffer += memcopySize;
 				}
@@ -426,7 +426,7 @@ namespace MMD4UE4
 				FMemory::Memcpy(&boneList[i].TransformLayer, Buffer, memcopySize);
 				Buffer += memcopySize;
 
-				WORD Flag;
+				uint16 Flag;
 				//
 				memcopySize = sizeof(Flag);
 				FMemory::Memcpy(&Flag, Buffer, memcopySize);

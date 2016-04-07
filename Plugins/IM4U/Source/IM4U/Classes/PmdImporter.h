@@ -10,7 +10,7 @@
 // Copy From DxLib DxModelLoader3.h
 // DX Library Copyright (C) 2001-2008 Takumi Yamada.
 
-//#define BYTE (unsigned char)
+//#define uint8 (unsigned char)
 
 namespace MMD4UE4
 {
@@ -23,10 +23,10 @@ namespace MMD4UE4
 	// PMDデータヘッダ( 283byte )
 	struct PMD_HEADER
 	{
-		/*BYTE	Data[283];						// データ
+		/*uint8	Data[283];						// データ
 		*/
 		char	Magic[ 3 ] ;						// "Pmd"
-		BYTE	Version[4];							// 1.0f ( 0x3f800000 )
+		uint8	Version[4];							// 1.0f ( 0x3f800000 )
 		char	Name[ 20 ] ;						// 名前
 		char	Comment[ 256 ] ;					// コメント
 		
@@ -38,9 +38,9 @@ namespace MMD4UE4
 		float	Position[3];						// 座標
 		float	Normal[3];						// 法線
 		float	Uv[2];							// テクスチャ座標
-		WORD	BoneNo[2];						// ボーン番号
-		BYTE	BoneWeight;						// BoneNo[ 0 ] のボーンの影響度( 0～100 ) BoneNo[ 1 ] の影響度は( 100 - BoneWeight )
-		BYTE	Edge;								// エッジフラグ  0:エッジ有効  1:エッジ無効
+		uint16	BoneNo[2];						// ボーン番号
+		uint8	BoneWeight;						// BoneNo[ 0 ] のボーンの影響度( 0～100 ) BoneNo[ 1 ] の影響度は( 100 - BoneWeight )
+		uint8	Edge;								// エッジフラグ  0:エッジ有効  1:エッジ無効
 	};
 
 	// 頂点データ
@@ -53,27 +53,27 @@ namespace MMD4UE4
 	struct PMD_FACE
 	{
 		uint16	VertexIndx[3];		// 頂点の数( 面の数は VertexCount / 3 )
-		/* ここに WORD の頂点インデックスが VertexCount の数だけ存在する */
+		/* ここに uint16 の頂点インデックスが VertexCount の数だけ存在する */
 	};
 	// 面リスト
 	struct PMD_FACE_DATA
 	{
 		uint32	VertexCount;		// 頂点の数( 面の数は VertexCount / 3 )
-		/* ここに WORD の頂点インデックスが VertexCount の数だけ存在する */
+		/* ここに uint16 の頂点インデックスが VertexCount の数だけ存在する */
 	};
 
 	// マテリアル一つ辺りの情報( 70byte )
 	struct PMD_MATERIAL
 	{
-		/*BYTE	Data[70];						// データ
+		/*uint8	Data[70];						// データ
 		*/
 		float	DiffuseR, DiffuseG, DiffuseB ;		// ディフューズカラー
 		float	Alpha ;								// α値
 		float	Specularity ;						// スペキュラ係数
 		float	SpecularR, SpecularG, SpecularB ;	// スペキュラカラー
 		float	AmbientR, AmbientG, AmbientB ;		// アンビエントカラー
-		BYTE	ToolImage ;							// トゥーンレンダリング用のテクスチャのインデックス
-		BYTE	Edge ;								// 輪郭・影
+		uint8	ToolImage ;							// トゥーンレンダリング用のテクスチャのインデックス
+		uint8	Edge ;								// 輪郭・影
 		int		FaceVertexCount ;					// このマテリアルを使用する面頂点の数
 		char	TextureFileName[20] ;				// テクスチャファイル名
 		
@@ -89,12 +89,12 @@ namespace MMD4UE4
 	// ボーン一つ辺りの情報( 39byte )
 	struct PMD_BONE
 	{
-		/*BYTE	Data[39];						// データ
+		/*uint8	Data[39];						// データ
 		*/
 		char	Name[ 20 ] ;						//  0:ボーン名
 		short	Parent ;							// 20:親ボーン( 無い場合は 0xffff )
 		short	TailPosBone ;						// 22:Tail 位置のボーン( チェーン末端の場合は 0xffff )
-		BYTE	Type ;								// 24:ボーンのタイプ( 0:回転  1:回転と移動  2:IK  3:不明  4:IK影響下  5:回転影響下  6:IK接続先  7:非表示  8:捻り  9:回転運動 )
+		uint8	Type ;								// 24:ボーンのタイプ( 0:回転  1:回転と移動  2:IK  3:不明  4:IK影響下  5:回転影響下  6:IK接続先  7:非表示  8:捻り  9:回転運動 )
 		short	IkParent ;							// 25:IKボーン番号( 影響IKボーン  無い場合は 0xffff )
 		float	HeadPos[ 3 ] ;						// 27:ヘッドの位置
 		
@@ -103,29 +103,29 @@ namespace MMD4UE4
 	// ボーンの情報
 	struct PMD_BONE_DATA
 	{
-		WORD	Count;								// ボーンの数
+		uint16	Count;								// ボーンの数
 		/* ここに PMD_BONE が Count の数だけ存在する */
 	};
 
 	// IKデータ一つ辺りの情報( ChainBoneIndex を抜いたサイズ 11byte )
 	struct PMD_IK
 	{
-		/*BYTE	Data[11];						// データ
+		/*uint8	Data[11];						// データ
 		*/
-		WORD	Bone ;								// IKボーン
-		WORD	TargetBone ;						// IKターゲットボーン
-		BYTE	ChainLength ;						// IKチェーンの長さ(子の数)
-		WORD	Iterations ;						// 再起演算回数
+		uint16	Bone ;								// IKボーン
+		uint16	TargetBone ;						// IKターゲットボーン
+		uint8	ChainLength ;						// IKチェーンの長さ(子の数)
+		uint16	Iterations ;						// 再起演算回数
 		//float	ControlWeight ;						// IKの影響度
 		float	RotLimit;							// 単位制限角[dig] (PMD系のみ該当Boneがひざの場合X軸のみの制限となる)
-		TArray<WORD>	ChainBoneIndexs;	// IK影響下のボーン番号
+		TArray<uint16>	ChainBoneIndexs;	// IK影響下のボーン番号
 		
 	};
 
 	// IKの情報
 	struct PMD_IK_DATA
 	{
-		WORD	Count;								// IKデータの数
+		uint16	Count;								// IKデータの数
 		/* ここに PMD_IK が Count の数だけ存在する */
 	};
 
@@ -139,11 +139,11 @@ namespace MMD4UE4
 	// 表情一つ辺りの情報( Vertex を抜いたサイズ 25byte )
 	struct PMD_SKIN
 	{
-		/*BYTE	Data[25];						// データ
+		/*uint8	Data[25];						// データ
 		*/
 		char	Name[ 20 ] ;						// 表情名
 		int		VertexCount ;						// 頂点の数
-		BYTE	SkinType ;							// 表情の種類( 0:base 1：まゆ、2：目、3：リップ、4：その他 )
+		uint8	SkinType ;							// 表情の種類( 0:base 1：まゆ、2：目、3：リップ、4：その他 )
 		TArray<PMD_SKIN_VERT> Vertex;		// 表情用の頂点データ
 		
 	};
@@ -151,7 +151,7 @@ namespace MMD4UE4
 	// 表情の情報
 	struct PMD_SKIN_DATA
 	{
-		WORD	Count;								// 表情データの数
+		uint16	Count;								// 表情データの数
 		/* ここに PMD_SKIN が Count の数だけ存在する */
 	};
 
@@ -159,13 +159,13 @@ namespace MMD4UE4
 	// 物理演算データ一つ辺りの情報( 83byte )
 	struct PMD_PHYSICS
 	{
-		BYTE	Data[83];
+		uint8	Data[83];
 		/*
 		char	RigidBodyName[ 20 ] ;				//  0 : 剛体名
-		WORD	RigidBodyRelBoneIndex ;				// 20 : 剛体関連ボーン番号
-		BYTE	RigidBodyGroupIndex ;				// 22 : 剛体グループ番号
-		WORD	RigidBodyGroupTarget ;				// 23 : 剛体グループ対象
-		BYTE	ShapeType ;							// 25 : 形状( 0:球  1:箱  2:カプセル )
+		uint16	RigidBodyRelBoneIndex ;				// 20 : 剛体関連ボーン番号
+		uint8	RigidBodyGroupIndex ;				// 22 : 剛体グループ番号
+		uint16	RigidBodyGroupTarget ;				// 23 : 剛体グループ対象
+		uint8	ShapeType ;							// 25 : 形状( 0:球  1:箱  2:カプセル )
 		float	ShapeW ;							// 26 : 幅
 		float	ShapeH ;							// 30 : 高さ
 		float	ShapeD ;							// 34 : 奥行
@@ -176,7 +176,7 @@ namespace MMD4UE4
 		float	RigidBodyRotDim ;					// 70 : 回転減
 		float	RigidBodyRecoil ;					// 74 : 反発力
 		float	RigidBodyFriction ;					// 78 : 摩擦力
-		BYTE	RigidBodyType ;						// 82 : 剛体タイプ( 0:Bone追従  1:物理演算  2:物理演算(Bone位置合わせ) )
+		uint8	RigidBodyType ;						// 82 : 剛体タイプ( 0:Bone追従  1:物理演算  2:物理演算(Bone位置合わせ) )
 		*/
 	};
 
@@ -256,13 +256,13 @@ namespace MMD4UE4
 		PMD_READ_BONE_INFO	*Bone;					// IKターゲットボーン
 		PMD_READ_BONE_INFO	*TargetBone;			// IK先端ボーン
 
-		WORD				LimitAngleIK;			// 角度制限ボーンが含まれたＩＫかどうか( 0:違う 1:そう ) 
-		WORD				Iterations;			// 再起演算回数
+		uint16				LimitAngleIK;			// 角度制限ボーンが含まれたＩＫかどうか( 0:違う 1:そう ) 
+		uint16				Iterations;			// 再起演算回数
 		float				ControlWeight;			// IKの影響度
 		float				IKTotalLength;			// IK処理の根元からチェインの最後までの距離
 
 		int					ChainBoneNum;			// IKチェーンの長さ(子の数)
-		WORD				*ChainBone;			// IK影響下のボーンへのインデックス配列へのポインタ
+		uint16				*ChainBone;			// IK影響下のボーンへのインデックス配列へのポインタ
 
 		PMD_READ_IK_INFO	*Prev;					// リストの前のデータへのアドレス
 		PMD_READ_IK_INFO	*Next;					// リストの次のデータへのアドレス

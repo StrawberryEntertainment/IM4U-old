@@ -15,7 +15,7 @@
 // Copy From DxLib DxModelLoader4.h
 // DX Library Copyright (C) 2001-2008 Takumi Yamada.
 
-//#define BYTE (unsigned char)
+//#define uint8 (unsigned char)
 
 namespace MMD4UE4
 {
@@ -29,14 +29,14 @@ namespace MMD4UE4
 	// PMXファイルの情報を格納する構造体
 	struct PMX_BASEINFO
 	{
-		BYTE	EncodeType;							// 文字コードのエンコードタイプ 0:UTF16 1:UTF8
-		BYTE	UVNum;								// 追加ＵＶ数 ( 0～4 )
-		BYTE	VertexIndexSize;					// 頂点Indexサイズ ( 1 or 2 or 4 )
-		BYTE	TextureIndexSize;					// テクスチャIndexサイズ ( 1 or 2 or 4 )
-		BYTE	MaterialIndexSize;					// マテリアルIndexサイズ ( 1 or 2 or 4 )
-		BYTE	BoneIndexSize;						// ボーンIndexサイズ ( 1 or 2 or 4 )
-		BYTE	MorphIndexSize;						// モーフIndexサイズ ( 1 or 2 or 4 )
-		BYTE	RigidIndexSize;						// 剛体Indexサイズ ( 1 or 2 or 4 )
+		uint8	EncodeType;							// 文字コードのエンコードタイプ 0:UTF16 1:UTF8
+		uint8	UVNum;								// 追加ＵＶ数 ( 0～4 )
+		uint8	VertexIndexSize;					// 頂点Indexサイズ ( 1 or 2 or 4 )
+		uint8	TextureIndexSize;					// テクスチャIndexサイズ ( 1 or 2 or 4 )
+		uint8	MaterialIndexSize;					// マテリアルIndexサイズ ( 1 or 2 or 4 )
+		uint8	BoneIndexSize;						// ボーンIndexサイズ ( 1 or 2 or 4 )
+		uint8	MorphIndexSize;						// モーフIndexサイズ ( 1 or 2 or 4 )
+		uint8	RigidIndexSize;						// 剛体Indexサイズ ( 1 or 2 or 4 )
 	};
 
 	// 頂点データ
@@ -46,7 +46,7 @@ namespace MMD4UE4
 		FVector		Normal;							// 法線
 		FVector2D	UV;								// 標準UV値
 		FVector4	AddUV[4];						// 追加UV値
-		BYTE		WeightType;						// ウエイトタイプ( 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF )
+		uint8		WeightType;						// ウエイトタイプ( 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF )
 		uint32		BoneIndex[4];					// ボーンインデックス
 		float		BoneWeight[4];					// ボーンウェイト
 		FVector		SDEF_C;							// SDEF-C
@@ -78,20 +78,20 @@ namespace MMD4UE4
 		float	SpecularPower;						// スペキュラ定数
 		float	Ambient[3];						// アンビエントカラー
 
-		BYTE	CullingOff;						// 両面描画
-		BYTE	GroundShadow;						// 地面影
-		BYTE	SelfShadowMap;						// セルフシャドウマップへの描画
-		BYTE	SelfShadowDraw;					// セルフシャドウの描画
-		BYTE	EdgeDraw;							// エッジの描画
+		uint8	CullingOff;						// 両面描画
+		uint8	GroundShadow;						// 地面影
+		uint8	SelfShadowMap;						// セルフシャドウマップへの描画
+		uint8	SelfShadowDraw;					// セルフシャドウの描画
+		uint8	EdgeDraw;							// エッジの描画
 
 		float	EdgeColor[4];					// エッジカラー
 		float	EdgeSize;							// エッジサイズ
 
 		int		TextureIndex;						// 通常テクスチャインデックス
 		int		SphereTextureIndex;				// スフィアテクスチャインデックス
-		BYTE	SphereMode;						// スフィアモード( 0:無効 1:乗算 2:加算 3:サブテクスチャ(追加UV1のx,yをUV参照して通常テクスチャ描画を行う)
+		uint8	SphereMode;						// スフィアモード( 0:無効 1:乗算 2:加算 3:サブテクスチャ(追加UV1のx,yをUV参照して通常テクスチャ描画を行う)
 
-		BYTE	ToonFlag;							// 共有トゥーンフラグ( 0:個別Toon 1:共有Toon )
+		uint8	ToonFlag;							// 共有トゥーンフラグ( 0:個別Toon 1:共有Toon )
 		int		ToonTextureIndex;					// トゥーンテクスチャインデックス
 
 		int		MaterialFaceNum;					// マテリアルが適応されている面の数
@@ -101,7 +101,7 @@ namespace MMD4UE4
 	struct PMX_IKLINK
 	{
 		int		BoneIndex;							// リンクボーンのインデックス
-		BYTE	RotLockFlag;						// 回転制限( 0:OFF 1:ON )
+		uint8	RotLockFlag;						// 回転制限( 0:OFF 1:ON )
 		float	RotLockMin[3];					// 回転制限、下限
 		float	RotLockMax[3];					// 回転制限、上限
 	};
@@ -126,18 +126,18 @@ namespace MMD4UE4
 		int		ParentBoneIndex;					// 親ボーンインデックス
 		int		TransformLayer;					// 変形階層
 
-		BYTE	Flag_LinkDest;						// 接続先
-		BYTE	Flag_EnableRot;					// 回転ができるか
-		BYTE	Flag_EnableMov;					// 移動ができるか
-		BYTE	Flag_Disp;							// 表示
-		BYTE	Flag_EnableControl;				// 操作ができるか
-		BYTE	Flag_IK;							// IK
-		BYTE	Flag_AddRot;						// 回転付与
-		BYTE	Flag_AddMov;						// 移動付与
-		BYTE	Flag_LockAxis;						// 軸固定
-		BYTE	Flag_LocalAxis;					// ローカル軸
-		BYTE	Flag_AfterPhysicsTransform;		// 物理後変形
-		BYTE	Flag_OutParentTransform;			// 外部親変形
+		uint8	Flag_LinkDest;						// 接続先
+		uint8	Flag_EnableRot;					// 回転ができるか
+		uint8	Flag_EnableMov;					// 移動ができるか
+		uint8	Flag_Disp;							// 表示
+		uint8	Flag_EnableControl;				// 操作ができるか
+		uint8	Flag_IK;							// IK
+		uint8	Flag_AddRot;						// 回転付与
+		uint8	Flag_AddMov;						// 移動付与
+		uint8	Flag_LockAxis;						// 軸固定
+		uint8	Flag_LocalAxis;					// ローカル軸
+		uint8	Flag_AfterPhysicsTransform;		// 物理後変形
+		uint8	Flag_OutParentTransform;			// 外部親変形
 
 		FVector	OffsetPosition;				// オフセット座標
 		int		LinkBoneIndex;						// 接続先ボーンインデックス
@@ -177,7 +177,7 @@ namespace MMD4UE4
 	struct PMX_MORPH_MATERIAL
 	{
 		int		Index;								// マテリアルインデックス
-		BYTE	CalcType;							// 計算タイプ( 0:乗算  1:加算 )
+		uint8	CalcType;							// 計算タイプ( 0:乗算  1:加算 )
 		float	Diffuse[4];						// ディフューズカラー
 		float	Specular[3];						// スペキュラカラー
 		float	SpecularPower;						// スペキュラ係数
@@ -202,8 +202,8 @@ namespace MMD4UE4
 		FString	Name;						// 名前
 		FString	NameEng;						// 名前
 
-		BYTE	ControlPanel;						// 操作パネル
-		BYTE	Type;								// モーフの種類  0:グループ 1:頂点 2:ボーン 3:UV 4:追加UV1 5:追加UV2 6:追加UV3 7:追加UV4 8:材質
+		uint8	ControlPanel;						// 操作パネル
+		uint8	Type;								// モーフの種類  0:グループ 1:頂点 2:ボーン 3:UV 4:追加UV1 5:追加UV2 6:追加UV3 7:追加UV4 8:材質
 
 		int		DataNum;							// モーフ情報の数
 
@@ -221,10 +221,10 @@ namespace MMD4UE4
 
 		int		BoneIndex;							// 対象ボーン番号
 
-		BYTE	RigidBodyGroupIndex;				// 剛体グループ番号
-		WORD	RigidBodyGroupTarget;				// 剛体グループ対象
+		uint8	RigidBodyGroupIndex;				// 剛体グループ番号
+		uint16	RigidBodyGroupTarget;				// 剛体グループ対象
 
-		BYTE	ShapeType;							// 形状( 0:球  1:箱  2:カプセル )
+		uint8	ShapeType;							// 形状( 0:球  1:箱  2:カプセル )
 		float	ShapeW;							// 幅
 		float	ShapeH;							// 高さ
 		float	ShapeD;							// 奥行
@@ -238,7 +238,7 @@ namespace MMD4UE4
 		float	RigidBodyRecoil;					// 反発力
 		float	RigidBodyFriction;					// 摩擦力
 
-		BYTE	RigidBodyType;						// 剛体タイプ( 0:Bone追従  1:物理演算  2:物理演算(Bone位置合わせ) )
+		uint8	RigidBodyType;						// 剛体タイプ( 0:Bone追従  1:物理演算  2:物理演算(Bone位置合わせ) )
 	};
 
 	// ジョイント情報
@@ -246,7 +246,7 @@ namespace MMD4UE4
 	{
 		FString	Name;						// 名前
 
-		BYTE	Type;								// 種類( 0:スプリング6DOF ( PMX2.0 では 0 のみ )
+		uint8	Type;								// 種類( 0:スプリング6DOF ( PMX2.0 では 0 のみ )
 
 		int		RigidBodyAIndex;					// 接続先剛体Ａ
 		int		RigidBodyBIndex;					// 接続先剛体Ｂ

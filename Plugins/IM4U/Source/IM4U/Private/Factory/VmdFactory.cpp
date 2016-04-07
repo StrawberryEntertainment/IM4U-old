@@ -516,8 +516,8 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 			//TDB::ERR. not found Morph Target(Name) in mesh
 			{
 				UE_LOG(LogMMD4UE4_VMDFactory, Warning,
-					TEXT("ImportMorphCurveToAnimSequence Target Morph Not Found...[%s]"),
-					*Name.ToString());
+					TEXT("ImportMorphCurveToAnimSequence Target Morph Not Found...Search[%s]VMD-Org[%s]"),
+					*Name.ToString(), *vmdFaceTrackPtr->TrackName );
 			}
 			continue;
 		}
@@ -565,6 +565,15 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 			CurveToImport->FloatCurve.AddKey(timeCurve, faceKeyPtr->Factor, true);
 			/********************************************/
 		}
+		/***********************************************************************************/
+		// Trace Log ( for debug message , compleat import morph of this track )
+		if (true)
+		{
+			UE_LOG(LogMMD4UE4_VMDFactory, Log,
+				TEXT("ImportMorphCurveToAnimSequence Target Morph compleat...NameSearch[%s]VMD-Org[%s], KeyListNum[%d]"),
+				*Name.ToString(), *vmdFaceTrackPtr->TrackName, vmdFaceTrackPtr->keyList.Num() );
+		}
+		/***********************************************************************************/
 	}
 	return true;
 }

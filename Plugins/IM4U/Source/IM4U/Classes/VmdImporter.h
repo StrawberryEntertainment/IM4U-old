@@ -13,7 +13,7 @@
 //MMDのモーションデータ(VMD)形式　めも2　(表示・IK)
 //http://blog.goo.ne.jp/torisu_tetosuki/e/2a2cb5c2de7563c5e6f20b19e1fe6139
 
-//#define BYTE (unsigned char)
+//#define uint8 (unsigned char)
 
 namespace MMD4UE4
 {
@@ -35,7 +35,7 @@ namespace MMD4UE4
 	// VMDキーデータ( 111byte )
 	struct VMD_KEY
 	{
-		//BYTE	Data[111];
+		//uint8	Data[111];
 		
 		char	Name[ 15 ] ;						// 名前
 		uint32	Frame ;								// フレーム
@@ -46,14 +46,14 @@ namespace MMD4UE4
 		float	PosZBezier[ 4 ] ;					// 座標Ｚ用ベジェ曲線情報
 		float	RotBezier[4 ] ;					// 回転用ベジェ曲線情報
 		*/
-		BYTE	Bezier[2][2][4];					// [id] [xy][XYZ R]
+		uint8	Bezier[2][2][4];					// [id] [xy][XYZ R]
 
 	};
 
 	// VMD表情キーデータ( 23byte )
 	struct VMD_FACE_KEY
 	{
-		/*BYTE	Data[23];						// データ
+		/*uint8	Data[23];						// データ
 		*/
 		char	Name[ 15 ] ;						// 表情名
 		uint32	Frame ;								// フレーム
@@ -74,15 +74,15 @@ namespace MMD4UE4
 	// VMDカメラキーデータ
 	struct VMD_CAMERA
 	{
-		/*BYTE	Data[61];						// データ
+		/*uint8	Data[61];						// データ
 		*/
 		uint32	Frame;								//  4:  0:フレーム番号
 		float	Length;								//  8:  4: -(距離)
 		float	Location[3];						// 20:  8:位置
 		float	Rotate[3];							// 32: 20:オイラー角 // X軸は符号が反転しているので注意
-		BYTE	Interpolation[6][2][2];				// 56: 32:補間情報 // [6:X,Y,Z,Rot,Len,View][2:X,Y][2:P1,P2]
+		uint8	Interpolation[6][2][2];				// 56: 32:補間情報 // [6:X,Y,Z,Rot,Len,View][2:X,Y][2:P1,P2]
 		uint32	ViewingAngle;						// 60: 56:向き
-		BYTE	Perspective;						// 61: 60:射影カメラかどうか 0:射影カメラ 1:正射影カメラ
+		uint8	Perspective;						// 61: 60:射影カメラかどうか 0:射影カメラ 1:正射影カメラ
 		
 	};
 	// VMD 照明
@@ -95,7 +95,7 @@ namespace MMD4UE4
 	// VMDセルフシャドー
 	struct VMD_SELFSHADOW{
 		uint32	FlameNo;
-		BYTE	Mode;
+		uint8	Mode;
 		float	Distance;
 	};
 	////////////////////////////////////////////////////

@@ -74,7 +74,7 @@ namespace MMD4UE4
 					Buffer += memcopySize;
 					//
 					//dummy bezier
-					Buffer += 48 * sizeof(BYTE);
+					Buffer += 48 * sizeof(uint8);
 				}
 			}
 			// 各データの先頭アドレスをセット
@@ -122,13 +122,13 @@ namespace MMD4UE4
 						Buffer += memcopySize;
 
 						//Interpolation[6][4]
-						memcopySize = sizeof(BYTE) * (6 * 4);
+						memcopySize = sizeof(uint8) * (6 * 4);
 						FMemory::Memcpy(&vmdCameraPtr->Interpolation[0][0][0], Buffer, memcopySize);
 						Buffer += memcopySize;
 
 						//ViewingAngle + Perspective
 						memcopySize = sizeof(uint32) * (1)	//ViewingAngle
-							+ sizeof(BYTE)* (1);			//Perspective
+							+ sizeof(uint8)* (1);			//Perspective
 						FMemory::Memcpy(&vmdCameraPtr->ViewingAngle, Buffer, memcopySize);
 						Buffer += memcopySize;
 					}
