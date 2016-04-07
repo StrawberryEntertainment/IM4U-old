@@ -506,8 +506,14 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 				Name = tempUe4Name;
 			}
 		}
+#if 0	/* under ~UE4.10*/
 		FSmartNameMapping* NameMapping 
-			= const_cast<FSmartNameMapping*>(Skeleton->GetSmartNameContainer(USkeleton::AnimCurveMappingName));
+			//= Skeleton->SmartNames.GetContainer(USkeleton::AnimCurveMappingName); 
+#else	/* UE4.11~ over */
+		const FSmartNameMapping* NameMapping
+			//= const_cast<FSmartNameMapping*>(Skeleton->GetSmartNameContainer(USkeleton::AnimCurveMappingName));//UE4.11~
+			= Skeleton->GetSmartNameContainer(USkeleton::AnimCurveMappingName);//UE4.11~
+#endif
 		/**********************************/
 		//self
 		UMorphTarget * morphTargetPtr = mesh->FindMorphTarget(Name);
@@ -524,7 +530,17 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 		/*********************************/
 		// Add or retrieve curve
 		USkeleton::AnimCurveUID Uid;
+#if 0	/* under ~UE4.10*/
 		NameMapping->AddOrFindName(Name, Uid);
+#else	/* UE4.11~ over */
+		if (!NameMapping->Exists(Name))
+		{
+			// mark skeleton dirty
+			Skeleton->Modify();
+		}
+
+		Skeleton->AddSmartNameAndModify(USkeleton::AnimCurveMappingName, Name, Uid);
+#endif
 
 		// FloatCurve for Morph Target 
 		int CurveFlags = ACF_DrivesMorphTarget;

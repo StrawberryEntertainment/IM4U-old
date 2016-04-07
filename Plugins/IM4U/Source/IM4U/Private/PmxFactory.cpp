@@ -1003,7 +1003,8 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 	if (true /*!FbxShapeArray*/)
 	{
-		UObject* ExistingObject = StaticFindObjectFast(UObject::StaticClass(), InParent, *Name.ToString(), false, false, EObjectFlags::RF_NoFlags, EInternalObjectFlags::PendingKill);
+		//UObject* ExistingObject = StaticFindObjectFast(UObject::StaticClass(), InParent, *Name.ToString(), false, false, RF_PendingKill);//~UE4.10
+		UObject* ExistingObject = StaticFindObjectFast(UObject::StaticClass(), InParent, *Name.ToString(), false, false, EObjectFlags::RF_NoFlags, EInternalObjectFlags::PendingKill);//UE4.11~
 		USkeletalMesh* ExistingSkelMesh = Cast<USkeletalMesh>(ExistingObject);
 
 		if (ExistingSkelMesh)
@@ -1232,6 +1233,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		TArray<FText> WarningMessages;
 		TArray<FName> WarningNames;
 		// Create actual rendering data.
+#if 0 /* under ~ UE4.10 */
 		if (!MeshUtilities.BuildSkeletalMesh(
 			ImportedResource->LODModels[0], 
 			SkeletalMesh->RefSkeleton,
@@ -1239,8 +1241,24 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 			LODWedges,
 			LODFaces,
 			LODPoints, 
+			LODPointToRawMap,
+			false,//ImportOptions->bKeepOverlappingVertices, 
+			bShouldComputeNormals, 
+			bShouldComputeTangents,
+			&WarningMessages, 
+			&WarningNames)
+			)
+#else /* UE4.11~ over */
+		if (!MeshUtilities.BuildSkeletalMesh(
+			ImportedResource->LODModels[0],
+			SkeletalMesh->RefSkeleton,
+			LODInfluences,
+			LODWedges,
+			LODFaces,
+			LODPoints,
 			LODPointToRawMap)
 			)
+#endif
 		{
 			if (WarningNames.Num() == WarningMessages.Num())
 			{

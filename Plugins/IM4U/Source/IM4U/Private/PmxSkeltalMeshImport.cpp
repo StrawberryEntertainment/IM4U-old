@@ -1427,6 +1427,7 @@ public:
 		ImportData.CopyLODImportData(LODPoints, LODWedges, LODFaces, LODInfluences, LODPointToRawMap);
 
 		ImportData.Empty();
+#if 0	/* under ~ UR4.10 */
 		MeshUtilities->BuildSkeletalMesh(
 			TempSkeletalMesh->GetImportedResource()->LODModels[0],
 			TempSkeletalMesh->RefSkeleton,
@@ -1434,8 +1435,20 @@ public:
 			LODWedges, 
 			LODFaces,
 			LODPoints,
+			LODPointToRawMap, 
+			bKeepOverlappingVertices
+			);
+#else	/* UE4.11 ~ over */
+		MeshUtilities->BuildSkeletalMesh(
+			TempSkeletalMesh->GetImportedResource()->LODModels[0],
+			TempSkeletalMesh->RefSkeleton,
+			LODInfluences,
+			LODWedges,
+			LODFaces,
+			LODPoints,
 			LODPointToRawMap
 			);
+#endif
 	}
 
 	//UE4.7Œn‚Ü‚Å
