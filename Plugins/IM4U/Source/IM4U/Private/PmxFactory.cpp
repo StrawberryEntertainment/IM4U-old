@@ -1206,7 +1206,11 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 	//BEN const int32 CoordToTuck = bAssumeMayaCoordinates ? 1 : 2;
 	//BEN BoundingBox.Min[CoordToTuck]	= Temp.Min[CoordToTuck] + 0.1f*(Temp.Min[CoordToTuck] - MidMesh[CoordToTuck]);
 	BoundingBox.Min[2] = Temp.Min[2] + 0.1f*(Temp.Min[2] - MidMesh[2]);
+#if 0 /* under ~ UE4.11 */
 	SkeletalMesh->Bounds = FBoxSphereBounds(BoundingBox);
+#else /* over UE4.12 ~*/
+	SkeletalMesh->SetImportedBounds( FBoxSphereBounds(BoundingBox) );
+#endif
 
 	// Store whether or not this mesh has vertex colors
 	SkeletalMesh->bHasVertexColors = SkelMeshImportDataPtr->bHasVertexColors;
