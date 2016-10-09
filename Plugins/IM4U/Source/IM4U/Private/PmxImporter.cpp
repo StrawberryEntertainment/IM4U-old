@@ -391,7 +391,7 @@ namespace MMD4UE4
 
 			// ボーン情報の取得
 			{
-				boneList[PmxBoneNum].Name = TEXT("ルート");
+				boneList[PmxBoneNum].Name = TEXT("Root");
 				boneList[PmxBoneNum].NameEng = "AllTopRootBone";
 				boneList[PmxBoneNum].Position = FVector(0);
 				boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;

@@ -33,7 +33,9 @@ namespace UnrealBuildTool.Rules
 					"RawMesh" ,
 					"MessageLog",
 					"MainFrame",
-					"PropertyEditor"
+					"PropertyEditor",
+                    "RHI",
+                    "RenderCore"
 					// ... add other public dependencies that you statically link with here ...
 				}
 				);

@@ -542,7 +542,7 @@ namespace MMD4UE4
 
 			// ボーン情報の取得
 			{
-				pmxMeshInfoPtr->boneList[PmxBoneNum].Name = TEXT("ルート");
+				pmxMeshInfoPtr->boneList[PmxBoneNum].Name = TEXT("Root");
 				pmxMeshInfoPtr->boneList[PmxBoneNum].NameEng = "AllTopRootBone";
 				pmxMeshInfoPtr->boneList[PmxBoneNum].Position = FVector(0);
 				pmxMeshInfoPtr->boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;

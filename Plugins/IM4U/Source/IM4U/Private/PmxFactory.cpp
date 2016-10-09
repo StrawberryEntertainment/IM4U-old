@@ -33,6 +33,8 @@
 
 #include "MessageLogModule.h"
 #include "ComponentReregisterContext.h"
+
+#include "PhysicsEngine/PhysicsAsset.h"
 ////////////
 
 #include "PmxFactory.h"

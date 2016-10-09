@@ -104,7 +104,7 @@ UObject* UVmdFactory::FactoryCreateBinary
 		//モデル読み込み後の警告文表示：コメント欄
 		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
 		const FText MessageDbg
-			= FText(LOCTEXT("ImportReadMe_Generic_Dbg",
+			= FText(LOCTEXT("ImportReadMe_Generic_Dbg_Comment",
 			"次のImportOption用Slateはまだ実装途中です。\n\
 			現時点で有効なパラメータは、\n\
 			::Skeleton Asset(必須::Animation関連付け先)\n\
@@ -529,41 +529,42 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 		}
 		/*********************************/
 		// Add or retrieve curve
-		USkeleton::AnimCurveUID Uid;
-#if 0	/* under ~UE4.10*/
-		NameMapping->AddOrFindName(Name, Uid);
-#else	/* UE4.11~ over */
 		if (!NameMapping->Exists(Name))
 		{
 			// mark skeleton dirty
 			Skeleton->Modify();
 		}
 
-		Skeleton->AddSmartNameAndModify(USkeleton::AnimCurveMappingName, Name, Uid);
-#endif
+		FSmartName NewName;
+		Skeleton->AddSmartNameAndModify(USkeleton::AnimCurveMappingName, Name, NewName);
 
 		// FloatCurve for Morph Target 
-		int CurveFlags = ACF_DrivesMorphTarget;
+		int CurveFlags = ACF_DriveMorphTarget;
 
 		FFloatCurve * CurveToImport
-			= static_cast<FFloatCurve *>(DestSeq->RawCurveData.GetCurveData(Uid, FRawCurveTracks::FloatType));
+			= static_cast<FFloatCurve *>(DestSeq->RawCurveData.GetCurveData(NewName.UID, FRawCurveTracks::FloatType));
 		if (CurveToImport == NULL)
 		{
-			if (DestSeq->RawCurveData.AddCurveData(Uid, CurveFlags))
+			if (DestSeq->RawCurveData.AddCurveData(NewName, CurveFlags))
 			{
 				CurveToImport
-					= static_cast<FFloatCurve *> (DestSeq->RawCurveData.GetCurveData(Uid, FRawCurveTracks::FloatType));
+					= static_cast<FFloatCurve *> (DestSeq->RawCurveData.GetCurveData(NewName.UID, FRawCurveTracks::FloatType));
+				CurveToImport->Name = NewName;
 			}
 			else
 			{
 				// this should not happen, we already checked before adding
-				ensureMsg(0, TEXT("VMD Import: Critical error: no memory?"));
+				UE_LOG(LogMMD4UE4_VMDFactory, Warning,
+					TEXT("VMD Import: Critical error: no memory?"));
 			}
 		}
 		else
 		{
 			CurveToImport->FloatCurve.Reset();
+			// if existing add these curve flags. 
+			CurveToImport->SetCurveTypeFlags(CurveFlags | CurveToImport->GetCurveTypeFlags());
 		}
+		
 		/**********************************************/
 		MMD4UE4::VMD_FACE_KEY * faceKeyPtr = NULL;
 		for (int s = 0; s < vmdFaceTrackPtr->keyList.Num(); ++s)
@@ -581,6 +582,12 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 			CurveToImport->FloatCurve.AddKey(timeCurve, faceKeyPtr->Factor, true);
 			/********************************************/
 		}
+
+		// update last observed name. If not, sometimes it adds new UID while fixing up that will confuse Compressed Raw Data
+		const FSmartNameMapping* Mapping = Skeleton->GetSmartNameContainer(USkeleton::AnimCurveMappingName);
+		DestSeq->RawCurveData.RefreshName(Mapping);
+
+		DestSeq->MarkRawDataAsModified();
 		/***********************************************************************************/
 		// Trace Log ( for debug message , compleat import morph of this track )
 		if (true)

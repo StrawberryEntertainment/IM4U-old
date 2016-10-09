@@ -12,6 +12,8 @@
 #include "SkeletalMeshSorting.h"
 #include "../../../../Source/Runtime/Engine/Classes/PhysicsEngine/PhysicsAsset.h"
 #include "Engine/SkeletalMeshSocket.h"
+//#include "LODUtilities.h"
+//#include "Developer/MeshUtilities/Public/MeshUtilities.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSkeletalMeshImport, Log, All);
 
@@ -53,7 +55,6 @@ bool SkeletonsAreCompatible( const FReferenceSkeleton& NewSkel, const FReference
 
 	return true;
 }
-#endif
 /**
 * Takes an imported bone name, removes any leading or trailing spaces, and converts the remaining spaces to dashes.
 */
@@ -127,6 +128,8 @@ void FSkeletalMeshImportData::CopyLODImportData(
 		Face.TangentZ[1]		= Faces[f].TangentZ[1];
 		Face.TangentZ[2]		= Faces[f].TangentZ[2];
 
+		Face.SmoothingGroups    = Faces[f].SmoothingGroups;
+
 		LODFaces[f] = Face;
 	}			
 
@@ -143,6 +146,7 @@ void FSkeletalMeshImportData::CopyLODImportData(
 	// Copy mapping
 	LODPointToRawMap = PointToRawMap;
 }
+#endif
 
 /**
 * Process and fill in the mesh Materials using the raw binary import data
@@ -205,7 +209,7 @@ bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalD
 	{
 		const VBone & BinaryBone = RefBonesBinary[ b ];
 		const FString BoneName = FSkeletalMeshImportData::FixupBoneName( BinaryBone.Name );
-		const FMeshBoneInfo BoneInfo(FName(*BoneName, FNAME_Add, true), BinaryBone.Name, BinaryBone.ParentIndex);
+		const FMeshBoneInfo BoneInfo(FName(*BoneName, FNAME_Add), BinaryBone.Name, BinaryBone.ParentIndex);
 		const FTransform BoneTransform(BinaryBone.BonePos.Transform);
 
 		if(RefSkeleton.FindBoneIndex(BoneInfo.Name) != INDEX_NONE)
@@ -279,6 +283,31 @@ void ProcessImportMeshInfluences(FSkeletalMeshImportData& ImportData)
 	float TotalWeight		= 0.f;
 	const float MINWEIGHT   = 0.01f;
 
+	//We have to normalize the data before filtering influences
+	//Because influence filtering is base on the normalize value.
+	//Some DCC like Daz studio don't have normalized weight
+	for (int32 i = 0; i < Influences.Num(); i++)
+	{
+		// if less than min weight, or it's more than 8, then we clear it to use weight
+		InfluenceCount++;
+		TotalWeight += Influences[i].Weight;
+		// we have all influence for the same vertex, normalize it now
+		if (i + 1 >= Influences.Num() || Influences[i].VertexIndex != Influences[i+1].VertexIndex)
+		{
+			// Normalize the last set of influences.
+			if (InfluenceCount && (TotalWeight != 1.0f))
+			{
+				float OneOverTotalWeight = 1.f / TotalWeight;
+				for (int r = 0; r < InfluenceCount; r++)
+				{
+					Influences[i - r].Weight *= OneOverTotalWeight;
+				}
+			}
+			// clear to count next one
+			InfluenceCount = 0;
+			TotalWeight = 0.f;
+		}
+	}
 
 	for( int32 i=0; i<Influences.Num(); i++ )
 	{
@@ -687,7 +716,7 @@ void FSavedCustomSortInfo::Restore(USkeletalMesh* NewSkeletalMesh, int32 LODMode
 
 
 
-ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
+ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh, bool bSaveMaterials)
 {
 	struct ExistingSkelMeshData* ExistingMeshDataPtr = NULL;
 
@@ -702,7 +731,11 @@ ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
 		}
 
 		ExistingMeshDataPtr->ExistingSockets = ExistingSkelMesh->GetMeshOnlySocketList();
-		ExistingMeshDataPtr->ExistingMaterials = ExistingSkelMesh->Materials;
+		ExistingMeshDataPtr->bSaveRestoreMaterials = bSaveMaterials;
+		if (ExistingMeshDataPtr->bSaveRestoreMaterials)
+		{
+			ExistingMeshDataPtr->ExistingMaterials = ExistingSkelMesh->Materials;
+		}
 		ExistingMeshDataPtr->ExistingRetargetBasePose = ExistingSkelMesh->RetargetBasePose;
 
 		if( ImportedResource->LODModels.Num() > 0 &&
@@ -729,6 +762,10 @@ ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
 				LODModel.MultiSizeIndexContainer.GetIndexBufferData( ExistingData );
 				ExistingMeshDataPtr->ExistingIndexBufferData.Add( ExistingData );
 
+				FMultiSizeIndexContainerData ExistingAdjacencyData;
+				LODModel.AdjacencyMultiSizeIndexContainer.GetIndexBufferData(ExistingAdjacencyData);
+				ExistingMeshDataPtr->ExistingAdjacencyIndexBufferData.Add(ExistingAdjacencyData);
+
 			}
 
 			ExistingMeshDataPtr->ExistingLODInfo = ExistingSkelMesh->LODInfo;
@@ -748,6 +785,8 @@ ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
 			}
 		}
 
+		ExistingMeshDataPtr->ExistingShadowPhysicsAsset = ExistingSkelMesh->ShadowPhysicsAsset;
+
 		ExistingMeshDataPtr->ExistingSkeleton = ExistingSkelMesh->Skeleton;
 
 		ExistingSkelMesh->ExportMirrorTable(ExistingMeshDataPtr->ExistingMirrorTable);
@@ -762,6 +801,52 @@ ExistingSkelMeshData* SaveExistingSkelMeshData(USkeletalMesh* ExistingSkelMesh)
 	}
 
 	return ExistingMeshDataPtr;
+}
+
+void TryRegenerateLODs(ExistingSkelMeshData* MeshData, USkeletalMesh* SkeletalMesh)
+{
+	int32 TotalLOD = MeshData->ExistingLODModels.Num();
+
+	// see if mesh reduction util is available
+	static bool bAutoMeshReductionAvailable = FModuleManager::Get().LoadModuleChecked<IMeshUtilities>("MeshUtilities").GetMeshReductionInterface() != NULL;
+
+	if (bAutoMeshReductionAvailable)
+	{
+		GWarn->BeginSlowTask(LOCTEXT("RegenLODs", "Generating new LODs"), true);
+		// warn users to see if they'd like to regen using the LOD
+		EAppReturnType::Type Ret = FMessageDialog::Open(EAppMsgType::YesNo,
+			LOCTEXT("LODDataWarningMessage", "Previous LODs exist, but the bone hierarchy is not compatible.\n\n This could cause crash if you keep the old LODs. Would you like to regenerate them using mesh reduction? Or the previous LODs will be lost.\n"));
+
+		if (Ret == EAppReturnType::Yes)
+		{
+			FSkeletalMeshUpdateContext UpdateContext;
+			UpdateContext.SkeletalMesh = SkeletalMesh;
+
+			for (int32 Index = 0; Index < TotalLOD; ++Index)
+			{
+				int32 LODIndex = Index + 1;
+				FSkeletalMeshLODInfo& LODInfo = MeshData->ExistingLODInfo[Index];
+				// reset material maps, it won't work anyway. 
+				LODInfo.LODMaterialMap.Empty();
+				// add LOD info back
+				SkeletalMesh->LODInfo.Add(LODInfo);
+				// force it to regen
+				FLODUtilities::SimplifySkeletalMeshLOD(UpdateContext, LODInfo.ReductionSettings, LODIndex, false);
+			}
+		}
+		else
+		{
+			UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
+			FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Warning, LOCTEXT("NoCompatibleSkeleton", "New base mesh is not compatible with previous LODs. LOD will be removed.")), FFbxErrors::SkeletalMesh_LOD_MissingBone);
+		}
+
+		GWarn->EndSlowTask();
+	}
+	else
+	{
+		UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
+		FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Warning, LOCTEXT("NoCompatibleSkeleton", "New base mesh is not compatible with previous LODs. LOD will be removed.")), FFbxErrors::SkeletalMesh_LOD_MissingBone);
+	}
 }
 
 void RestoreExistingSkelMeshData(ExistingSkelMeshData* MeshData, USkeletalMesh* SkeletalMesh)
