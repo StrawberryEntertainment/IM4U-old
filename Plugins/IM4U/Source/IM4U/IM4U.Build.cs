@@ -35,7 +35,8 @@ namespace UnrealBuildTool.Rules
 					"MainFrame",
 					"PropertyEditor",
                     "RHI",
-                    "RenderCore"
+                    "RenderCore",
+                    "ContentBrowser",
 					// ... add other public dependencies that you statically link with here ...
 				}
 				);

@@ -202,20 +202,21 @@ bool UPmxFactory::ImportBone(
 
 		// get the link parent and children
 		int32 ParentIndex = INDEX_NONE; // base value for root if no parent found
-		/*FbxNode* LinkParent = Link->GetParent();
+		/*FbxNode* LinkParent = Link->GetParent();*/
+		int32 LinkParent = PmxMeshInfo->boneList[LinkIndex].ParentBoneIndex;
 		if (LinkIndex)
 		{
 			for (int32 ll = 0; ll<LinkIndex; ++ll) // <LinkIndex because parent is guaranteed to be before child in sortedLink
 			{
-				FbxNode* Otherlink = SortedLinks[ll];
+				/*FbxNode* Otherlink = SortedLinks[ll];*/
+				int32 Otherlink = ll;
 				if (Otherlink == LinkParent)
 				{
 					ParentIndex = ll;
 					break;
 				}
 			}
-		}*/
-		ParentIndex = PmxMeshInfo->boneList[LinkIndex].ParentBoneIndex;
+		}
 
 		// see how many root this has
 		// if more than 
@@ -225,12 +226,12 @@ bool UPmxFactory::ImportBone(
 			RootIdx = LinkIndex;
 			if (NumberOfRoot > 1)
 			{
-				/*AddTokenizedErrorMessage(
+				AddTokenizedErrorMessage(
 					FTokenizedMessage::Create(
 						EMessageSeverity::Error,
 						LOCTEXT("MultipleRootsFound", "Multiple roots are found in the bone hierarchy. We only support single root bone.")), 
 					FFbxErrors::SkeletalMesh_MultipleRoots
-					);*/
+					);
 				return false;
 			}
 		}
@@ -581,10 +582,12 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 		for (int k = 0; k < PmxMeshInfo->materialList.Num(); ++k)
 		{
 			pmxMaterialImportHelper.CreateUnrealMaterial(
+				PmxMeshInfo->modelNameJP,
 				//InParent,
 				PmxMeshInfo->materialList[k],
+				ImportUI->bCreateMaterialInstMode,
+				ImportUI->bUnlitMaterials,
 				Materials,
-				UVSets,
 				textureAssetList);
 			//if (NewObject)
 			/*{
@@ -1802,7 +1805,7 @@ void UPmxFactory::ImportFbxMorphTarget(
 //////////////////////////////
 
 void UPmxFactory::AddTokenizedErrorMessage(
-	TSharedRef<FTokenizedMessage> Error, 
+	TSharedRef<FTokenizedMessage> ErrorMsg, 
 	FName FbxErrorName
 	)
 {
@@ -1820,6 +1823,20 @@ void UPmxFactory::AddTokenizedErrorMessage(
 	else*/
 	{
 		// if not found, use normal log
-		UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%d_%s"),__LINE__, *(Error->ToText().ToString()));
+		switch (ErrorMsg->GetSeverity())
+		{
+		case EMessageSeverity::Error:
+			UE_LOG(LogMMD4UE4_PMXFactory, Error, TEXT("%d_%s"), __LINE__, *(ErrorMsg->ToText().ToString()));
+			break;
+		case EMessageSeverity::CriticalError:
+			UE_LOG(LogMMD4UE4_PMXFactory, Error, TEXT("%d_%s"), __LINE__, *(ErrorMsg->ToText().ToString()));
+			break;
+		case EMessageSeverity::Warning:
+			UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%d_%s"), __LINE__, *(ErrorMsg->ToText().ToString()));
+			break;
+		default:
+			UE_LOG(LogMMD4UE4_PMXFactory, Warning, TEXT("%d_%s"), __LINE__, *(ErrorMsg->ToText().ToString()));
+			break;
+		}
 	}
 }

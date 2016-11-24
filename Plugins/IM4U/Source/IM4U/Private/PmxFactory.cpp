@@ -224,7 +224,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 		//モデル読み込み後の警告文表示：コメント欄
 		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic", "{0}"), FText::FromString("tilesss"));
 		const FText Message
-			= FText::Format(LOCTEXT("ImportReadMe_Generic",
+			= FText::Format(LOCTEXT("ImportReadMe_Generic_Msg",
 			"Important!! \nReadMe Lisence \n modele Name:\n'{0}'\n \n Model Comment JP:\n'{1}'"),
 			FText::FromString(pmxMeshInfoPtr.modelNameJP), FText::FromString(pmxMeshInfoPtr.modelCommentJP));
 		if (EAppReturnType::Ok != FMessageDialog::Open(EAppMsgType::OkCancel, Message))
@@ -234,7 +234,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 		}
 		TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
 		const FText MessageDbg
-			= FText(LOCTEXT("ImportReadMe_Generic_Dbg",
+			= FText(LOCTEXT("ImportReadMe_Generic_Dbg_Msg",
 			"次のImportOption用Slateはまだ実装途中です。\n\
 			Import対象はSkeletonのみ生成可能。\n\
 			現時点で有効なパラメータは、表示されている項目が有効です。") );

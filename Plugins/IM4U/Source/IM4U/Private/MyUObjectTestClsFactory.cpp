@@ -146,10 +146,12 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 		for (int k = 0; k < PmxMeshInfo.materialList.Num(); ++k)
 		{
 			pmxMaterialImport.CreateUnrealMaterial(
+				PmxMeshInfo.modelNameJP,
 				//InParent,
 				PmxMeshInfo.materialList[k],
+				true,
+				false,
 				OutMaterials,
-				UVSets,
 				textureAssetList);
 			//if (NewObject)
 			{
@@ -248,10 +250,12 @@ UObject* UMyUObjectTestClsFactory::FactoryCreateBinary(
 		for (int k = 0; k < pmxMeshInfoPtr.materialList.Num(); ++k)
 		{
 			pmxMaterialImport.CreateUnrealMaterial(
+				pmxMeshInfoPtr.modelNameJP,
 				//InParent,
 				pmxMeshInfoPtr.materialList[k],
+				true,
+				false,
 				OutMaterials,
-				UVSets,
 				textureAssetList);
 			//if (NewObject)
 			{

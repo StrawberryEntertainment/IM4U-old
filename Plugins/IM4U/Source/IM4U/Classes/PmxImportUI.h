@@ -65,7 +65,7 @@ class UPmxImportUI : public UObject
 	class USkeleton* Skeleton;
 
 	/** If checked, create new PhysicsAsset if it doesn't have it */
-	UPROPERTY(EditAnywhere, AdvancedDisplay, config, Category = Mesh, meta = (OBJRestrict = "true", ImportType = "SkeletalMesh"))
+	UPROPERTY(EditAnywhere, config, Category = Mesh, meta = (OBJRestrict = "true", ImportType = "SkeletalMesh"))
 		uint32 bCreatePhysicsAsset : 1;
 
 	/** If this is set, use this PhysicsAsset. It is possible bCreatePhysicsAsset == false, and PhysicsAsset == NULL. It is possible they do not like to create anything. */
@@ -95,6 +95,14 @@ class UPmxImportUI : public UObject
 	/** The option works only when option "Import UMaterial" is OFF. If "Import UMaterial" is ON, textures are always imported. */
 	UPROPERTY(EditAnywhere, config, Category = Material, meta = (OBJRestrict = "true"))
 		uint32 bImportTextures : 1;
+
+	/** create Unreal materials of MaterialInst Type */
+	UPROPERTY(EditAnywhere, config, Category = Material, meta = (OBJRestrict = "true", ToolTip = "If enabled, Create Material Inst and Duplicate Mat-Assets from IM4U Base Mat. "))
+		uint32 bCreateMaterialInstMode : 1;
+
+	/** create Unreal materials of Unlit Type */
+	UPROPERTY(EditAnywhere, config, Category = Material, meta = (OBJRestrict = "true", ToolTip = "If CreateMaterialInstMode enabled, effective. Create Mat Shading Model is Unlit."))
+		uint32 bUnlitMaterials : 1;
 
 	/** Import data used when importing static meshes */
 	//UPROPERTY(EditAnywhere, Instanced, Category = Mesh, meta = (ImportType = "StaticMesh"))

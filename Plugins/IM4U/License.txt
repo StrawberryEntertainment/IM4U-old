@@ -51,5 +51,11 @@ Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 ・PMD,PMX,VMDの読み込みに関する処理で一部改変し使用しています
 DX Library Copyright (C) 2001-2015 Takumi Yamada.
 
+・MaterialInstance生成処理に「UE4_MICRep Plugin」を一部改変し使用しております
+Copyright (c) 2016 historia
+https://github.com/historia-Inc/UE4_MICRep
+Ref:[UE4] StaticMeshマテリアル置換プラグインを公開しました
+http://historia.co.jp/archives/4953
+
 他
 …

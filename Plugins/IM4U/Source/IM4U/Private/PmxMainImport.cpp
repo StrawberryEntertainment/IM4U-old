@@ -193,6 +193,8 @@ void ApplyImportUIToImportOptions(
 	InOutImportOptions.bImportMaterials = ImportUI->bImportMaterials;
 	//InOutImportOptions.bInvertNormalMap = ImportUI->TextureImportData->bInvertNormalMaps;
 	InOutImportOptions.bImportTextures = ImportUI->bImportTextures;
+	InOutImportOptions.bCreateMaterialInstMode = ImportUI->bCreateMaterialInstMode;
+	InOutImportOptions.bUnlitMaterials = ImportUI->bUnlitMaterials;
 	InOutImportOptions.bUsedAsFullName = ImportUI->bOverrideFullName;
 	InOutImportOptions.bConvertScene = ImportUI->bConvertScene;
 	InOutImportOptions.bImportAnimations = ImportUI->bImportAnimations;
