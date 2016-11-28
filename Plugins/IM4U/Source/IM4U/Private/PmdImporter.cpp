@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
 #include "PmdImporter.h"
@@ -30,7 +30,7 @@ namespace MMD4UE4
 
 		memcopySize = sizeof(header);
 		FMemory::Memcpy(&header, Buffer, memcopySize);
-		// PMDƒtƒ@ƒCƒ‹‚©‚Ç‚¤‚©‚ğŠm”F
+		// PMDãƒ•ã‚¡ã‚¤ãƒ«ã‹ã©ã†ã‹ã‚’ç¢ºèª
 		if (header.Magic[0] == 'P' && header.Magic[1] == 'm' && header.Magic[2] == 'd')
 		{
 			UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning, TEXT("PMX Import START /Correct Magic[PMX]"));
@@ -40,16 +40,16 @@ namespace MMD4UE4
 			UE_LOG(LogMMD4UE4_PmdMeshInfo, Error, TEXT("PMX Import FALSE/Return /UnCorrect Magic[PMX]"));
 			return false;
 		}
-		// ƒo[ƒWƒ‡ƒ“‚PˆÈŠO‚Í“Ç‚İ‚ß‚È‚¢
+		// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼‘ä»¥å¤–ã¯èª­ã¿è¾¼ã‚ãªã„
 		/*if (*((float *)header.Version) != 0x0000803f)
 		{
-			//DXST_ERRORLOGFMT_ADD((_T("PMD Load Error : ƒo[ƒWƒ‡ƒ“‚PD‚OˆÈŠO‚Í“Ç‚İ‚ß‚Ü‚¹‚ñ\n")));
+			//DXST_ERRORLOGFMT_ADD((_T("PMD Load Error : ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼‘ï¼ï¼ä»¥å¤–ã¯èª­ã¿è¾¼ã‚ã¾ã›ã‚“\n")));
 			return false;
 		}*/
 		Buffer += memcopySize;
-		// Šeƒf[ƒ^‚Ìæ“ªƒAƒhƒŒƒX‚ğƒZƒbƒg
+		// å„ãƒ‡ãƒ¼ã‚¿ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ã‚»ãƒƒãƒˆ
 		{
-			//’¸“_
+			//é ‚ç‚¹
 			memcopySize = sizeof(PMD_VERTEX_DATA);
 			FMemory::Memcpy(&vertexData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -64,7 +64,7 @@ namespace MMD4UE4
 
 		}
 		{
-			//–Êƒf[ƒ^
+			//é¢ãƒ‡ãƒ¼ã‚¿
 			memcopySize = sizeof(PMD_FACE_DATA);
 			FMemory::Memcpy(&faceData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -79,7 +79,7 @@ namespace MMD4UE4
 
 		}
 		{
-			//ƒ}ƒeƒŠƒAƒ‹
+			//ãƒãƒ†ãƒªã‚¢ãƒ«
 			memcopySize = sizeof(PMD_MATERIAL_DATA);
 			FMemory::Memcpy(&materialData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -98,7 +98,7 @@ namespace MMD4UE4
 
 		}
 		{
-			//ƒ{[ƒ“
+			//ãƒœãƒ¼ãƒ³
 			memcopySize = sizeof(PMD_BONE_DATA);
 			FMemory::Memcpy(&boneData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -157,7 +157,7 @@ namespace MMD4UE4
 
 		}
 		{
-			//ƒ‚[ƒt
+			//ãƒ¢ãƒ¼ãƒ•
 			memcopySize = sizeof(PMD_SKIN_DATA);
 			FMemory::Memcpy(&skinData, Buffer, memcopySize);
 			Buffer += memcopySize;
@@ -184,11 +184,11 @@ namespace MMD4UE4
 			}
 
 		}
-		//•\¦˜gi•\îAƒ{[ƒ“j
-		//Šg’£d—l(‰p–¼‘Î‰)
-		//Šg’£d—l(ToonTexture)
-		//Šg’£d—l(•¨—F„‘Ì)
-		//Šg’£d—l(•¨—FJoint)
+		//è¡¨ç¤ºæ ï¼ˆè¡¨æƒ…ã€ãƒœãƒ¼ãƒ³ï¼‰
+		//æ‹¡å¼µä»•æ§˜(è‹±åå¯¾å¿œ)
+		//æ‹¡å¼µä»•æ§˜(ToonTexture)
+		//æ‹¡å¼µä»•æ§˜(ç‰©ç†ï¼šå‰›ä½“)
+		//æ‹¡å¼µä»•æ§˜(ç‰©ç†ï¼šJoint)
 		//////////////////////////////////////////////
 		UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning, TEXT("PMX Importer Class Complete"));
 		return true;
@@ -215,7 +215,7 @@ namespace MMD4UE4
 			= ConvertMMDSJISToFString((uint8 *)&(header.Comment), sizeof(header.Comment));
 
 		{
-			//“Œv
+			//çµ±è¨ˆ
 			uint32 statics_bdef1 = 0;
 			uint32 statics_bdef2 = 0;
 
@@ -225,11 +225,11 @@ namespace MMD4UE4
 				PMD_VERTEX & pmdVertexPtr = vertexList[VertexIndex];
 				PMX_VERTEX & pmxVertexPtr = pmxMeshInfoPtr->vertexList[VertexIndex];
 				///
-				//ˆÊ’u(x,y,z)
+				//ä½ç½®(x,y,z)
 				memcopySize = sizeof(pmxVertexPtr.Position);
 				FMemory::Memcpy(&pmxVertexPtr.Position, pmdVertexPtr.Position, memcopySize);
 				pmxVertexPtr.Position = ConvertVectorAsixToUE4FromMMD(pmxVertexPtr.Position)*modelScale;
-				//–@ü(x,y,z)
+				//æ³•ç·š(x,y,z)
 				memcopySize = sizeof(pmxVertexPtr.Normal);
 				FMemory::Memcpy(&pmxVertexPtr.Normal, pmdVertexPtr.Normal, memcopySize);
 				pmxVertexPtr.Normal = ConvertVectorAsixToUE4FromMMD(pmxVertexPtr.Normal);
@@ -237,15 +237,15 @@ namespace MMD4UE4
 				memcopySize = sizeof(pmxVertexPtr.UV);
 				FMemory::Memcpy(&pmxVertexPtr.UV, pmdVertexPtr.Uv, memcopySize);
 				/*
-				float tempUV = pmxVertexPtr.UV.X;//UE4À•WŒn”½“]
+				float tempUV = pmxVertexPtr.UV.X;//UE4åº§æ¨™ç³»åè»¢
 				pmxVertexPtr.UV.X = 1 - pmxVertexPtr.UV.Y;
 				pmxVertexPtr.UV.Y = 1 - tempUV;
 				*/
-				//’Ç‰ÁUV(x,y,z,w)  PMXƒwƒbƒ_‚Ì’Ç‰ÁUV”‚É‚æ‚é	n:’Ç‰ÁUV” 0`4
+				//è¿½åŠ UV(x,y,z,w)  PMXãƒ˜ãƒƒãƒ€ã®è¿½åŠ UVæ•°ã«ã‚ˆã‚‹	n:è¿½åŠ UVæ•° 0ï½4
 
-				// ƒEƒFƒCƒg•ÏŒ`•û® 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF
+				// ã‚¦ã‚§ã‚¤ãƒˆå¤‰å½¢æ–¹å¼ 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF
 				//pmxVertexPtr.WeightType = 0;
-				// ƒ{[ƒ“Index‚ª“¯‚¶ê‡‚ÍBDEF1‚Æ‚µ‚Ä‚ ‚Â‚©‚¤
+				// ãƒœãƒ¼ãƒ³IndexãŒåŒã˜å ´åˆã¯BDEF1ã¨ã—ã¦ã‚ã¤ã‹ã†
 				/*
 				if (pmdVertexPtr.BoneNo[0] != pmdVertexPtr.BoneNo[1]
 					|| (pmdVertexPtr.BoneNo[1] == 0 && pmdVertexPtr.BoneWeight == 100))
@@ -262,8 +262,8 @@ namespace MMD4UE4
 				else*/
 				{
 					//BUG::
-					//BDEF1‚Æ‚Ì¬İ‚¾‚Æ‰½ŒÌ‚©ƒEƒFƒCƒgİ’è‚ªˆÙí‚Å‚ ‚é‚ÆMake‚ÉŒx‚ªo‚é‚½‚ßA
-					//b’è‘Îˆ‚Æ‚µ‚ÄAPMDŒ`®‚Å‚Íˆê—¥BDEF2Œ`®‚Æ‚·‚éBƒf[ƒ^‚ª‘½‚­‚È‚é‚æ‚è‚©‚Í³‚µ‚­“®ì‚·‚é‚±‚Æ‚ğ—DæB
+					//BDEF1ã¨ã®æ··åœ¨ã ã¨ä½•æ•…ã‹ã‚¦ã‚§ã‚¤ãƒˆè¨­å®šãŒç•°å¸¸ã§ã‚ã‚‹ã¨Makeæ™‚ã«è­¦å‘ŠãŒå‡ºã‚‹ãŸã‚ã€
+					//æš«å®šå¯¾å‡¦ã¨ã—ã¦ã€PMDå½¢å¼ã§ã¯ä¸€å¾‹BDEF2å½¢å¼ã¨ã™ã‚‹ã€‚ãƒ‡ãƒ¼ã‚¿ãŒå¤šããªã‚‹ã‚ˆã‚Šã‹ã¯æ­£ã—ãå‹•ä½œã™ã‚‹ã“ã¨ã‚’å„ªå…ˆã€‚
 					//bdef2
 					pmxVertexPtr.WeightType = 1;
 					pmxVertexPtr.BoneIndex[0] = pmdVertexPtr.BoneNo[0] + 1;
@@ -273,7 +273,7 @@ namespace MMD4UE4
 					//
 					statics_bdef2++;
 				}
-				//ƒGƒbƒW”{—¦  Ş¿‚ÌƒGƒbƒWƒTƒCƒY‚É‘Î‚µ‚Ä‚Ì”{—¦’l
+				//ã‚¨ãƒƒã‚¸å€ç‡  æè³ªã®ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚ºã«å¯¾ã—ã¦ã®å€ç‡å€¤
 			}
 			UE_LOG(LogMMD4UE4_PmdMeshInfo, Warning,
 				TEXT("PMX convert [Vertex:: statics bone type, bdef1 = %u] Complete"), statics_bdef1);
@@ -283,12 +283,12 @@ namespace MMD4UE4
 		}
 		{
 			/*
-			œ–Ê
+			â—é¢
 
-			n : ’¸“_IndexƒTƒCƒY     | ’¸“_‚ÌQÆIndex
+			n : é ‚ç‚¹Indexã‚µã‚¤ã‚º     | é ‚ç‚¹ã®å‚ç…§Index
 
-			¦3“_(3’¸“_Index)‚Å1–Ê
-			Ş¿–ˆ‚Ì–Ê”‚ÍŞ¿“à‚Ì–Ê(’¸“_)”‚ÅŠÇ— (“¯PMD•û®)
+			â€»3ç‚¹(3é ‚ç‚¹Index)ã§1é¢
+			æè³ªæ¯ã®é¢æ•°ã¯æè³ªå†…ã®é¢(é ‚ç‚¹)æ•°ã§ç®¡ç† (åŒPMDæ–¹å¼)
 			*/
 			uint32 PmxFaceNum = 0;
 			PmxFaceNum = faceData.VertexCount;
@@ -311,17 +311,17 @@ namespace MMD4UE4
 		/*
 		{
 
-			// ƒeƒNƒXƒ`ƒƒ‚Ì”‚ğæ“¾
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ã‚’å–å¾—
 			uint32 PmxTextureNum = 0;
 			//
 			memcopySize = sizeof(PmxTextureNum);
 			FMemory::Memcpy(&PmxTextureNum, Buffer, memcopySize);
 			Buffer += memcopySize;
 
-			// ƒeƒNƒXƒ`ƒƒƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			textureList.AddZeroed(PmxTextureNum);
 
-			// ƒeƒNƒXƒ`ƒƒ‚Ìî•ñ‚ğæ“¾
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æƒ…å ±ã‚’å–å¾—
 			for (uint32 i = 0; i < PmxTextureNum; i++)
 			{
 				textureList[i].TexturePath = PMXTexBufferToFString(&Buffer, pmxEncodeType);
@@ -332,21 +332,21 @@ namespace MMD4UE4
 		{
 			FString tempAlphaStr;
 			TArray<FString> tempTexPathList;
-			// ƒ}ƒeƒŠƒAƒ‹‚Ì”‚ğæ“¾
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ã®æ•°ã‚’å–å¾—
 			uint32 PmxMaterialNum = 0;
 			//
 			PmxMaterialNum = materialData.Count;
 
-			// ƒ}ƒeƒŠƒAƒ‹ƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			pmxMeshInfoPtr->materialList.AddZeroed(PmxMaterialNum);
 
-			// ƒ}ƒeƒŠƒAƒ‹‚Ì“Ç‚İ‚±‚İ
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ã®èª­ã¿ã“ã¿
 			for (uint32 i = 0; i < PmxMaterialNum; i++)
 			{
 				PMD_MATERIAL & pmdMaterialPtr = materialList[i];
 				PMX_MATERIAL & pmxMaterialPtr = pmxMeshInfoPtr->materialList[i];
 
-				// Ş¿–¼‚Ìæ“¾
+				// æè³ªåã®å–å¾—
 				pmxMaterialPtr.Name = FString::Printf(TEXT("mat_%d"), i);
 				pmxMaterialPtr.NameEng = pmxMaterialPtr.Name;
 
@@ -359,7 +359,7 @@ namespace MMD4UE4
 				pmxMaterialPtr.Specular[0] = pmdMaterialPtr.SpecularR;
 				pmxMaterialPtr.Specular[1] = pmdMaterialPtr.SpecularG;
 				pmxMaterialPtr.Specular[2] = pmdMaterialPtr.SpecularB;
-				//SpecularŒW”
+				//Specularä¿‚æ•°
 				pmxMaterialPtr.SpecularPower = pmdMaterialPtr.Specularity;
 				//Ambient (R,G,B)
 				pmxMaterialPtr.Ambient[0] = pmdMaterialPtr.AmbientR;
@@ -368,31 +368,31 @@ namespace MMD4UE4
 
 
 				/*
-				•`‰æƒtƒ‰ƒO(8bit) - Šebit 0:OFF 1:ON
-				0x01:—¼–Ê•`‰æ, 0x02:’n–Ê‰e, 0x04:ƒZƒ‹ƒtƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ, 0x08:ƒZƒ‹ƒtƒVƒƒƒhƒE‚Ì•`‰æ,
-				0x10:ƒGƒbƒW•`‰æ
+				æç”»ãƒ•ãƒ©ã‚°(8bit) - å„bit 0:OFF 1:ON
+				0x01:ä¸¡é¢æç”», 0x02:åœ°é¢å½±, 0x04:ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”», 0x08:ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã®æç”»,
+				0x10:ã‚¨ãƒƒã‚¸æç”»
 				*/
 				tempAlphaStr = FString::Printf(TEXT("%.03f"), pmdMaterialPtr.Alpha);
-				//pmxMaterialPtr.CullingOff = (pmdMaterialPtr.Alpha < 1.0f) ? 1 : 0;//–{—ˆ‚Ìd—l‚Ì‚Í‚¸H‚¾‚ª— ’n‚É•ƒGƒbƒWo—ˆ‚È‚¢‚Ì‚Å1.0f‚¾‚Æ“§‚¯‚é
-				pmxMaterialPtr.CullingOff = 1;//ã‹L——R‚©‚çPMD‚Ìê‡—¼–Ê‚É‚·‚éB‚ ‚Æ‚Å“K‹X•Ğ–Ê‚É‚·‚é‚È‚Çƒhƒ[ƒR[ƒ‹‚ğŒ¸‚ç‚µ‚Ä‚à‚ç‚¢‚½‚¢BBB
+				//pmxMaterialPtr.CullingOff = (pmdMaterialPtr.Alpha < 1.0f) ? 1 : 0;//æœ¬æ¥ã®ä»•æ§˜ã®ã¯ãšï¼Ÿã ãŒè£åœ°ã«é»’ã‚¨ãƒƒã‚¸å‡ºæ¥ãªã„ã®ã§1.0fã ã¨é€ã‘ã‚‹
+				pmxMaterialPtr.CullingOff = 1;//ä¸Šè¨˜ç†ç”±ã‹ã‚‰PMDã®å ´åˆä¸¡é¢ã«ã™ã‚‹ã€‚ã‚ã¨ã§é©å®œç‰‡é¢ã«ã™ã‚‹ãªã©ãƒ‰ãƒ­ãƒ¼ã‚³ãƒ¼ãƒ«ã‚’æ¸›ã‚‰ã—ã¦ã‚‚ã‚‰ã„ãŸã„ã€‚ã€‚ã€‚
 				pmxMaterialPtr.GroundShadow = (0) ? 1 : 0;
 				pmxMaterialPtr.SelfShadowMap = tempAlphaStr.Equals("0.980") ? 1 : 0;
 				pmxMaterialPtr.SelfShadowDraw = tempAlphaStr.Equals( "0.980") ? 1 : 0;
 				pmxMaterialPtr.EdgeDraw = (0) ? 1 : 0;
 
-				//ƒGƒbƒWF (R,G,B,A)
+				//ã‚¨ãƒƒã‚¸è‰² (R,G,B,A)
 				pmxMaterialPtr.EdgeColor[0] = 0;
 				pmxMaterialPtr.EdgeColor[1] = 0;
 				pmxMaterialPtr.EdgeColor[2] = 0;
 				pmxMaterialPtr.EdgeColor[3] = 0;
 
-				//ƒGƒbƒWƒTƒCƒY
+				//ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
 				pmxMaterialPtr.EdgeSize = 0;
 
 
-				//ƒXƒtƒBƒAƒ‚[ƒh 0:–³Œø 1:æZ(sph) 2:‰ÁZ(spa) 
-				//3:ƒTƒuƒeƒNƒXƒ`ƒƒ(’Ç‰ÁUV1‚Ìx,y‚ğUVQÆ‚µ‚Ä’ÊíƒeƒNƒXƒ`ƒƒ•`‰æ‚ğs‚¤)
-				pmxMaterialPtr.SphereMode = 0;//‰Šú’l
+				//ã‚¹ãƒ•ã‚£ã‚¢ãƒ¢ãƒ¼ãƒ‰ 0:ç„¡åŠ¹ 1:ä¹—ç®—(sph) 2:åŠ ç®—(spa) 
+				//3:ã‚µãƒ–ãƒ†ã‚¯ã‚¹ãƒãƒ£(è¿½åŠ UV1ã®x,yã‚’UVå‚ç…§ã—ã¦é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£æç”»ã‚’è¡Œã†)
+				pmxMaterialPtr.SphereMode = 0;//åˆæœŸå€¤
 				
 				PMX_TEXTURE tempTex;
 				FString tempTexPathStr;
@@ -403,11 +403,11 @@ namespace MMD4UE4
 						sizeof(pmdMaterialPtr.TextureFileName));
 				if (tempTex.TexturePath.Split("/", &tempTexPathStr, &tempShaPathStr))
 				{
-					//ƒTƒuƒtƒHƒ‹ƒ_‚Éƒ}ƒeƒŠƒAƒ‹‚ª‚È‚¢‘O’ñ
+					//ã‚µãƒ–ãƒ•ã‚©ãƒ«ãƒ€ã«ãƒãƒ†ãƒªã‚¢ãƒ«ãŒãªã„å‰æ
 					tempTex.TexturePath = tempTexPathStr;
 					if (tempTex.TexturePath.Find(".spa") != -1)
 					{
-						//‰ÁZ‚Å‚È‚¢ê‡
+						//åŠ ç®—ã§ãªã„å ´åˆ
 						pmxMaterialPtr.SphereMode = 1;
 						UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
 							TEXT("PMX convert [materialList] multi texture[%s] / sphere[%s]")
@@ -428,7 +428,7 @@ namespace MMD4UE4
 					tempTex.TexturePath = tempTexPathStr;
 					if (tempTex.TexturePath.Find(".spa") != -1)
 					{
-						//‰ÁZ‚Å‚È‚¢ê‡
+						//åŠ ç®—ã§ãªã„å ´åˆ
 						pmxMaterialPtr.SphereMode = 1;
 						UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
 							TEXT("PMX convert [materialList] multi texture[%s] / sphere[%s]")
@@ -446,15 +446,15 @@ namespace MMD4UE4
 				}
 				else
 				{
-					//ƒeƒNƒXƒ`ƒƒ‚ªˆê‚Â‚Ì‚İ
+					//ãƒ†ã‚¯ã‚¹ãƒãƒ£ãŒä¸€ã¤ã®ã¿
 					if (tempTex.TexturePath.Find(".sp") != -1)
 					{
-						//ƒXƒtƒBƒA‚Ì‚İ
+						//ã‚¹ãƒ•ã‚£ã‚¢ã®ã¿
 						tempShaPathStr = tempTex.TexturePath;
 						tempTex.TexturePath = "";
 						if (tempTex.TexturePath.Find(".spa") != -1)
 						{
-							//‰ÁZ‚Å‚È‚¢ê‡
+							//åŠ ç®—ã§ãªã„å ´åˆ
 							pmxMaterialPtr.SphereMode = 1;
 						}
 						else
@@ -464,7 +464,7 @@ namespace MMD4UE4
 					}
 					else
 					{
-						//ƒXƒtƒBƒA‚È‚µ
+						//ã‚¹ãƒ•ã‚£ã‚¢ãªã—
 						tempShaPathStr = "";
 					}
 					UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning,
@@ -473,7 +473,7 @@ namespace MMD4UE4
 						, *tempShaPathStr);
 					//tempTex.TexturePath = tempTexPathStr;
 				}
-				//’ÊíƒeƒNƒXƒ`ƒƒ, ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹‚ÌQÆIndex
+				//é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£, ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‚ç…§Index
 				if (tempTex.TexturePath.Equals(""))
 				{
 					//not
@@ -493,7 +493,7 @@ namespace MMD4UE4
 				if (tempShaPathStr.Equals(""))
 				{
 					//not
-					//ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ, ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹‚ÌQÆIndex  ¦ƒeƒNƒXƒ`ƒƒŠg’£q‚Ì§ŒÀ‚È‚µ
+					//ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£, ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‚ç…§Index  â€»ãƒ†ã‚¯ã‚¹ãƒãƒ£æ‹¡å¼µå­ã®åˆ¶é™ãªã—
 					pmxMaterialPtr.SphereTextureIndex
 						= -1;
 				}
@@ -511,36 +511,36 @@ namespace MMD4UE4
 						pmxMeshInfoPtr->textureList.Add(tempSphTex);
 					}
 				}
-				//‹¤—LToonƒtƒ‰ƒO 0:Œp‘±’l‚ÍŒÂ•ÊToon 1 : Œp‘±’l‚Í‹¤—LToon
+				//å…±æœ‰Toonãƒ•ãƒ©ã‚° 0:ç¶™ç¶šå€¤ã¯å€‹åˆ¥Toon 1 : ç¶™ç¶šå€¤ã¯å…±æœ‰Toon
 				pmxMaterialPtr.ToonFlag = 1;
 
 				if (pmxMaterialPtr.ToonFlag == 0)
-				{//ToonƒeƒNƒXƒ`ƒƒ, ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹‚ÌQÆIndex
+				{//Toonãƒ†ã‚¯ã‚¹ãƒãƒ£, ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‚ç…§Index
 					pmxMaterialPtr.ToonTextureIndex
 						= 0;
 				}
 				else
-				{//‹¤—LToonƒeƒNƒXƒ`ƒƒ[0`9] -> ‚»‚ê‚¼‚ê toon01.bmp`toon10.bmp ‚É‘Î‰
+				{//å…±æœ‰Toonãƒ†ã‚¯ã‚¹ãƒãƒ£[0ï½9] -> ãã‚Œãã‚Œ toon01.bmpï½toon10.bmp ã«å¯¾å¿œ
 					pmxMaterialPtr.ToonTextureIndex = pmdMaterialPtr.ToolImage;
 				}
 
-				// ƒƒ‚‚ÍƒXƒLƒbƒv
+				// ãƒ¡ãƒ¢ã¯ã‚¹ã‚­ãƒƒãƒ—
 
-				//Ş¿‚É‘Î‰‚·‚é–Ê(’¸“_)” (•K‚¸3‚Ì”{”‚É‚È‚é)
+				//æè³ªã«å¯¾å¿œã™ã‚‹é¢(é ‚ç‚¹)æ•° (å¿…ãš3ã®å€æ•°ã«ãªã‚‹)
 				pmxMaterialPtr.MaterialFaceNum = pmdMaterialPtr.FaceVertexCount;
 			}
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX convert [materialList] Complete"));
 		}
 		{
-			// ‚·‚×‚Ä‚ÌeBone‚ğUE4Œü‚¯‚É’Ç‰Á
-			// ƒ{[ƒ“ƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ã™ã¹ã¦ã®è¦ªBoneã‚’UE4å‘ã‘ã«è¿½åŠ 
+			// ãƒœãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			pmxMeshInfoPtr->boneList.AddZeroed(1);
 
-			// ƒ{[ƒ“‚Ì”‚ğæ“¾
+			// ãƒœãƒ¼ãƒ³ã®æ•°ã‚’å–å¾—
 			uint32 PmxBoneNum = 0;
 			uint32 offsetBoneIndx = 1;
 
-			// ƒ{[ƒ“î•ñ‚Ìæ“¾
+			// ãƒœãƒ¼ãƒ³æƒ…å ±ã®å–å¾—
 			{
 				pmxMeshInfoPtr->boneList[PmxBoneNum].Name = TEXT("Root");
 				pmxMeshInfoPtr->boneList[PmxBoneNum].NameEng = "AllTopRootBone";
@@ -548,10 +548,10 @@ namespace MMD4UE4
 				pmxMeshInfoPtr->boneList[PmxBoneNum].ParentBoneIndex = INDEX_NONE;
 			}
 			PmxBoneNum = boneData.Count;
-			// ƒ{[ƒ“ƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒœãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			pmxMeshInfoPtr->boneList.AddZeroed(PmxBoneNum);
 
-			// ƒ{[ƒ“î•ñ‚Ìæ“¾
+			// ãƒœãƒ¼ãƒ³æƒ…å ±ã®å–å¾—
 			uint32 PmxIKNum = 0;
 			for (uint32 i = offsetBoneIndx; i < PmxBoneNum + offsetBoneIndx; i++)
 			{
@@ -584,29 +584,29 @@ namespace MMD4UE4
 				//bone type
 				switch (pmdBonePtr.Type)
 				{
-				case 0://0 : ‰ñ“]
+				case 0://0 : å›è»¢
 					pmxBonePtr.Flag_EnableRot = 1;
 					break;
-				case 1: //1:‰ñ“]‚ÆˆÚ“®
+				case 1: //1:å›è»¢ã¨ç§»å‹•
 					pmxBonePtr.Flag_EnableRot = 1;
 					pmxBonePtr.Flag_EnableMov = 1;
 					break;
 				case 2: //2:IK
 					pmxBonePtr.Flag_IK = 1;
 					break;
-				case 3: //3:•s–¾H
+				case 3: //3:ä¸æ˜ï¼Ÿ
 					break;
-				case 4: //4:IK‰e‹¿‰º
+				case 4: //4:IKå½±éŸ¿ä¸‹
 					break;
-				case 5: //5:‰ñ“]‰e‹¿‰º
+				case 5: //5:å›è»¢å½±éŸ¿ä¸‹
 					break;
-				case 6: //6:IKÚ‘±æ
+				case 6: //6:IKæ¥ç¶šå…ˆ
 					break;
-				case 7: //7:”ñ•\¦
+				case 7: //7:éè¡¨ç¤º
 					break;
-				case 8: //8:”P‚è
+				case 8: //8:æ»ã‚Š
 					break;
-				case 9: //9:‰ñ“]‰^“® 
+				case 9: //9:å›è»¢é‹å‹• 
 					break;
 				default:
 					break;
@@ -730,11 +730,11 @@ namespace MMD4UE4
 							FString tempChldBoneName
 								= ConvertMMDSJISToFString((uint8 *)&(boneList[tempPmdIKPtr->ChainBoneIndexs[j]].Name),
 								sizeof(boneList[tempPmdIKPtr->ChainBoneIndexs[j]].Name));
-							const char hiza[20] = "‚Ğ‚´";
+							const char hiza[20] = "ã²ã–";
 							FString tempHizaName
 								= ConvertMMDSJISToFString((uint8 *)&(hiza),
 								sizeof(hiza));
-							//•G‚Ìê‡AX²(MMD)‚Å²§ŒÀ‚ğ‘‚¯‚é
+							//è†ã®å ´åˆã€Xè»¸(MMD)ã§è»¸åˆ¶é™ã‚’æ›¸ã‘ã‚‹
 							if (tempChldBoneName.Find(tempHizaName) != -1)
 							{
 								pmxBonePtr.IKInfo.Link[j].RotLockFlag = 1;
@@ -764,28 +764,28 @@ namespace MMD4UE4
 		}
 		{
 			int32 i, j;
-			// ƒ‚[ƒtî•ñ‚Ì”‚ğæ“¾
+			// ãƒ¢ãƒ¼ãƒ•æƒ…å ±ã®æ•°ã‚’å–å¾—
 			int32 PmxMorphNum = 0;
 			TArray<int32> pmdMorphIndexList;
 			PMD_SKIN * basePmdMorphPtr = NULL; //base
-			PMD_SKIN * targetPmdMorphPtr = NULL; //ƒ‚[ƒt•ÏŠ·‚Ì•ÏŠ·Œ³ƒ‚[ƒtî•ñ
+			PMD_SKIN * targetPmdMorphPtr = NULL; //ãƒ¢ãƒ¼ãƒ•å¤‰æ›æ™‚ã®å¤‰æ›å…ƒãƒ¢ãƒ¼ãƒ•æƒ…å ±
 
 			for (i = 0; i < pmdMeshInfoPtr->skinData.Count; i++)
 			{
 				if (0 < pmdMeshInfoPtr->skinList[i].SkinType
 					&&  pmdMeshInfoPtr->skinList[i].SkinType < 4)
 				{
-					//type 0: baseœŠOB‚»‚êˆÈŠO‚Ì—LŒøSkin‚È‚ç‰ÁZ
-					//1: ‚Ü‚ä
-					//2: –Ú
-					//3: ƒŠƒbƒv
-					//4: ‚»‚Ì‘¼
+					//type 0: baseé™¤å¤–ã€‚ãã‚Œä»¥å¤–ã®æœ‰åŠ¹Skinãªã‚‰åŠ ç®—
+					//1: ã¾ã‚†
+					//2: ç›®
+					//3: ãƒªãƒƒãƒ—
+					//4: ãã®ä»–
 					PmxMorphNum++;
 					pmdMorphIndexList.Add(i);
 				}
 				else if (0 == pmdMeshInfoPtr->skinList[i].SkinType && basePmdMorphPtr == NULL)
 				{
-					//‚à‚µŠù‚ÉBase‚ª“o˜^‚³‚ê‚Ä‚¢‚éê‡(PMDƒtƒH[ƒ}ƒbƒg‚Æ‚µ‚ÄˆÙí)‚Íã‘‚«‚µ‚È‚¢
+					//ã‚‚ã—æ—¢ã«BaseãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å ´åˆ(PMDãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã¨ã—ã¦ç•°å¸¸)ã¯ä¸Šæ›¸ãã—ãªã„
 					basePmdMorphPtr = &pmdMeshInfoPtr->skinList[i];
 				}
 				else
@@ -793,18 +793,18 @@ namespace MMD4UE4
 					//Err
 				}
 			}
-			// ƒ‚[ƒt‚ ‚è‚©‚ÂBaseƒ‚[ƒt‚ ‚è‚Ìê‡Aƒ‚[ƒt“o˜^‚ğ‚·‚é
+			// ãƒ¢ãƒ¼ãƒ•ã‚ã‚Šã‹ã¤Baseãƒ¢ãƒ¼ãƒ•ã‚ã‚Šã®å ´åˆã€ãƒ¢ãƒ¼ãƒ•ç™»éŒ²ã‚’ã™ã‚‹
 			if (PmxMorphNum > 0 && basePmdMorphPtr )
 			{
-				// ƒ‚[ƒtƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+				// ãƒ¢ãƒ¼ãƒ•ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 				pmxMeshInfoPtr->morphList.AddZeroed(PmxMorphNum);
 
-				// ƒ‚[ƒtî•ñ‚Ì“Ç‚İ‚İ
+				// ãƒ¢ãƒ¼ãƒ•æƒ…å ±ã®èª­ã¿è¾¼ã¿
 				int32 PmxSkinNum = 0;
 				FVector tempVec;
 				for (i = 0; i < PmxMorphNum; i++)
 				{
-					// target morph ptr QÆ
+					// target morph ptr å‚ç…§
 					targetPmdMorphPtr = &pmdMeshInfoPtr->skinList[pmdMorphIndexList[i]];
 					//
 					pmxMeshInfoPtr->morphList[i].Name
@@ -818,13 +818,13 @@ namespace MMD4UE4
 					//
 					pmxMeshInfoPtr->morphList[i].ControlPanel = targetPmdMorphPtr->SkinType;
 					//
-					pmxMeshInfoPtr->morphList[i].Type = 1;//’¸“_ŒÅ’è
+					pmxMeshInfoPtr->morphList[i].Type = 1;//é ‚ç‚¹å›ºå®š
 					//
 					pmxMeshInfoPtr->morphList[i].DataNum = targetPmdMorphPtr->VertexCount;
 
 					switch (pmxMeshInfoPtr->morphList[i].Type)
 					{
-					case 1:	// ’¸“_
+					case 1:	// é ‚ç‚¹
 						PmxSkinNum++;
 						pmxMeshInfoPtr->morphList[i].Vertex.AddZeroed(pmxMeshInfoPtr->morphList[i].DataNum);
 

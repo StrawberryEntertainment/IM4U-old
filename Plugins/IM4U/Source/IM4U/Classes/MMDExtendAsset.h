@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
 #include "Engine.h"
@@ -18,7 +18,7 @@
 /**********************
 * MMD Extend Info : Ik info
 ***********************/
-// ‚h‚jƒŠƒ“ƒNî•ñ
+// ï¼©ï¼«ãƒªãƒ³ã‚¯æƒ…å ±
 USTRUCT()
 struct FMMD_IKLINK
 {
@@ -31,13 +31,13 @@ struct FMMD_IKLINK
 	FName	BoneName;							// Link Bone Name
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "If enabled, rotation limite, 0:OFF, 1:ON "))
-	uint32	RotLockFlag:1;						// ‰ñ“]§ŒÀ( 0:OFF 1:ON )
+	uint32	RotLockFlag:1;						// å›è»¢åˆ¶é™( 0:OFF 1:ON )
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] min"))
-	FVector	RotLockMin;							// ‰ñ“]§ŒÀA‰ºŒÀ[x,y,z]
+	FVector	RotLockMin;							// å›è»¢åˆ¶é™ã€ä¸‹é™[x,y,z]
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "Rotation angle limit Euler[dig:-180~180] max"))
-	FVector	RotLockMax;							// ‰ñ“]§ŒÀAãŒÀ[x,y,z]
+	FVector	RotLockMax;							// å›è»¢åˆ¶é™ã€ä¸Šé™[x,y,z]
 
 	FMMD_IKLINK()
 	{
@@ -46,13 +46,13 @@ struct FMMD_IKLINK
 	};
 };
 
-// ‚h‚jî•ñ
+// ï¼©ï¼«æƒ…å ±
 USTRUCT()
 struct FMMD_IKInfo
 {
 	GENERATED_USTRUCT_BODY()
 
-	// IKŒvZ‰Â”\ƒtƒ‰ƒO
+	// IKè¨ˆç®—å¯èƒ½ãƒ•ãƒ©ã‚°
 	bool	checkIKIndex;
 
 	int		IKBoneIndexVMDKey;			// IK target bone index vmd key index
@@ -70,13 +70,13 @@ struct FMMD_IKInfo
 	FName	TargetBoneName;						// IK Target Bone Name 
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "CCD-IK loop count"))
-	int32		LoopNum;							// IKŒvZ‚Ìƒ‹[ƒv‰ñ”
+	int32		LoopNum;							// IKè¨ˆç®—ã®ãƒ«ãƒ¼ãƒ—å›æ•°
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "CCD-IK unit angle[dig]"))
-	float	RotLimit;							// ŒvZˆê‰ñ•Ó‚è‚Ì§ŒÀŠp“x
+	float	RotLimit;							// è¨ˆç®—ä¸€å›è¾ºã‚Šã®åˆ¶é™è§’åº¦
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MMD", meta = (ToolTip = "CCD-IK link IK info"))
-	TArray<FMMD_IKLINK> ikLinkList;				// ‚h‚jƒŠƒ“ƒNî•ñ
+	TArray<FMMD_IKLINK> ikLinkList;				// ï¼©ï¼«ãƒªãƒ³ã‚¯æƒ…å ±
 
 	FMMD_IKInfo()
 	{
@@ -114,7 +114,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = IK)
 		TArray<FMMD_IKInfo> IkInfoList;	
 	
-	//TBD::—p“r•s–¾
+	//TBD::ç”¨é€”ä¸æ˜
 	//	bool CanEditChange( const UProperty* InProperty ) const;
 private:
 

@@ -1,4 +1,4 @@
-
+ï»¿
 #include "IM4UPrivatePCH.h"
 #include "EncodeHelper.h"
 
@@ -30,13 +30,13 @@ std::string EncodeHelper::convert_encoding(const std::string &str, const char *f
 	char *outstr;
 	int rtn_len;
 
-	// utf-16‚É•ÏŠ·
+	// utf-16ã«å¤‰æ›
 	int utf16str_len = MultiByteToWideChar(from_code, 0, str.c_str(), -1, NULL, 0);
 	utf16str = new WCHAR[utf16str_len + 1];
 	rtn_len = MultiByteToWideChar(from_code, 0, str.c_str(), -1, utf16str, utf16str_len);
 	utf16str[rtn_len] = L'\0';
 
-	// utf-16‚©‚ç”CˆÓ‚Ì•¶šƒR[ƒh‚É•ÏŠ·
+	// utf-16ã‹ã‚‰ä»»æ„ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›
 	int outstr_len = WideCharToMultiByte(to_code, 0, utf16str, -1, NULL, 0, NULL, NULL);
 	outstr = new char[outstr_len + 1];
 	rtn_len = WideCharToMultiByte(to_code, 0, utf16str, -1, outstr, outstr_len, NULL, NULL);

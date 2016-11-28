@@ -1,4 +1,4 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
 /*
 * Copyright 2010 Autodesk, Inc.  All Rights Reserved.
@@ -33,7 +33,7 @@
 
 #include "../IM4UPrivatePCH.h"
 
-//‚±‚±‚ÌŠÖ”‚ğg‚Á‚ÄVMD‚ÌƒJƒƒ‰ƒ‚[ƒVƒ‡ƒ“‚ğMatineeAnim‚ÉƒCƒ“ƒ|[ƒg‚³‚¹‚½‚¢—\’è
+//ã“ã“ã®é–¢æ•°ã‚’ä½¿ã£ã¦VMDã®ã‚«ãƒ¡ãƒ©ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã‚’MatineeAnimã«ã‚¤ãƒ³ãƒãƒ¼ãƒˆã•ã›ãŸã„äºˆå®š
 #if 1 //all
 
 #include "UnrealEd.h"
@@ -189,7 +189,7 @@
 		return Camera;
 	}
 #endif
-	// ÅãˆÊŠÖ”F‚½‚¾‚µAInMatineeActor‚ğ–‘O‚É¶¬‚µ‚Ä‚¢‚é‚±‚Æ
+	// æœ€ä¸Šä½é–¢æ•°ï¼šãŸã ã—ã€InMatineeActorã‚’äº‹å‰ã«ç”Ÿæˆã—ã¦ã„ã‚‹ã“ã¨
 	bool UVmdFactory::ImportMatineeSequence(
 		AMatineeActor* InMatineeActor,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
@@ -383,8 +383,8 @@
 
 		ImportAnimatedProperty(&Actor->GetCameraComponent()->FieldOfView, TEXT("FOVAngle"), MatineeGroup, AperatureModeProperty.Get(), AperatureModeProperty, true, Camera);
 #else
-		/* ƒRƒ“ƒpƒCƒ‹ƒGƒ‰[‰ñ”ğô
-		//mmd mode :ŠY“–‚·‚é‰ÓŠ‚ğÄ’²¸‚·‚é
+		/* ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚¨ãƒ©ãƒ¼å›é¿ç­–
+		//mmd mode :è©²å½“ã™ã‚‹ç®‡æ‰€ã‚’å†èª¿æŸ»ã™ã‚‹
 		if (Camera->FocalLength.IsValid() 
 			&& Camera->GetApertureMode() == FbxCamera::eFocalLength)
 		{
@@ -528,7 +528,7 @@
 		//mmd mode
 #endif
 	}
-	//‚±‚ÌŠÖ”‚Í“Á‚É•ÏX‚È‚µ‚Ì—\’è
+	//ã“ã®é–¢æ•°ã¯ç‰¹ã«å¤‰æ›´ãªã—ã®äºˆå®š
 	UInterpGroupInst* UVmdFactory::CreateMatineeGroup(
 		AMatineeActor* InMatineeActor, 
 		AActor* Actor, 
@@ -552,7 +552,7 @@
 
 
 #if 0 //Test Build
-	//TBD::‚¨‚»‚ç‚­‚±‚ÌŠÖ”‚ªˆê”ÔƒRƒA‚É‚È‚Á‚Ä‚¢‚é‚Æ„‘ªBˆ—“à—e‚ğ’²¸‚·‚é‚±‚ÆB
+	//TBD::ãŠãã‚‰ãã“ã®é–¢æ•°ãŒä¸€ç•ªã‚³ã‚¢ã«ãªã£ã¦ã„ã‚‹ã¨æ¨æ¸¬ã€‚å‡¦ç†å†…å®¹ã‚’èª¿æŸ»ã™ã‚‹ã“ã¨ã€‚
 	/**
 	* Imports a FBX scene node into a Matinee actor group.
 	*/
@@ -566,7 +566,7 @@
 
 		if (Scene == NULL || Node == NULL || MatineeGroup == NULL) return -1.0f;
 
-		//ˆêæ‚¸FBXê—p‚Ì–‘O€”õ‚Æv‚í‚ê‚éˆ×AƒJƒbƒg
+		//ä¸€å…ˆãšFBXå°‚ç”¨ã®äº‹å‰æº–å‚™ã¨æ€ã‚ã‚Œã‚‹ç‚ºã€ã‚«ãƒƒãƒˆ
 #ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		// Bake the pivots.
 		// Based in sample code in kfbxnode.h, re: Pivot Management
@@ -649,7 +649,7 @@
 				false);																// Do not apply key reducing filter
 		}
 #endif
-		//ƒƒ‚F‚±‚±‚Í‚±‚Ì‚Ü‚Ü‚ÅOKBCAST¸”s‚È‚çNULL‚Å•Ï‚¦‚éˆ×A
+		//ãƒ¡ãƒ¢ï¼šã“ã“ã¯ã“ã®ã¾ã¾ã§OKã€‚CASTå¤±æ•—ãªã‚‰NULLã§å¤‰ãˆã‚‹ç‚ºã€
 		// Search for a Movement track in the Matinee group.
 		UInterpTrackMove* MovementTrack = NULL;
 		int32 TrackCount = MatineeGroup->Group->InterpTracks.Num();
@@ -658,7 +658,7 @@
 			MovementTrack = Cast<UInterpTrackMove>(MatineeGroup->Group->InterpTracks[TrackIndex]);
 		}
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“”»’è‚ÌFBXê—pˆ—‚Ì‚½‚ßƒJƒbƒgB
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åˆ¤å®šã®FBXå°‚ç”¨å‡¦ç†ã®ãŸã‚ã‚«ãƒƒãƒˆã€‚
 #ifdef ORIGINAL_FBX_MATINEE_IMPORT
 		// Check whether the actor should be pivoted in the FBX document.
 
@@ -680,7 +680,7 @@
 		bool bNodeAnimated = IsNodeAnimated(Node, AnimLayer);
 		bool ForceImportSampling = false;
 #else
-		// b’è‘Îˆ‚Æ‚µ‚ÄtrueŒÅ’è
+		// æš«å®šå¯¾å‡¦ã¨ã—ã¦trueå›ºå®š
 		bool bNodeAnimated = true;
 #endif
 		// Add a Movement track if the node is animated and the group does not already have one.
@@ -726,10 +726,10 @@
 		// Fill in the Movement track with the FBX keys
 		if (bNodeAnimated)
 		{
-			//ƒƒ‚FVMD‚ÌˆÊ’u‚Æ‰ñ“]‚ÌƒJ[ƒu‚ğì¬‚·‚éiTrans‚ªƒf[ƒ^‚©‚çReal‚ªMatineeŒü‚¯‚©‚Æ„‘ªj
-			//ƒƒ‚FRealƒJ[ƒu‚ÉŠÖ‚·‚éƒŠƒTƒ“ƒvƒŠƒ“ƒO‚Ì•K—v”»’èˆ—B
-			//VMD‚ÉŠÖ‚µ‚Ä‚Í—£U‚ÅƒL[‚ª‘Å‚½‚ê‚Ä‚¢‚é‚½‚ßAƒTƒ“ƒvƒŠƒ“ƒO‚Í•K{‚Æ„‘ªA
-			//‚µ‚½‚ª‚Á‚ÄA‰º‹L‚Ì”»’è‘‚Í•s—v‚ÅAŒÅ’èTrue‚Æ‚µ‚ÄŒŸ“¢‚·‚éAB
+			//ãƒ¡ãƒ¢ï¼šVMDã®ä½ç½®ã¨å›è»¢ã®ã‚«ãƒ¼ãƒ–ã‚’ä½œæˆã™ã‚‹ï¼ˆTransãŒãƒ‡ãƒ¼ã‚¿ã‹ã‚‰RealãŒMatineeå‘ã‘ã‹ã¨æ¨æ¸¬ï¼‰
+			//ãƒ¡ãƒ¢ï¼šRealã‚«ãƒ¼ãƒ–ã«é–¢ã™ã‚‹ãƒªã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã®å¿…è¦åˆ¤å®šå‡¦ç†ã€‚
+			//VMDã«é–¢ã—ã¦ã¯é›¢æ•£ã§ã‚­ãƒ¼ãŒæ‰“ãŸã‚Œã¦ã„ã‚‹ãŸã‚ã€ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã¯å¿…é ˆã¨æ¨æ¸¬ã€
+			//ã—ãŸãŒã£ã¦ã€ä¸‹è¨˜ã®åˆ¤å®šæ›¸ã¯ä¸è¦ã§ã€å›ºå®šTrueã¨ã—ã¦æ¤œè¨ã™ã‚‹ã€ã€‚
 #ifdef ORIGINAL_FBX_MATINEE_IMPORT
 			// Check: The position and rotation tracks must have the same number of keys, the same key timings and
 			// the same segment interpolation types.
@@ -841,15 +841,15 @@
 
 			}
 #else
-			//vmd‚É’u‚¢‚Ä‚ÍƒL[‚Ì‘Å‚½‚ê‚é‰ÓŠ‚ª—£U‚Å‚ ‚é‚½‚ß
-			//ƒTƒ“ƒvƒŠƒ“ƒO‚ ‚è‚Æ‚·‚éB
-			//‚½‚¾‚µAƒJ[ƒu¶¬‚ÉŠù‚É‘S‚Ä‚ÌƒL[‚ğ“ˆê‚µ‚Ä‚¢‚éê‡‚Í•s—v‚Æv‚í‚ê‚éB
+			//vmdã«ç½®ã„ã¦ã¯ã‚­ãƒ¼ã®æ‰“ãŸã‚Œã‚‹ç®‡æ‰€ãŒé›¢æ•£ã§ã‚ã‚‹ãŸã‚
+			//ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ã‚ã‚Šã¨ã™ã‚‹ã€‚
+			//ãŸã ã—ã€ã‚«ãƒ¼ãƒ–ç”Ÿæˆæ™‚ã«æ—¢ã«å…¨ã¦ã®ã‚­ãƒ¼ã‚’çµ±ä¸€ã—ã¦ã„ã‚‹å ´åˆã¯ä¸è¦ã¨æ€ã‚ã‚Œã‚‹ã€‚
 #endif
-			//ƒƒ‚F‚±‚±‚Ü‚Å‚ª–‘O‚ÌƒJ[ƒuì¬ˆ—‚Æ„‘ª
+			//ãƒ¡ãƒ¢ï¼šã“ã“ã¾ã§ãŒäº‹å‰ã®ã‚«ãƒ¼ãƒ–ä½œæˆå‡¦ç†ã¨æ¨æ¸¬
 
 
-			//Šî–{ˆÊ’u‚Æ‰ñ“]‚Ìİ’è
-			//UE‚Ì‰EèŒn‚Ö‚Ì•ÏŠ·‚àÀ{‚µ‚µ‚Ä‚¢‚é–Í—l
+			//åŸºæœ¬ä½ç½®ã¨å›è»¢ã®è¨­å®š
+			//UEã®å³æ‰‹ç³»ã¸ã®å¤‰æ›ã‚‚å®Ÿæ–½ã—ã—ã¦ã„ã‚‹æ¨¡æ§˜
 #ifdef ORIGINAL_FBX_MATINEE_IMPORT
 			FbxAMatrix Matrix = ComputeTotalMatrix(Node);
 			FbxVector4 DefaultPos = Node->LclTranslation.Get();
@@ -903,10 +903,10 @@
 				bIsCamera = true;
 			}
 #else
-			//b’èŒÅ’è
+			//æš«å®šå›ºå®š
 			bool bIsCamera = true;
-			//vmd Œü‚¯‚É‰ŠúˆÊ’u‚Æ‰ñ“]‚ğæ“¾
-			//‚»‚ÌÛ‚ÉÀ•WŒn•ÏŠ·‚ÌŒvZ‚ğs‚¤‚±‚Æ
+			//vmd å‘ã‘ã«åˆæœŸä½ç½®ã¨å›è»¢ã‚’å–å¾—
+			//ãã®éš›ã«åº§æ¨™ç³»å¤‰æ›ã®è¨ˆç®—ã‚’è¡Œã†ã“ã¨
 			Actor->SetActorLocation(FVector(-DefaultPos[1], -DefaultPos[0], DefaultPos[2]), false);
 			Actor->SetActorRotation(
 				FRotator::MakeFromEuler(
@@ -916,7 +916,7 @@
 #endif
 
 			///////////////////////////////////////////////////////////////////////
-			//ƒƒ‚F‚±‚±‚Ü‚ÅŠ÷ã‚Å‰ğÍÏ‚İ
+			//ãƒ¡ãƒ¢ï¼šã“ã“ã¾ã§æœºä¸Šã§è§£ææ¸ˆã¿
 			///////////////////////////////////////////////////////////////////////
 
 			if (MovementTrack->SubTracks.Num() > 0)
@@ -1049,7 +1049,7 @@
 	}
 #endif //Build Error
 
-	//‚±‚ÌŠÖ”‚ÉŠÖ‚µ‚Ä‚ÍC³•s—v‚Æv‚í‚ê‚é
+	//ã“ã®é–¢æ•°ã«é–¢ã—ã¦ã¯ä¿®æ­£ä¸è¦ã¨æ€ã‚ã‚Œã‚‹
 	void UVmdFactory::ConsolidateMovementTrackInterpModes(
 		UInterpTrackMove* MovementTrack
 		)
@@ -1061,12 +1061,12 @@
 		}
 	}
 
-	//‚±‚ÌŠÖ”‚Ì–ß‚è’l‚ÍMMD‚ÌƒJ[ƒu“Á«‚É‡‚í‚¹‚ÄŒÅ’è’l‚ğ•Ï‚¦‚³‚¹‚é‚æ‚¤‚ÉC³‚·‚é
+	//ã“ã®é–¢æ•°ã®æˆ»ã‚Šå€¤ã¯MMDã®ã‚«ãƒ¼ãƒ–ç‰¹æ€§ã«åˆã‚ã›ã¦å›ºå®šå€¤ã‚’å¤‰ãˆã•ã›ã‚‹ã‚ˆã†ã«ä¿®æ­£ã™ã‚‹
 	EInterpCurveMode UVmdFactory::GetUnrealInterpMode(
 		//FbxAnimCurveKey FbxKey
 		)
 	{
-		//TBD::ŒÅ’è’l‚ÉŒŸ“¢‚ÉŠÖ‚µ‚Ä‚ÍƒJ[ƒu“Á«‚ğ’²¸‚·‚é‚±‚Æ->b’è‚ÅCurveAutoClamped‚É‚·‚éB
+		//TBD::å›ºå®šå€¤ã«æ¤œè¨ã«é–¢ã—ã¦ã¯ã‚«ãƒ¼ãƒ–ç‰¹æ€§ã‚’èª¿æŸ»ã™ã‚‹ã“ã¨->æš«å®šã§CurveAutoClampedã«ã™ã‚‹ã€‚
 		EInterpCurveMode Mode = CIM_CurveAutoClamped;
 
 #if ORIGINAL_FBX_MATINEE_IMPORT
@@ -1125,7 +1125,7 @@
 	}
 	
 #if 0 //test build 2
-	//‚±‚ÌŠÖ”‚ª•K—v‚©•s–¾BSubTrack‚Ì‘¶İ‚É‚Â‚¢‚Ä’²¸‚ª•K—vB
+	//ã“ã®é–¢æ•°ãŒå¿…è¦ã‹ä¸æ˜ã€‚SubTrackã®å­˜åœ¨ã«ã¤ã„ã¦èª¿æŸ»ãŒå¿…è¦ã€‚
 	void UVmdFactory::ImportMoveSubTrack(
 //		FbxAnimCurve* FbxCurve, 
 		int32 FbxDimension, 
@@ -1208,7 +1208,7 @@
 	}
 #endif
 
-	//‚±‚ÌŠÖ”‚ª•K—v‚©•s–¾BMatineeAnimated‚ª‚Ç‚Ì•”•ª‚ÉŠY“–‚·‚é‚©‚É‚Â‚¢‚Ä’²¸‚ª•K—vB
+	//ã“ã®é–¢æ•°ãŒå¿…è¦ã‹ä¸æ˜ã€‚MatineeAnimatedãŒã©ã®éƒ¨åˆ†ã«è©²å½“ã™ã‚‹ã‹ã«ã¤ã„ã¦èª¿æŸ»ãŒå¿…è¦ã€‚
 	void UVmdFactory::ImportMatineeAnimated(
 		MMD4UE4::VmdCameraTrackList * VmdCurve,
 		//FbxAnimCurve* FbxCurve,

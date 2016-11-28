@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
 #include "VmdImporter.h"
@@ -33,7 +33,7 @@ namespace MMD4UE4
 
 			memcopySize = sizeof(readData.vmdHeader);
 			FMemory::Memcpy(&readData.vmdHeader, Buffer, memcopySize);
-			// VMD�t�@�C�����ǂ������m�F �b���
+			// VMDファイルかどうかを確認 暫定版
 			if (readData.vmdHeader.header[0] == 'V' &&
 				readData.vmdHeader.header[1] == 'o' && 
 				readData.vmdHeader.header[2] == 'c')
@@ -47,7 +47,7 @@ namespace MMD4UE4
 			}
 			Buffer += memcopySize;
 
-			// �e�f�[�^�̐擪�A�h���X���Z�b�g
+			// 各データの先頭アドレスをセット
 			{
 				//Key VMD
 				memcopySize = sizeof(readData.vmdKeyCount);
@@ -77,7 +77,7 @@ namespace MMD4UE4
 					Buffer += 48 * sizeof(uint8);
 				}
 			}
-			// �e�f�[�^�̐擪�A�h���X���Z�b�g
+			// 各データの先頭アドレスをセット
 			{
 				//Key Fase VMD
 				memcopySize = sizeof(readData.vmdFaceCount);
@@ -100,7 +100,7 @@ namespace MMD4UE4
 					Buffer += memcopySize;
 				}
 			}
-			// �e�f�[�^�̐擪�A�h���X���Z�b�g
+			// 各データの先頭アドレスをセット
 			{
 				//Key Camera VMD
 				memcopySize = sizeof(readData.vmdCameraCount);
@@ -221,7 +221,7 @@ namespace MMD4UE4
 				maxFrame = FMath::Max(vmdKeyPtr->Frame, maxFrame);
 				minFrame = FMath::Min(vmdKeyPtr->Frame, minFrame);
 			}
-			// Frame���Ɍv�Z���₷���悤��List��Index�Q�Ƃ��\�[�g�����z��𐶐�����B���������ʂ����鏈���BVMD�����s���ׁ̈B
+			// Frame順に計算しやすいようにListのIndex参照をソートした配列を生成する。ただし無駄すぎる処理。VMDが順不同の為。
 			for (int i = 0; i < tempKeyBoneList.Num(); i++)
 			{// all bone
 				if (tempKeyBoneList[i].keyList.Num() > 0)
@@ -237,10 +237,10 @@ namespace MMD4UE4
 				for (int k = 1; k < tempKeyBoneList[i].keyList.Num(); k++)
 				{
 					bool isSetList = false;
-					//TBD:2���T���Ōy�ʂɍs���ׂ������ʓ|�������̂łƂ肠�����A���`�T���ɂ���
+					//TBD:2分探索で軽量に行くべきだが面倒くさいのでとりあえず、線形探索にする
 					for (int s = 0; s < tempKeyBoneList[i].sortIndexList.Num(); s++)
 					{
-						//�������݂̈ʒu��������̒l���傫�����H
+						//もし現在の位置よりも今回の値が大きいか？
 						if (tempKeyBoneList[i].keyList[k].Frame <
 							tempKeyBoneList[i].keyList[tempKeyBoneList[i].sortIndexList[s]].Frame)
 						{
@@ -323,7 +323,7 @@ namespace MMD4UE4
 				maxFrame = FMath::Max(vmdFacePtr->Frame, maxFrame);
 				minFrame = FMath::Min(vmdFacePtr->Frame, minFrame);
 			}
-			// Frame���Ɍv�Z���₷���悤��List��Index�Q�Ƃ��\�[�g�����z��𐶐�����B���������ʂ����鏈���BVMD�����s���ׁ̈B
+			// Frame順に計算しやすいようにListのIndex参照をソートした配列を生成する。ただし無駄すぎる処理。VMDが順不同の為。
 			for (int i = 0; i < tempKeyFaceList.Num(); i++)
 			{// all bone
 				if (tempKeyFaceList[i].keyList.Num() > 0)
@@ -339,10 +339,10 @@ namespace MMD4UE4
 				for (int k = 1; k < tempKeyFaceList[i].keyList.Num(); k++)
 				{
 					bool isSetList = false;
-					//TBD:2���T���Ōy�ʂɍs���ׂ������ʓ|�������̂łƂ肠�����A���`�T���ɂ���
+					//TBD:2分探索で軽量に行くべきだが面倒くさいのでとりあえず、線形探索にする
 					for (int s = 0; s < tempKeyFaceList[i].sortIndexList.Num(); s++)
 					{
-						//�������݂̈ʒu��������̒l���傫�����H
+						//もし現在の位置よりも今回の値が大きいか？
 						if (tempKeyFaceList[i].keyList[k].Frame <
 							tempKeyFaceList[i].keyList[tempKeyFaceList[i].sortIndexList[s]].Frame)
 						{
@@ -382,10 +382,10 @@ namespace MMD4UE4
 			tempTrackNameList.Empty();
 			arrayIndx = -1;
 			tempKeyCamList.Empty();
-			tempKeyCamList.Add(VmdCameraTrackList());//VMD��cam�͂ЂƂ����Ȃ���
-			trackName = "MMDCamera000";//�Œ�l
+			tempKeyCamList.Add(VmdCameraTrackList());//VMDにcamはひとつしかない為
+			trackName = "MMDCamera000";//固定値
 			//New Track
-			vmdCamKeyTrackPtr = &(tempKeyCamList[0]);//VMD��cam�͂ЂƂ����Ȃ���
+			vmdCamKeyTrackPtr = &(tempKeyCamList[0]);//VMDにcamはひとつしかない為
 			vmdCamKeyTrackPtr->TrackName = trackName;
 			for (int32 i = 0; i < readData->vmdCameraCount; i++)
 			{
@@ -405,7 +405,7 @@ namespace MMD4UE4
 				maxFrame = FMath::Max(vmdCamKeyPtr->Frame, maxFrame);
 				minFrame = FMath::Min(vmdCamKeyPtr->Frame, minFrame);
 			}
-			// Frame���Ɍv�Z���₷���悤��List��Index�Q�Ƃ��\�[�g�����z��𐶐�����B���������ʂ����鏈���BVMD�����s���ׁ̈B
+			// Frame順に計算しやすいようにListのIndex参照をソートした配列を生成する。ただし無駄すぎる処理。VMDが順不同の為。
 			for (int i = 0; i < tempKeyCamList.Num(); i++)
 			{// all bone
 				if (tempKeyCamList[i].keyList.Num() > 0)
@@ -421,10 +421,10 @@ namespace MMD4UE4
 				for (int k = 1; k < tempKeyCamList[i].keyList.Num(); k++)
 				{
 					bool isSetList = false;
-					//TBD:2���T���Ōy�ʂɍs���ׂ������ʓ|�������̂łƂ肠�����A���`�T���ɂ���
+					//TBD:2分探索で軽量に行くべきだが面倒くさいのでとりあえず、線形探索にする
 					for (int s = 0; s < tempKeyCamList[i].sortIndexList.Num(); s++)
 					{
-						//�������݂̈ʒu��������̒l���傫�����H
+						//もし現在の位置よりも今回の値が大きいか？
 						if (tempKeyCamList[i].keyList[k].Frame <
 							tempKeyCamList[i].keyList[tempKeyCamList[i].sortIndexList[s]].Frame)
 						{
@@ -459,14 +459,14 @@ namespace MMD4UE4
 		return true;
 	}
 
-	// �w��List���ŊY������Frame��������΂���Index�l��Ԃ��B�ُ�l=-1�B
+	// 指定List内で該当するFrame名があればそのIndex値を返す。異常値=-1。
 	int32 VmdMotionInfo::FindKeyTrackName(
 		FString targetName,
 		EVMDKEYFRAMETYPE listType)
 	{
 		int32  index = -1;
-		//��TBD:VMD�̃{�[������15Byte�����ł���A�O����v�Ō������ׂ������A
-		//�ʓ|�̂��߁A���S��v�^�Ń{�[�������i�t���[����)����������
+		//★TBD:VMDのボーン名が15Byte制限であり、前方一致で検索すべきだが、
+		//面倒のため、完全一致型でボーン名尾（フレーム名)を検索する
 		if (listType == EVMDKEYFRAMETYPE::EVMD_KEYBONE)
 		{
 			for (int i = 0; i < keyBoneList.Num(); i++)

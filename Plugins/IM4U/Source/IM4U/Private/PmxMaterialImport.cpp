@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 
 #include "IM4UPrivatePCH.h"
@@ -61,7 +61,7 @@ void UPmxMaterialImport::AssetsCreateTextuer(
 	// texture
 	for (int i = 0; i < ImagePaths.Num(); ++i)
 	{
-		//TODO: ImageBaseDirectory‚ğl—¶
+		//TODO: ImageBaseDirectoryã‚’è€ƒæ…®
 		FString FileName = CurPath / ImagePaths[i];
 
 		UTexture* ImportedTexture = NULL;
@@ -675,10 +675,10 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 )
 {
 	FString MaterialFullName = "M_" + PmxMaterial.Name;// ANSI_TO_TCHAR(MakeName(PmxMaterial.Name));
-	//‹Ö~•¶š‚ğíœ‚·‚é(‚à‚µŞ¿–¼‚É‹Ö~•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½ê‡‚ÌƒtƒFƒCƒ‹ƒZ[ƒt)
+	//ç¦æ­¢æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹(ã‚‚ã—æè³ªåã«ç¦æ­¢æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ãŸå ´åˆã®ãƒ•ã‚§ã‚¤ãƒ«ã‚»ãƒ¼ãƒ•)
 	MaterialFullName = ObjectTools::SanitizeObjectName(MaterialFullName);
 
-	//‹Ö~•¶š‚ğíœ‚·‚é(‚à‚µƒ‚ƒfƒ‹–¼‚É‹Ö~•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½ê‡‚ÌƒtƒFƒCƒ‹ƒZ[ƒt)
+	//ç¦æ­¢æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹(ã‚‚ã—ãƒ¢ãƒ‡ãƒ«åã«ç¦æ­¢æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ãŸå ´åˆã®ãƒ•ã‚§ã‚¤ãƒ«ã‚»ãƒ¼ãƒ•)
 	ParentObjName = ObjectTools::SanitizeObjectName(ParentObjName);
 
 	if (false == bCreateMaterialInstMode)
@@ -825,18 +825,18 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 	else
 	{
 		/*
-		 * ˆÈ‰ºAIM4Uƒvƒ‰ƒOƒCƒ“•t‘®‚ÌBaseMaterial‚©‚çDuplicate‚µAMaterialInstance‚ğì¬‚·‚éƒ‚[ƒh
+		 * ä»¥ä¸‹ã€IM4Uãƒ—ãƒ©ã‚°ã‚¤ãƒ³ä»˜å±ã®BaseMaterialã‹ã‚‰Duplicateã—ã€MaterialInstanceã‚’ä½œæˆã™ã‚‹ãƒ¢ãƒ¼ãƒ‰
 		 */
 
-		/* ¶¬‚·‚éMI */
+		/* ç”Ÿæˆã™ã‚‹MI */
 		UMaterialInterface* UnrealMaterial_MI = nullptr;
-		/* ¶¬ˆ—F—Dæ‡ˆÊ‚ÅÀ{*/
+		/* ç”Ÿæˆå‡¦ç†ï¼šå„ªå…ˆé †ä½ã§å®Ÿæ–½*/
 		do
 		{
 			//Unlit Material
 			if (bMaterialUnlit)
 			{
-				/* MMD AutoLuminous ‹^—İ’è */
+				/* MMD AutoLuminous ç–‘ä¼¼è¨­å®š */
 				if (PmxMaterial.SpecularPower > 100) //auto luminus
 				{
 					UnrealMaterial_MI = this->CreateMaterialInst_Luminous_Unlit(ParentObjName, PmxMaterial, MaterialFullName, textureAssetList);
@@ -847,7 +847,7 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 					}
 				}
 
-				/* MMD ’ÊíŞ¿İ’è */
+				/* MMD é€šå¸¸æè³ªè¨­å®š */
 				UnrealMaterial_MI = this->CreateMaterialInst_Masked_Unlit(ParentObjName, PmxMaterial, MaterialFullName, textureAssetList);
 				if (UnrealMaterial_MI)
 				{
@@ -858,7 +858,7 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 			}
 			else
 			{
-				/* MMD AutoLuminous ‹^—İ’è */
+				/* MMD AutoLuminous ç–‘ä¼¼è¨­å®š */
 				if (PmxMaterial.SpecularPower > 100) //auto luminus
 				{
 					UnrealMaterial_MI = this->CreateMaterialInst_Luminous(ParentObjName, PmxMaterial, MaterialFullName, textureAssetList);
@@ -869,7 +869,7 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 					}
 				}
 
-				/* MMD ’ÊíŞ¿İ’è */
+				/* MMD é€šå¸¸æè³ªè¨­å®š */
 				UnrealMaterial_MI = this->CreateMaterialInst_Masked(ParentObjName, PmxMaterial, MaterialFullName, textureAssetList);
 				if (UnrealMaterial_MI)
 				{
@@ -878,7 +878,7 @@ void UPmxMaterialImport::CreateUnrealMaterial(
 				}
 			}
 
-			//ˆÙíƒP[ƒXF¶¬¸”s
+			//ç•°å¸¸ã‚±ãƒ¼ã‚¹ï¼šç”Ÿæˆå¤±æ•—
 			{
 				//OutMaterials.Add(UnrealMaterial);
 				UE_LOG(LogCategoryPMXMaterialImport, Error, TEXT("[%s]:Material MIC Null.Error[%s]:[%s]"), *(FString(__FUNCTION__)), *ParentObjName, *MaterialFullName);
@@ -1090,7 +1090,7 @@ UMaterialInterface * UPmxMaterialImport::DuplicateBaseMaterial(
 		return nullptr;
 	}
 
-	// ƒx[ƒXƒ}ƒeƒŠƒAƒ‹‚Ì•¡»Œ³‚ğæ“¾ 
+	// ãƒ™ãƒ¼ã‚¹ãƒãƒ†ãƒªã‚¢ãƒ«ã®è¤‡è£½å…ƒã‚’å–å¾— 
 	UMaterial* BaseMatOriginal = nullptr;
 	
 	//FAssetData AssetData = AssetRegistryModule.Get().GetAssetByObjectPath(FName(TEXT(*DupAssetBaseName)));
@@ -1105,7 +1105,7 @@ UMaterialInterface * UPmxMaterialImport::DuplicateBaseMaterial(
 
 	TArray<UObject*> ObjectsToSync;
 
-	// ƒx[ƒXƒ}ƒeƒŠƒAƒ‹‚ğ•¡» 
+	// ãƒ™ãƒ¼ã‚¹ãƒãƒ†ãƒªã‚¢ãƒ«ã‚’è¤‡è£½ 
 	FString TargetPathName = FPackageName::GetLongPackagePath(InParent->GetOutermost()->GetName());
 	UMaterial* BaseMat = nullptr;
 	FString BaseMatSimpleName;
@@ -1123,14 +1123,14 @@ UMaterialInterface * UPmxMaterialImport::DuplicateBaseMaterial(
 
 			if (Cast<UMaterial>(FoundMaterial))
 			{
-				/* ‚·‚Å‚É“¯‚¶–¼‘O‚ÌMaterial Asset‚ª‘¶İ‚µ‚½‚Ì‚Å */
+				/* ã™ã§ã«åŒã˜åå‰ã®Material AssetãŒå­˜åœ¨ã—ãŸã®ã§ */
 
 				UE_LOG(LogCategoryPMXMaterialImport, Log, TEXT("[%s]:Existing Material. can't Duplicate. Path[%s]"), *(FString(__FUNCTION__)), *ObjectPath.ToString());
 				return FoundMaterial;
 			}
 			else
 			{
-				/* “¯‚¶AssetName‚Ì•Êí•Ê‚ª‘¶İ‚µ‚Ä‚¢‚é‚Ì‚ÅNG */
+				/* åŒã˜AssetNameã®åˆ¥ç¨®åˆ¥ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã®ã§NG */
 
 				UE_LOG(LogCategoryPMXMaterialImport, Error, TEXT("[%s]:Existing Material. can't Duplicate. and Not Mat-Assets. Path[%s]"), *(FString(__FUNCTION__)), *ObjectPath.ToString());
 				return nullptr;
@@ -1175,7 +1175,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst(
 		FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
 
 
-	// VMIC–¼ 
+	// æ–°MICå 
 	FString NewMICName = FString::Printf( TEXT("MI_%s"), *TargetMaterialName );
 
 	FString TargetPathName = FPackageName::GetLongPackagePath(InParent->GetOutermost()->GetName())/ NewMICName;
@@ -1189,27 +1189,27 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst(
 	{
 		if (Cast<UMaterialInstanceConstant>(FoundMaterial))
 		{
-			/* ‚·‚Å‚É“¯‚¶–¼‘O‚ÌMaterial Asset‚ª‘¶İ‚µ‚½‚Ì‚Å */
-			// ‚Ä‚©A•’Ê‚ÉÄ—˜—p‚Å‚¢‚¢‚Ì‚©H
+			/* ã™ã§ã«åŒã˜åå‰ã®Material AssetãŒå­˜åœ¨ã—ãŸã®ã§ */
+			// ã¦ã‹ã€æ™®é€šã«å†åˆ©ç”¨ã§ã„ã„ã®ã‹ï¼Ÿ
 			UE_LOG(LogCategoryPMXMaterialImport, Log, TEXT("[%s]:Existing Material MIC. can't Duplicate. Path[%s]"), *(FString(__FUNCTION__)), *ObjectPath.ToString());
 			return FoundMaterial;
 		}
 		else
 		{
-			/* “¯‚¶AssetName‚Ì•Êí•Ê‚ª‘¶İ‚µ‚Ä‚¢‚é‚Ì‚ÅNG */
+			/* åŒã˜AssetNameã®åˆ¥ç¨®åˆ¥ãŒå­˜åœ¨ã—ã¦ã„ã‚‹ã®ã§NG */
 
 			UE_LOG(LogCategoryPMXMaterialImport, Error, TEXT("[%s]:Existing Material MIC. can't Duplicate. and Not Mat-Assets. Path[%s]"), *(FString(__FUNCTION__)), *ObjectPath.ToString());
 			return nullptr;
 		}
 	}
 
-	// VMICì¬ 
+	// æ–°MICä½œæˆ 
 	UMaterialInstanceConstant* NewMIC = nullptr;
 	{
 		UMaterialInstanceConstantFactoryNew* Factory =
 			NewObject<UMaterialInstanceConstantFactoryNew>();
 		Factory->InitialParent = ParentMaterial;
-#if 0	//ŠÈˆÕ”ÅA‚±‚ê‚Å‚à‚¢‚¢‚Ì‚Å‚Í‚È‚¢‚©H
+#if 0	//ç°¡æ˜“ç‰ˆã€ã“ã‚Œã§ã‚‚ã„ã„ã®ã§ã¯ãªã„ã‹ï¼Ÿ
 		UObject* NewAsset = AssetToolsModule.Get().CreateAsset(
 			NewMICName,
 			TargetPathName,
@@ -1217,7 +1217,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst(
 			Factory
 		);
 
-#else	//‚¨‚µSetDirtyFlag‚É‘µ‚¦‚éƒpƒ^[ƒ“
+#else	//ãŠè©¦ã—SetDirtyFlagã«æƒãˆã‚‹ãƒ‘ã‚¿ãƒ¼ãƒ³
 		const FString Suffix(TEXT(""));
 		FString FinalPackageName;
 		AssetToolsModule.Get().CreateUniqueAssetName(TargetPathName, Suffix, FinalPackageName, NewMICName);
@@ -1278,10 +1278,10 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked(
 
 	//Set Param
 	FStaticParameterSet StaticParams;
-	// VMIC‚ÖƒeƒNƒXƒ`ƒƒİ’è 
+	// æ–°MICã¸ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®š 
 	UTexture* ColorTex = nullptr;
 	int32 TextureCount = PmxMaterial.TextureIndex;
-	//”ÍˆÍ“à
+	//ç¯„å›²å†…
 	if ( (0 <= TextureCount)  && (TextureCount < textureAssetList.Num()) )
 	{
 		ColorTex = textureAssetList[TextureCount];
@@ -1295,7 +1295,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked(
 			ColorTex
 		);
 
-		// ColorTex—LŒø‚Ìê‡‚ÍStaticSwitch‚ÅON‚É‚·‚é 
+		// ColorTexæœ‰åŠ¹ã®å ´åˆã¯StaticSwitchã§ONã«ã™ã‚‹ 
 		FStaticSwitchParameter Param;
 		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
@@ -1330,14 +1330,14 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked(
 
 	if(pUMIC->BasePropertyOverrides.TwoSided != PmxMaterial.CullingOff)
 	{
-		// TowSide—LŒø‚Ìê‡‚ÍON‚É‚·‚é 
+		// TowSideæœ‰åŠ¹ã®å ´åˆã¯ONã«ã™ã‚‹ 
 		pUMIC->BasePropertyOverrides.TwoSided = PmxMaterial.CullingOff;
 		pUMIC->BasePropertyOverrides.bOverride_TwoSided = true;
 		pUMIC->UpdateOverridableBaseProperties(); // OverrideParam Update
 		UE_LOG(LogCategoryPMXMaterialImport, Log, TEXT("[%s]:MIC TwoSided mode enable "), *(FString(__FUNCTION__)));
 	}
 
-	// StaticSwitch‚Ì“K—p •¡”‚Ü‚Æ‚ß‚Ä
+	// StaticSwitchã®é©ç”¨ è¤‡æ•°ã¾ã¨ã‚ã¦
 	if (0 < StaticParams.StaticSwitchParameters.Num())
 	{
 		pUMIC->UpdateStaticPermutation(StaticParams);
@@ -1378,10 +1378,10 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked_Unlit(
 
 	//Set Param
 	FStaticParameterSet StaticParams;
-	// VMIC‚ÖƒeƒNƒXƒ`ƒƒİ’è 
+	// æ–°MICã¸ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®š 
 	UTexture* ColorTex = nullptr;
 	int32 TextureCount = PmxMaterial.TextureIndex;
-	//”ÍˆÍ“à
+	//ç¯„å›²å†…
 	if ((0 <= TextureCount) && (TextureCount < textureAssetList.Num()))
 	{
 		ColorTex = textureAssetList[TextureCount];
@@ -1395,7 +1395,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked_Unlit(
 			ColorTex
 		);
 
-		// ColorTex—LŒø‚Ìê‡‚ÍStaticSwitch‚ÅON‚É‚·‚é 
+		// ColorTexæœ‰åŠ¹ã®å ´åˆã¯StaticSwitchã§ONã«ã™ã‚‹ 
 		FStaticSwitchParameter Param;
 		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
@@ -1430,14 +1430,14 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Masked_Unlit(
 
 	if (pUMIC->BasePropertyOverrides.TwoSided != PmxMaterial.CullingOff)
 	{
-		// TowSide—LŒø‚Ìê‡‚ÍON‚É‚·‚é 
+		// TowSideæœ‰åŠ¹ã®å ´åˆã¯ONã«ã™ã‚‹ 
 		pUMIC->BasePropertyOverrides.TwoSided = PmxMaterial.CullingOff;
 		pUMIC->BasePropertyOverrides.bOverride_TwoSided = true;
 		pUMIC->UpdateOverridableBaseProperties(); // OverrideParam Update
 		UE_LOG(LogCategoryPMXMaterialImport, Log, TEXT("[%s]:MIC TwoSided mode enable "), *(FString(__FUNCTION__)));
 	}
 
-	// StaticSwitch‚Ì“K—p •¡”‚Ü‚Æ‚ß‚Ä
+	// StaticSwitchã®é©ç”¨ è¤‡æ•°ã¾ã¨ã‚ã¦
 	if (0 < StaticParams.StaticSwitchParameters.Num())
 	{
 		pUMIC->UpdateStaticPermutation(StaticParams);
@@ -1479,10 +1479,10 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous(
 
 	//Set Param
 	FStaticParameterSet StaticParams;
-	// VMIC‚ÖƒeƒNƒXƒ`ƒƒİ’è 
+	// æ–°MICã¸ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®š 
 	UTexture* ColorTex = nullptr;
 	int32 TextureCount = PmxMaterial.TextureIndex;
-	//”ÍˆÍ“à
+	//ç¯„å›²å†…
 	if ((0 <= TextureCount) && (TextureCount < textureAssetList.Num()))
 	{
 		ColorTex = textureAssetList[TextureCount];
@@ -1496,7 +1496,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous(
 			ColorTex
 		);
 
-		// ColorTex—LŒø‚Ìê‡‚ÍStaticSwitch‚ÅON‚É‚·‚é 
+		// ColorTexæœ‰åŠ¹ã®å ´åˆã¯StaticSwitchã§ONã«ã™ã‚‹ 
 		FStaticSwitchParameter Param;
 		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
@@ -1537,14 +1537,14 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous(
 
 	if (pUMIC->BasePropertyOverrides.TwoSided != PmxMaterial.CullingOff)
 	{
-		// TowSide—LŒø‚Ìê‡‚ÍON‚É‚·‚é 
+		// TowSideæœ‰åŠ¹ã®å ´åˆã¯ONã«ã™ã‚‹ 
 		pUMIC->BasePropertyOverrides.TwoSided = PmxMaterial.CullingOff;
 		pUMIC->BasePropertyOverrides.bOverride_TwoSided = true;
 		pUMIC->UpdateOverridableBaseProperties(); // OverrideParam Update
 		UE_LOG(LogCategoryPMXMaterialImport, Log, TEXT("[%s]:MIC TwoSided mode enable "), *(FString(__FUNCTION__)));
 	}
 
-	// StaticSwitch‚Ì“K—p •¡”‚Ü‚Æ‚ß‚Ä
+	// StaticSwitchã®é©ç”¨ è¤‡æ•°ã¾ã¨ã‚ã¦
 	if (0 < StaticParams.StaticSwitchParameters.Num())
 	{
 		pUMIC->UpdateStaticPermutation(StaticParams);
@@ -1586,10 +1586,10 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous_Unlit(
 
 	//Set Param
 	FStaticParameterSet StaticParams;
-	// VMIC‚ÖƒeƒNƒXƒ`ƒƒİ’è 
+	// æ–°MICã¸ãƒ†ã‚¯ã‚¹ãƒãƒ£è¨­å®š 
 	UTexture* ColorTex = nullptr;
 	int32 TextureCount = PmxMaterial.TextureIndex;
-	//”ÍˆÍ“à
+	//ç¯„å›²å†…
 	if ((0 <= TextureCount) && (TextureCount < textureAssetList.Num()))
 	{
 		ColorTex = textureAssetList[TextureCount];
@@ -1603,7 +1603,7 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous_Unlit(
 			ColorTex
 		);
 
-		// ColorTex—LŒø‚Ìê‡‚ÍStaticSwitch‚ÅON‚É‚·‚é 
+		// ColorTexæœ‰åŠ¹ã®å ´åˆã¯StaticSwitchã§ONã«ã™ã‚‹ 
 		FStaticSwitchParameter Param;
 		Param.ParameterName = FName(D_IM4U_MatInst_Name_isTextureEnable);
 		Param.Value = true;
@@ -1644,14 +1644,14 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous_Unlit(
 
 	if (pUMIC->BasePropertyOverrides.TwoSided != PmxMaterial.CullingOff)
 	{
-		// TowSide—LŒø‚Ìê‡‚ÍON‚É‚·‚é 
+		// TowSideæœ‰åŠ¹ã®å ´åˆã¯ONã«ã™ã‚‹ 
 		pUMIC->BasePropertyOverrides.TwoSided = PmxMaterial.CullingOff;
 		pUMIC->BasePropertyOverrides.bOverride_TwoSided = true;
 		pUMIC->UpdateOverridableBaseProperties(); // OverrideParam Update
 		UE_LOG(LogCategoryPMXMaterialImport, Log, TEXT("[%s]:MIC TwoSided mode enable "), *(FString(__FUNCTION__)));
 	}
 
-	// StaticSwitch‚Ì“K—p •¡”‚Ü‚Æ‚ß‚Ä
+	// StaticSwitchã®é©ç”¨ è¤‡æ•°ã¾ã¨ã‚ã¦
 	if (0 < StaticParams.StaticSwitchParameters.Num())
 	{
 		pUMIC->UpdateStaticPermutation(StaticParams);

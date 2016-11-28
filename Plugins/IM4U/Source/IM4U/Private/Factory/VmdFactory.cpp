@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 #include "../IM4UPrivatePCH.h"
 
@@ -21,11 +21,11 @@
 DEFINE_LOG_CATEGORY(LogMMD4UE4_VMDFactory)
 /////////////////////////////////////////////////////////
 //prototype ::from dxlib 
-// �w���𒆐S�Ƃ�����]�s����쐬����
+// Ｘ軸を中心とした回転行列を作成する
 void CreateRotationXMatrix(FMatrix *Out, float Angle);
-// ��]���������̍s��̐ς����߂�( �R�~�R�ȊO�̕����ɂ͒l��������Ȃ� )
+// 回転成分だけの行列の積を求める( ３×３以外の部分には値も代入しない )
 void MV1LoadModelToVMD_CreateMultiplyMatrixRotOnly(FMatrix *Out, FMatrix *In1, FMatrix *In2);
-// �p�x�����𔻒肷�鋤�ʊ֐� (subIndexJdg�̔���͊���ƕs���c)
+// 角度制限を判定する共通関数 (subIndexJdgの判定は割りと不明…)
 void CheckLimitAngle(
 	const FVector& RotMin,
 	const FVector& RotMax,
@@ -97,29 +97,29 @@ UObject* UVmdFactory::FactoryCreateBinary
 	//////////////////////////////////////
 
 	/***************************************
-	* IM4U �b��� �d�l�ʒm���b�Z�[�W
+	* IM4U 暫定版 仕様通知メッセージ
 	****************************************/
 	if (true)
 	{
-		//���f���ǂݍ��݌�̌x�����\���F�R�����g��
-		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} ��������"), FText::FromString("IM4U Plugin"));
+		//モデル読み込み後の警告文表示：コメント欄
+		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
 		const FText MessageDbg
 			= FText(LOCTEXT("ImportReadMe_Generic_Dbg_Comment",
-			"����ImportOption�pSlate�͂܂������r���ł��B\n\
-			�����_�ŗL���ȃp�����[�^�́A\n\
-			::Skeleton Asset(�K�{::Animation�֘A�t����)\n\
-			::Animation Asset(NULL�ȊO�Ŋ���Asset��Morph�̂ݒǉ����鏈�������s�BNULL��Bone��Morph�܂ސV�KAsset�쐬)\n\
-			::DataTable(MMD2UE4Name) Asset(�C�ӁFNULL�ȊO�œǂݍ��ݎ���Bone��MorphName��MMD=UE4�œǂݑւ���Import�����s����B���O��CSV�`����Import���V�K�쐬���Ă����K�v����B)\n\
-			::MmdExtendAsse(�C�ӁFNULL�ȊO��VMD����AnimSeq�A�Z�b�g��������Extend����IK�����Q�Ƃ��v�Z����ۂɎg�p�B���O�Ƀ��f���C���|�[�g���蓮�ɂăA�Z�b�g�������Ă������ƁB)\n\
-			�ł��B\n\
+			"次のImportOption用Slateはまだ実装途中です。\n\
+			現時点で有効なパラメータは、\n\
+			::Skeleton Asset(必須::Animation関連付け先)\n\
+			::Animation Asset(NULL以外で既存AssetにMorphのみ追加する処理を実行。NULLでBoneとMorph含む新規Asset作成)\n\
+			::DataTable(MMD2UE4Name) Asset(任意：NULL以外で読み込み時にBoneとMorphNameをMMD=UE4で読み替えてImportを実行する。事前にCSV形式でImportか新規作成しておく必要あり。)\n\
+			::MmdExtendAsse(任意：NULL以外でVMDからAnimSeqアセット生成時にExtendからIK情報を参照し計算する際に使用。事前にモデルインポートか手動にてアセット生成しておくこと。)\n\
+			です。\n\
 			\n\
-			���ӁF�V�KAsset������IK�Ȃǖ��Ή��̈ה񐄏��B�ǉ�Morph�̂ݑΉ��B"
+			注意：新規Asset生成はIKなど未対応の為非推奨。追加Morphのみ対応。"
 			)
 			);
 		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
 	}
 
-	//Test VMD Slate�i���݂̓R�����g�A�E�g�B�폜�\��j
+	//Test VMD Slate（現在はコメントアウト。削除予定）
 	if(false)
 	{
 		TSharedPtr<SWindow> ParentWindow;
@@ -146,22 +146,22 @@ UObject* UVmdFactory::FactoryCreateBinary
 
 	}
 	/***************************************
-	* VMD��荞�ݎ��̌x���\��
+	* VMD取り込み時の警告表示
 	****************************************/
 	if (true)
 	{
-		//���f���ǂݍ��݌�̌x�����\���F�R�����g��
-		FText TitleStr = FText(LOCTEXT("ImportVMD_TargetModelInfo", "�x��[ImportVMD_TargetModelInfo]"));
+		//モデル読み込み後の警告文表示：コメント欄
+		FText TitleStr = FText(LOCTEXT("ImportVMD_TargetModelInfo", "警告[ImportVMD_TargetModelInfo]"));
 		const FText MessageDbg
 			= FText::Format(LOCTEXT("ImportVMD_TargetModelInfo_Comment",
-			"���ӁF���[�V�����f�[�^��荞�ݏ��F�F\n\
+			"注意：モーションデータ取り込み情報：：\n\
 			\n\
-			�{VMD�́A�u{0}�v�p�ɍ쐬���ꂽ�t�@�C���ł��B\n\
+			本VMDは、「{0}」用に作成されたファイルです。\n\
 			\n\
-			���f���������[�V�����̏ꍇ�A�����{�[�����̃f�[�^�̂ݎ�荞�܂�܂��B\n\
-			���f�����̃{�[�����ƈقȂ閼�̂̓���{�[�����܂܂��ꍇ�A\n\
-			���O�ɕϊ��e�[�u��(MMD2UE4NameTableRow)���쐬���A\n\
-			InportOption��ʂɂĎw�肷�邱�ƂŎ�荞�ނ��Ƃ��\�ł��B"
+			モデル向けモーションの場合、同じボーン名のデータのみ取り込まれます。\n\
+			モデル側のボーン名と異なる名称の同一ボーンが含まれる場合、\n\
+			事前に変換テーブル(MMD2UE4NameTableRow)を作成し、\n\
+			InportOption画面にて指定することで取り込むことが可能です。"
 			)
 			, FText::FromString(vmdMotionInfo.ModelName)
 			);
@@ -172,7 +172,7 @@ UObject* UVmdFactory::FactoryCreateBinary
 	////////////////////////////////////
 	if (vmdMotionInfo.keyCameraList.Num() == 0)
 	{
-		//�J�����A�j���[�V�����łȂ��ꍇ
+		//カメラアニメーションでない場合
 		FPmxImporter* PmxImporter = FPmxImporter::GetInstance();
 
 		EPMXImportType ForcedImportType = PMXIT_StaticMesh;
@@ -212,7 +212,7 @@ UObject* UVmdFactory::FactoryCreateBinary
 			}
 			else
 			{
-				//TBD::Option��AinimSeq���I������Ă��Ȃ��ꍇ�A�I��
+				//TBD::OptionでAinimSeqが選択されていない場合、終了
 				// add morph curve only to exist ainimation
 				LastCreatedAnim = AddtionalMorphCurveImportToAnimations(
 					ImportOptions->AnimSequenceAsset,//UAnimSequence* exsistAnimSequ,
@@ -229,23 +229,23 @@ UObject* UVmdFactory::FactoryCreateBinary
 	}
 	else
 	{
-		//�J�����A�j���[�V�����̃C���|�[�g����
-		//��������\��H
+		//カメラアニメーションのインポート処理
+		//今後実装予定？
 		UE_LOG(LogMMD4UE4_VMDFactory, Warning,
 			TEXT("VMD Import Cancel::Camera root... not impl"));
 
 		LastCreatedAnim = NULL;
-		//�������Ȃ̂ŃR�����g�A�E�g
+		//未実装なのでコメントアウト
 #ifdef IM4U_FACTORY_MATINEEACTOR_VMD
 		////////////////////////
-		// Import Option��ݒ肷��slate�Ɋւ��Ă͕K�v�Ȃ��F���B
+		// Import Optionを設定するslateに関しては必要ない認識。
 		//
 
-		// �A�Z�b�g�̐���
+		// アセットの生成
 		//AMatineeActor* InMatineeActor = NULL;
-		//�����ɃA�Z�b�g�̊�{���������������͊����A�Z�b�g�̍ė��p�������������邱�ƁB
+		//ここにアセットの基本生成処理もしくは既存アセットの再利用処理を実装すること。
 
-		//target�̃A�Z�b�g�ɑ΂��J�����A�j���[�V�������C���|�[�g������
+		//targetのアセットに対しカメラアニメーションをインポートさせる
 		if (ImportMatineeSequence(
 			InMatineeActor,
 			vmdMotionInfo
@@ -385,7 +385,7 @@ float UVmdFactory::interpolateBezier(float x1, float y1, float  x2, float y2, fl
 	float t = 0.5, s = 0.5;
 	for (int i = 0; i < 15; i++) {
 		float ft = (3 * s * s * t * x1) + (3 * s * t * t * x2) + (t * t * t) - x;
-		if (ft == 0) break; // Math.abs(ft) < 0.00001 �ł���������
+		if (ft == 0) break; // Math.abs(ft) < 0.00001 でもいいかも
 		if (FGenericPlatformMath::Abs(ft) < 0.0001) break;
 		if (ft > 0)
 			t -= 1.0 / (float)(4 << i);
@@ -399,8 +399,8 @@ float UVmdFactory::interpolateBezier(float x1, float y1, float  x2, float y2, fl
 
 
 /*******************
-* ����AnimSequ�̃A�Z�b�g��VMD�̕\��f�[�^��ǉ����鏈��
-* MMD4Mecanimu�Ƃ̑������p�����e�X�g�@�\
+* 既存AnimSequのアセットにVMDの表情データを追加する処理
+* MMD4Mecanimuとの総合利用向けテスト機能
 **********************/
 UAnimSequence * UVmdFactory::AddtionalMorphCurveImportToAnimations(
 	UAnimSequence* exsistAnimSequ,
@@ -464,7 +464,7 @@ UAnimSequence * UVmdFactory::AddtionalMorphCurveImportToAnimations(
 }
 /*******************
 * Import Morph Target AnimCurve
-* VMD�t�@�C���̃f�[�^����Morphtarget��FloatCurve��AnimSeq�Ɏ�荞��
+* VMDファイルのデータからMorphtargetのFloatCurveをAnimSeqに取り込む
 **********************/
 bool UVmdFactory::ImportMorphCurveToAnimSequence(
 	UAnimSequence* DestSeq,
@@ -481,8 +481,8 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 	USkeletalMesh * mesh = Skeleton->GetAssetPreviewMesh(DestSeq);// GetPreviewMesh();
 	if (!mesh)
 	{
-		//���̃��[�g�ɓ��������Skeleton Asset�������x���A�Z�b�g���J���Ă��Ȃ��ꍇ�A
-		// NULL�̖͗l�B���̊֐����g�������ʂ̎�i���l���������ǂ������c�B�v�����g�B
+		//このルートに入る条件がSkeleton Asset生成後一度もアセットを開いていない場合、
+		// NULLの模様。この関数を使うよりも別の手段を考えた方が良さそう…。要調査枠。
 		//TDB::ERR.  previewMesh is Null
 		{
 			UE_LOG(LogMMD4UE4_VMDFactory, Error,
@@ -604,7 +604,7 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 
 /*******************
 * Import VMD Animation
-* VMD�t�@�C���̃f�[�^���烂�[�V�����f�[�^��AnimSeq�Ɏ�荞��
+* VMDファイルのデータからモーションデータをAnimSeqに取り込む
 **********************/
 bool UVmdFactory::ImportVMDToAnimSequence(
 	UAnimSequence* DestSeq,
@@ -648,7 +648,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 
 
 	check(RefBonePose.Num() == NumBones);
-	// Skeleton�Ƃ�Bone�֌W��o�^���遗�K�{����
+	// SkeletonとのBone関係を登録する＠必須事項
 	for (int32 BoneIndex = 0; BoneIndex < NumBones; ++BoneIndex)
 	{
 		DestSeq->AnimationTrackNames[BoneIndex] = Skeleton->GetReferenceSkeleton().GetBoneName(BoneIndex);
@@ -660,11 +660,11 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 		FRawAnimSequenceTrack& RawTrack = TempRawTrackList[BoneIndex];
 
 
-		//��TBD:�ǉ������F�ȉ�������
+		//★TBD:追加処理：以下検討中
 		FName targetName = DestSeq->AnimationTrackNames[BoneIndex];
 		if (ReNameTable)
 		{
-			//�����ϊ��e�[�u���̃A�Z�b�g���w�肵�Ă���ꍇ�̓e�[�u������ϊ������擾����
+			//もし変換テーブルのアセットを指定している場合はテーブルから変換名を取得する
 			FMMD2UE4NameTableRow* dataRow;
 			FString ContextString;
 			dataRow = ReNameTable->FindRow<FMMD2UE4NameTableRow>(targetName, ContextString);
@@ -682,7 +682,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					*targetName.ToString());
 			}
 			//nop
-			//�t���[���������l��ݒ肷��
+			//フレーム分同じ値を設定する
 			for (int32 i = 0; i < DestSeq->NumFrames; i++)
 			{
 				FTransform nrmTrnc;
@@ -708,9 +708,9 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					vmdMotionInfo->keyBoneList[vmdKeyListIndex].sortIndexList.Num() );
 			}
 
-			//���O�ɊeTrack�ɑ΂��eBone������Local���W�őS�o�^�\��̃t���[���v�Z���Ă����i�����Ɨǂ�����������΁c�����j
-			//90�x�ȏ�̎���]������ƃN�H�[�^�j�I���ׂ̈������Ɍ�肪���邩�ŗ]�v�ȉ�]�������Ă��܂��B
-			//����L�ɂ��A�P��Z��]�i�^�[�����[�V�����j�ŉ����g�Ə㔼�g�̎��������I�ɂ��肦�Ȃ���]�̑g�ݍ��킹�ɂȂ�B�o�O�B
+			//事前に各Trackに対し親Bone抜きにLocal座標で全登録予定のフレーム計算しておく（もっと良い処理があれば…検討）
+			//90度以上の軸回転が入るとクォータニオンの為か処理に誤りがあるかで余計な回転が入ってしまう。
+			//→上記により、単にZ回転（ターンモーション）で下半身と上半身の軸が物理的にありえない回転の組み合わせになる。バグ。
 			for (int32 i = 0; i < DestSeq->NumFrames; i++)
 			{
 				if (i == 0)
@@ -731,7 +731,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							)*10.0f,
 							FVector(1, 1, 1)
 							);
-						//���t�@�����X�|�[�Y����Key�̃|�[�Y���ړ��������l�������l�Ƃ���
+						//リファレンスポーズからKeyのポーズ分移動させた値を初期値とする
 						RawTrack.PosKeys.Add(tempTranceform.GetTranslation());
 						RawTrack.RotKeys.Add(tempTranceform.GetRotation());
 						RawTrack.ScaleKeys.Add(tempTranceform.GetScale3D());
@@ -747,7 +747,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 					else
 					{
 						preKeyIndex = nextKeyIndex;
-						//��O�����B�����t���[��(0)��Key���ݒ肳��Ă��Ȃ�
+						//例外処理。初期フレーム(0)にKeyが設定されていない
 						FTransform nrmTrnc;
 						nrmTrnc.SetIdentity();
 						RawTrack.PosKeys.Add(nrmTrnc.GetTranslation());
@@ -776,7 +776,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						}
 						else
 						{ 
-							//TBD::�t���[���Ԃ�1����0.5�Ōv�Z����Ȃ�?
+							//TBD::フレーム間が1だと0.5で計算されない?
 							blendRate = 1.0f - (float)(NextKey.Frame - (uint32)i) / (float)(NextKey.Frame - PreKey.Frame);
 						}
 						//pose
@@ -908,7 +908,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[1],
 							vmdMotionInfo->keyBoneList[vmdKeyListIndex].keyList[nextKeyIndex].Quaternion[3]
 							));
-						//TBD:���̃��[�g�����݂���͗l�A�����̍Č������K�v
+						//TBD:このルートが存在する模様、処理の再検討が必要
 						//check(false);
 					}
 
@@ -917,13 +917,13 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						NowTranc.GetTranslation()*10.0f,
 						FVector(1, 1, 1)
 						);
-					//���t�@�����X�|�[�Y����Key�̃|�[�Y���ړ��������l�������l�Ƃ���
+					//リファレンスポーズからKeyのポーズ分移動させた値を初期値とする
 					RawTrack.PosKeys.Add(tempTranceform.GetTranslation());
 					RawTrack.RotKeys.Add(tempTranceform.GetRotation());
 					RawTrack.ScaleKeys.Add(tempTranceform.GetScale3D());
 					if (nextKeyFrame == i)
 					{
-						//�Y���L�[�ƈ�v�B���l���
+						//該当キーと一致。直値代入
 						//RawTrack.PosKeys.Add()
 						if (sortIndex + 1 < vmdMotionInfo->keyBoneList[vmdKeyListIndex].sortIndexList.Num())
 						{
@@ -942,7 +942,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 		}
 	}
 	////////////////////////////////////
-	//�e�{�[���̏���::TBD(IK�p)
+	//親ボーンの順番::TBD(IK用)
 	TArray<int> TempBoneTreeRefSkel;
 	int tempParentID = -1;
 	while (TempBoneTreeRefSkel.Num() == NumBones)
@@ -956,8 +956,8 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 		}
 	}
 
-	//�S�t���[���ɑ΂����O�Ɋe�{�[���̍��W���v�Z��RawTrack�ɒǉ����遗�K�{
-	//TBD::�����o�O������͂��c
+	//全フレームに対し事前に各ボーンの座標を計算しRawTrackに追加する＠必須
+	//TBD::多分バグがあるはず…
 	FTransform subLocRef;
 	FTransform tempLoc;
 	GWarn->BeginSlowTask(LOCTEXT("BeginImportAnimation", "Importing Animation"), true);
@@ -986,10 +986,10 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			FRawAnimSequenceTrack& LocalRawTrack = TempRawTrackList[BoneIndex];
 
 			/////////////////////////////////////
-			///�������A�e�{�[���̏��Ԃ��l���Ȃ�
+			///お試し、親ボーンの順番を考えない
 			{
-				//�ړ���̈ʒu = ���̈ʒu + ���s�ړ�
-				//�ړ���̉�] = ��]
+				//移動後の位置 = 元の位置 + 平行移動
+				//移動後の回転 = 回転
 				RawTrack.PosKeys.Add(LocalRawTrack.PosKeys[k] + RefBonePose[BoneIndex].GetTranslation());
 				RawTrack.RotKeys.Add(LocalRawTrack.RotKeys[k]);
 				RawTrack.ScaleKeys.Add(LocalRawTrack.ScaleKeys[k]);
@@ -1005,11 +1005,11 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			//check bone has skeleton .
 			mmdExtend->IkInfoList[ikTargetIndex].checkIKIndex = true;
 			//vmd
-			//��TBD:�ǉ������F�ȉ�������
+			//★TBD:追加処理：以下検討中
 			targetName = mmdExtend->IkInfoList[ikTargetIndex].IKBoneName;
 			if (ReNameTable)
 			{
-				//�����ϊ��e�[�u���̃A�Z�b�g���w�肵�Ă���ꍇ�̓e�[�u������ϊ������擾����
+				//もし変換テーブルのアセットを指定している場合はテーブルから変換名を取得する
 				FMMD2UE4NameTableRow* dataRow;
 				FString ContextString;
 				dataRow = ReNameTable->FindRow<FMMD2UE4NameTableRow>(targetName, ContextString);
@@ -1046,7 +1046,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			targetName = mmdExtend->IkInfoList[ikTargetIndex].TargetBoneName;
 			if (ReNameTable)
 			{
-				//�����ϊ��e�[�u���̃A�Z�b�g���w�肵�Ă���ꍇ�̓e�[�u������ϊ������擾����
+				//もし変換テーブルのアセットを指定している場合はテーブルから変換名を取得する
 				FMMD2UE4NameTableRow* dataRow;
 				FString ContextString;
 				dataRow = ReNameTable->FindRow<FMMD2UE4NameTableRow>(targetName, ContextString);
@@ -1073,7 +1073,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				targetName = mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[subBone].BoneName;
 				if (ReNameTable)
 				{
-					//�����ϊ��e�[�u���̃A�Z�b�g���w�肵�Ă���ꍇ�̓e�[�u������ϊ������擾����
+					//もし変換テーブルのアセットを指定している場合はテーブルから変換名を取得する
 					FMMD2UE4NameTableRow* dataRow;
 					FString ContextString;
 					dataRow = ReNameTable->FindRow<FMMD2UE4NameTableRow>(targetName, ContextString);
@@ -1095,9 +1095,9 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				}
 			}
 		}
-		//TBD::������CCD-IK�Čv�Z����
-		//��1�F�e�t���[���v�Z���ɒ�������
-		//��2�FFK��S�t���[���v�Z�������IK�����܂Ƃ߂ăt���[���P�ʂōČv�Z
+		//TBD::ここにCCD-IK再計算処理
+		//案1：各フレーム計算中に逐次処理
+		//案2：FKを全フレーム計算完了後にIKだけまとめてフレーム単位で再計算
 
 		//
 		for (int32 k = 0; k < DestSeq->NumFrames; k++)
@@ -1116,8 +1116,8 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 				}
 				int32 loopMax = mmdExtend->IkInfoList[ikTargetIndex].LoopNum;
 				int32 ilLinklistNum = mmdExtend->IkInfoList[ikTargetIndex].ikLinkList.Num();
-				//TBD::�����Ɨǂ���������Ό���(Loc��Glb�ɍČv�Z���Ă���ׁA�v�Z�R�X�g����������Ɛ���)
-				//�����Ŏ��O��IK�Ώۂ�Glb���W�����v�Z���Ă���
+				//TBD::もっと良い方があれば検討(Loc→Glbに再計算している為、計算コストが高すぎると推測)
+				//ここで事前にIK対象のGlb座標等を計算しておく
 				FTransform tempGlbIkBoneTrsf;
 				FTransform tempGlbTargetBoneTrsf;
 				TArray<FTransform> tempGlbIkLinkTrsfList;
@@ -1183,23 +1183,23 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						////////////////////
 						// Ref: http://pr0jectze10.blogspot.jp/2011/06/ik-part2.html
 						////////////////////
-						// IK�^�[�Q�b�g�{�[���܂ł̃x�N�g��
+						// IKターゲットボーンまでのベクトル
 						vecToIKTargetPose
 							= tempGlbTargetBoneTrsf.GetTranslation() - tempGlbIkLinkTrsfList[linkBoneIndex].GetTranslation();
-						// IK�{�[���܂ł̃x�N�g�� 
+						// IKボーンまでのベクトル 
 						vecToIKLinkPose
 							= tempGlbIkBoneTrsf.GetTranslation() - tempGlbIkLinkTrsfList[linkBoneIndex].GetTranslation();
 
-						// 2�̃x�N�g���̊O�ρi�㎲�j���Z�o 
+						// 2つのベクトルの外積（上軸）を算出 
 						asix = FVector::CrossProduct(vecToIKTargetPose, vecToIKLinkPose);
-						// ���̐��l������ŁA2�̃x�N�g���̌������s��v�̏ꍇ�i�x�N�g���̌����������ꍇ�A�O�ς�0�ɂȂ�j
+						// 軸の数値が正常で、2つのベクトルの向きが不一致の場合（ベクトルの向きが同じ場合、外積は0になる）
 						if (asix.SizeSquared()>0)
 						{
-							// �@����
+							// 法線化
 							asix.Normalize();
 							vecToIKTargetPose.Normalize();
 							vecToIKLinkPose.Normalize();
-							// 2�̃x�N�g���̓��ς��v�Z���āA�x�N�g���Ԃ̃��W�A���p�x���Z�o 
+							// 2つのベクトルの内積を計算して、ベクトル間のラジアン角度を算出 
 							angle = FMath::Acos(FMath::Clamp<float>( FVector::DotProduct(vecToIKTargetPose, vecToIKLinkPose),-1,1));
 							//angle = FVector::DotProduct(vecToIKTargetPose, vecToIKLinkPose);
 							float RotLimitRad = FMath::DegreesToRadians(mmdExtend->IkInfoList[ikTargetIndex].RotLimit);
@@ -1207,15 +1207,15 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							{
 								angle = RotLimitRad;
 							}
-							// �C�ӎ���]�N�H�[�^�j�I�����쐬  
+							// 任意軸回転クォータニオンを作成  
 							qt = FQuat(asix, angle);
-							// �ϊ��s��ɍ��� 
+							// 変換行列に合成 
 							tempCalcIKTrns.SetIdentity();
 							//tempCalcIKTrns.SetTranslation(DestSeq->RawAnimationData[rawIndex].PosKeys[k]);
 							tempCalcIKTrns.SetRotation(DestSeq->RawAnimationData[rawIndex].RotKeys[k]);
 							tempCalcIKTrns *= FTransform(qt);
 
-							//�������v�Z
+							//軸制限計算
 							if (mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[linkBoneIndex].RotLockFlag == 1)
 							{
 								FVector eulerVec = tempCalcIKTrns.GetRotation().Euler();
@@ -1227,10 +1227,10 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 									mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[linkBoneIndex].RotLockMax
 									);
 								subEulerAngleVec -= eulerVec;
-								//��]�������␳
+								//回転軸制限補正
 								tempCalcIKTrns *= FTransform(FQuat::MakeFromEuler(subEulerAngleVec));
 							}
-							//CCD-IK��̉�]���X�V
+							//CCD-IK後の回転軸更新
 							DestSeq->RawAnimationData[rawIndex].RotKeys[k]
 								= tempCalcIKTrns.GetRotation();
 #if 0
@@ -1277,13 +1277,13 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						// j = linkBoneIndex
 						//////////////////////////////
 						FMMD_IKLINK * IKBaseLinkPtr = &mmdExtend->IkInfoList[ikTargetIndex].ikLinkList[linkBoneIndex];
-						// IK�^�[�Q�b�g�{�[���܂ł̃x�N�g��
+						// IKターゲットボーンまでのベクトル
 						vecToIKTargetPose = tempGlbIkLinkTrsfList[linkBoneIndex].GetTranslation();
 						vecToIKTargetPose -= tempGlbTargetBoneTrsf.GetTranslation();
-						// IK�{�[���܂ł̃x�N�g�� 
+						// IKボーンまでのベクトル 
 						vecToIKLinkPose = tempGlbIkLinkTrsfList[linkBoneIndex].GetTranslation();
 						vecToIKLinkPose -= tempGlbIkBoneTrsf.GetTranslation();
-						// �@����
+						// 法線化
 						vecToIKTargetPose.Normalize();
 						vecToIKLinkPose.Normalize();
 
@@ -1298,7 +1298,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						FVector v;
 						v = FVector::CrossProduct(v1, v2);
 						// calculate roll axis
-						//�e�v�Z�F���ʌv�Z���Ȃ����������܂����@��������Ȃ��̂ŕۗ�
+						//親計算：無駄計算を省きたいがうまい方法が見つからないので保留
 						FVector ChainParentBone_Asix;
 						FTransform tempGlbChainParentBoneTrsf = CalcGlbTransformFromBoneIndex(
 							DestSeq,
@@ -1377,12 +1377,12 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 						float RotLimitRad = FMath::DegreesToRadians(mmdExtend->IkInfoList[ikTargetIndex].RotLimit);
 						FVector RotLockMinRad = IKBaseLinkPtr->RotLockMin * FMath::DegreesToRadians(1);
 						FVector RotLockMaxRad = IKBaseLinkPtr->RotLockMax * FMath::DegreesToRadians(1);
-						//TBD::�P�ʊp�x�̐����m�F(�������A�����������Ă��邩�s���c�j
+						//TBD::単位角度の制限確認(ただし、処理があっているか不明…）
 						if (Rot > RotLimitRad * (linkBoneIndex + 1) * 2)
 						{
 							Rot = RotLimitRad * (linkBoneIndex + 1) * 2;
 						}
-						/* �b��FDxlib��
+						/* 暫定：Dxlib版
 						float IKsin, IKcos;
 						IKsin = FMath::Sin(Rot);
 						IKcos = FMath::Cos(Rot);
@@ -1392,48 +1392,48 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							v.Z * IKsin,
 							IKcos
 							);	*/
-						//UE4�ŁF���Ɗp�x����Quar�쐬
+						//UE4版：軸と角度からQuar作成
 						FQuat qIK(v, Rot);
 
-						//chainBone ik quat��Glb��Loc��IK�݂̂��s���B�E�E�b��
+						//chainBone ik quatがGlbかLocかIKのみか不明。・・暫定
 						FQuat ChainBone_IKQuat = tempGlbIkBoneTrsf.GetRotation();
 						ChainBone_IKQuat = qIK * ChainBone_IKQuat ;
 						tempGlbIkBoneTrsf.SetRotation(ChainBone_IKQuat);
 
 						FMatrix ChainBone_IKmat;
-						ChainBone_IKmat = tempGlbIkBoneTrsf.ToMatrixNoScale(); //�����܂����ŃN���b�V������E�E�E�������T���B
+						ChainBone_IKmat = tempGlbIkBoneTrsf.ToMatrixNoScale(); //時たまここでクラッシュする・・・解決策を探す。
 
-						//�������v�Z
+						//軸制限計算
 						if (IKBaseLinkPtr->RotLockFlag == 1)
 						{
-							// ����]�p�x���Z�o
+							// 軸回転角度を算出
 							if ((RotLockMinRad.X > -1.570796f) & (RotLockMaxRad.X < 1.570796f))
 							{
-								// Z*X*Y��
-								// X�����
+								// Z*X*Y順
+								// X軸回り
 								float fLimit = 1.535889f;			// 88.0f/180.0f*3.14159265f;
-								float fSX = -ChainBone_IKmat.M[2][1];				// sin(��x)
-								float fX = FMath::Asin(fSX);			// X����茈��
+								float fSX = -ChainBone_IKmat.M[2][1];				// sin(θx)
+								float fX = FMath::Asin(fSX);			// X軸回り決定
 								float fCX = FMath::Cos(fX);
 
-								// �W���o�����b�N���
+								// ジンバルロック回避
 								if (FMath::Abs<float>(fX) > fLimit)
 								{
 									fX = (fX < 0) ? -fLimit : fLimit; 
 									fCX = FMath::Cos(fX);
 								}
 
-								// Y�����
+								// Y軸回り
 								float fSY = ChainBone_IKmat.M[2][0] / fCX;
 								float fCY = ChainBone_IKmat.M[2][2] / fCX;
-								float fY = FMath::Atan2(fSY, fSX);	// Y����茈��
+								float fY = FMath::Atan2(fSY, fSX);	// Y軸回り決定
 
-								// Z�����
+								// Z軸回り
 								float fSZ = ChainBone_IKmat.M[0][1] / fCX;
 								float fCZ = ChainBone_IKmat.M[1][1] / fCX;
 								float fZ = FMath::Atan2(fSZ, fCZ);
 
-								// �p�x�̐���
+								// 角度の制限
 								FVector fixRotAngleVec(fX,fY,fZ);
 								CheckLimitAngle(
 									RotLockMinRad,
@@ -1441,7 +1441,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 									&fixRotAngleVec, 
 									(linkBoneIndex < ikt)
 									);
-								// ���肵���p�x�Ńx�N�g������]
+								// 決定した角度でベクトルを回転
 								FMatrix mX, mY, mZ, mT;
 
 								CreateRotationXMatrix(&mX, fixRotAngleVec.X);
@@ -1453,31 +1453,31 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							}
 							else if ((RotLockMinRad.X > -1.570796f) & (RotLockMaxRad.X < 1.570796f))
 							{
-								// X*Y*Z��
-								// Y�����
+								// X*Y*Z順
+								// Y軸回り
 								float fLimit = 1.535889f;		// 88.0f/180.0f*3.14159265f;
-								float fSY = -ChainBone_IKmat.M[0][2];			// sin(��y)
-								float fY = FMath::Asin(fSY);	// Y����茈��
+								float fSY = -ChainBone_IKmat.M[0][2];			// sin(θy)
+								float fY = FMath::Asin(fSY);	// Y軸回り決定
 								float fCY = FMath::Cos(fY);
 
-								// �W���o�����b�N���
+								// ジンバルロック回避
 								if (FMath::Abs<float>(fY) > fLimit)
 								{
 									fY = (fY < 0) ? -fLimit : fLimit;
 									fCY = FMath::Cos(fY);
 								}
 
-								// X�����
+								// X軸回り
 								float fSX = ChainBone_IKmat.M[1][2] / fCY;
 								float fCX = ChainBone_IKmat.M[2][2] / fCY;
-								float fX = FMath::Atan2(fSX, fCX);	// X����茈��
+								float fX = FMath::Atan2(fSX, fCX);	// X軸回り決定
 
-								// Z�����
+								// Z軸回り
 								float fSZ = ChainBone_IKmat.M[0][1] / fCY;
 								float fCZ = ChainBone_IKmat.M[0][0] / fCY;
-								float fZ = FMath::Atan2(fSZ, fCZ);	// Z����茈��
+								float fZ = FMath::Atan2(fSZ, fCZ);	// Z軸回り決定
 
-								// �p�x�̐���
+								// 角度の制限
 								FVector fixRotAngleVec(fX, fY, fZ);
 								CheckLimitAngle(
 									RotLockMinRad,
@@ -1486,7 +1486,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 									(linkBoneIndex < ikt)
 									);
 
-								// ���肵���p�x�Ńx�N�g������]
+								// 決定した角度でベクトルを回転
 								FMatrix mX, mY, mZ, mT;
 
 								CreateRotationXMatrix(&mX, fixRotAngleVec.X);
@@ -1498,31 +1498,31 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 							}
 							else
 							{
-								// Y*Z*X��
-								// Z�����
+								// Y*Z*X順
+								// Z軸回り
 								float fLimit = 1.535889f;		// 88.0f/180.0f*3.14159265f;
-								float fSZ = -ChainBone_IKmat.M[1][0];			// sin(��y)
-								float fZ = FMath::Asin(fSZ);	// Y����茈��
+								float fSZ = -ChainBone_IKmat.M[1][0];			// sin(θy)
+								float fZ = FMath::Asin(fSZ);	// Y軸回り決定
 								float fCZ = FMath::Cos(fZ);
 
-								// �W���o�����b�N���
+								// ジンバルロック回避
 								if (FMath::Abs(fZ) > fLimit)
 								{
 									fZ = (fZ < 0) ? -fLimit : fLimit;
 									fCZ = FMath::Cos(fZ);
 								}
 
-								// X�����
+								// X軸回り
 								float fSX = ChainBone_IKmat.M[1][2] / fCZ;
 								float fCX = ChainBone_IKmat.M[1][1] / fCZ;
-								float fX = FMath::Atan2(fSX, fCX);	// X����茈��
+								float fX = FMath::Atan2(fSX, fCX);	// X軸回り決定
 
-								// Y�����
+								// Y軸回り
 								float fSY = ChainBone_IKmat.M[2][0] / fCZ;
 								float fCY = ChainBone_IKmat.M[0][0] / fCZ;
-								float fY = FMath::Atan2(fSY, fCY);	// Z����茈��
+								float fY = FMath::Atan2(fSY, fCY);	// Z軸回り決定
 								
-								// �p�x�̐���
+								// 角度の制限
 								FVector fixRotAngleVec(fX, fY, fZ);
 								CheckLimitAngle(
 									RotLockMinRad,
@@ -1531,7 +1531,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 									(linkBoneIndex < ikt)
 									);
 
-								// ���肵���p�x�Ńx�N�g������]
+								// 決定した角度でベクトルを回転
 								FMatrix mX, mY, mZ, mT;
 
 								CreateRotationXMatrix(&mX, fixRotAngleVec.X);
@@ -1578,7 +1578,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 	return true;
 }
 //////////////////////////////////////////////////////////////////////////////////////
-// �w���𒆐S�Ƃ�����]�s����쐬����
+// Ｘ軸を中心とした回転行列を作成する
 void CreateRotationXMatrix(FMatrix *Out, float Angle)
 {
 	float Sin, Cos;
@@ -1600,7 +1600,7 @@ void CreateRotationXMatrix(FMatrix *Out, float Angle)
 
 	//return 0;
 }
-// ��]���������̍s��̐ς����߂�( �R�~�R�ȊO�̕����ɂ͒l��������Ȃ� )
+// 回転成分だけの行列の積を求める( ３×３以外の部分には値も代入しない )
 void MV1LoadModelToVMD_CreateMultiplyMatrixRotOnly(FMatrix *Out, FMatrix *In1, FMatrix *In2)
 {
 	Out->M[0][0] = In1->M[0][0] * In2->M[0][0] + In1->M[0][1] * In2->M[1][0] + In1->M[0][2] * In2->M[2][0];
@@ -1616,7 +1616,7 @@ void MV1LoadModelToVMD_CreateMultiplyMatrixRotOnly(FMatrix *Out, FMatrix *In1, F
 	Out->M[2][2] = In1->M[2][0] * In2->M[0][2] + In1->M[2][1] * In2->M[1][2] + In1->M[2][2] * In2->M[2][2];
 }
 /////////////////////////////////////
-// �p�x�����𔻒肷�鋤�ʊ֐� (subIndexJdg�̔���͊���ƕs���c)
+// 角度制限を判定する共通関数 (subIndexJdgの判定は割りと不明…)
 void CheckLimitAngle(
 	const FVector& RotMin,
 	const FVector& RotMax,
@@ -1680,7 +1680,7 @@ void CheckLimitAngle(
 //////////////////////////////////////////////////////////////////////////////////////
 
 /*****************
-* MMD���̖��̂���TableRow��UE�����̂��������擾����
+* MMD側の名称からTableRowのUE側名称を検索し取得する
 * Return :T is Found
 * @param :ue4Name is Found Row Name
 ****************/
@@ -1716,7 +1716,7 @@ bool UVmdFactory::FindTableRowMMD2UEName(
 }
 
 /*****************
-* Bone���̂���RefSkelton�ň�v����BoneIndex���������擾����
+* Bone名称からRefSkeltonで一致するBoneIndexを検索し取得する
 * Return :index, -1 is not found
 * @param :TargetName is Target Bone Name
 ****************/
@@ -1737,7 +1737,7 @@ int32 UVmdFactory::FindRefBoneInfoIndexFromBoneName(
 
 
 /*****************
-* ���݂̃L�[�ɂ�����w��Bone��Glb���W���ċA�I�ɎZ�o����
+* 現在のキーにおける指定BoneのGlb座標を再帰的に算出する
 * Return :trncform
 * @param :TargetName is Target Bone Name
 ****************/

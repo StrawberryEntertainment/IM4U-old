@@ -1,4 +1,4 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 // Copyright 2015 BlackMa9. All Rights Reserved.
 
 /**
@@ -120,7 +120,7 @@ class UPmxImportUI : public UObject
 	//UPROPERTY(EditAnywhere, Instanced, Category = Mesh, meta = (ImportType = "SkeletalMesh"))
 		class UMMDSkeletalMeshImportData* SkeletalMeshImportData;
 
-	//b’è”Å::ã‹LƒNƒ‰ƒX‚¾‚Æãè‚­•\¦‚Å‚«‚Ä‚¢‚È‚¢‚½‚ß•K—v‚È€–Ú‚Ì‚İ’Šo
+	//æš«å®šç‰ˆ::ä¸Šè¨˜ã‚¯ãƒ©ã‚¹ã ã¨ä¸Šæ‰‹ãè¡¨ç¤ºã§ãã¦ã„ãªã„ãŸã‚å¿…è¦ãªé …ç›®ã®ã¿æŠ½å‡º
 	/** True to import morph target meshes from the MMD file */
 	UPROPERTY(EditAnywhere, config, Category = Mesh, meta = (OBJRestrict = "true", ToolTip = "If enabled, creates Unreal morph objects for the imported meshes"))
 		uint32 bImportMorphTargets : 1;
@@ -145,9 +145,9 @@ class UPmxImportUI : public UObject
 
 	/** Whether to automatically create Unreal materials for materials found in the FBX scene */
 
-	//Gui‚ÉƒJƒeƒSƒŠ[uMaterialv“à•”‚ÉuImport Auto Luminous Materialsv‚ğ•\¦‚·‚é—áB
-	//Gui‚É•\¦‚³‚ê‚é•\¦–¼‚ÍubImportAutoLuminusMaterialsv‚ÌbˆÈ‰º‚Ì
-	//•Ï”–¼(Import Auto Luminous Materials)‚ğ‘å•¶š‘O‚ÉƒXƒy[ƒX‚ª“ü‚é–Í—lB
+	//Guiã«ã‚«ãƒ†ã‚´ãƒªãƒ¼ã€ŒMaterialã€å†…éƒ¨ã«ã€ŒImport Auto Luminous Materialsã€ã‚’è¡¨ç¤ºã™ã‚‹ä¾‹ã€‚
+	//Guiã«è¡¨ç¤ºã•ã‚Œã‚‹è¡¨ç¤ºåã¯ã€ŒbImportAutoLuminusMaterialsã€ã®bä»¥ä¸‹ã®
+	//å¤‰æ•°å(Import Auto Luminous Materials)ã‚’å¤§æ–‡å­—å‰ã«ã‚¹ãƒšãƒ¼ã‚¹ãŒå…¥ã‚‹æ¨¡æ§˜ã€‚
 	//UPROPERTY(EditAnywhere, config, Category = MaterialAdvMMD, meta = (OBJRestrict = "true"))
 		uint32 bImportAutoLuminousMaterials : 1;
 
@@ -170,7 +170,7 @@ class UPmxImportUI : public UObject
 	//struct FTableRowBase MMD2UE4NameTableRowDmmy;
 
 
-	//b’è”Å::ã‹LƒNƒ‰ƒX‚¾‚Æãè‚­•\¦‚Å‚«‚Ä‚¢‚È‚¢‚½‚ß•K—v‚È€–Ú‚Ì‚İ’Šo
+	//æš«å®šç‰ˆ::ä¸Šè¨˜ã‚¯ãƒ©ã‚¹ã ã¨ä¸Šæ‰‹ãè¡¨ç¤ºã§ãã¦ã„ãªã„ãŸã‚å¿…è¦ãªé …ç›®ã®ã¿æŠ½å‡º
 	/** True to import I-Aggree , I Read README for Model. */
 	//UPROPERTY(EditAnywhere, Category = Mast_ReadmeForModel, meta = (OBJRestrict = "true", ToolTip = "If enabled, creates Unreal morph objects for the imported meshes"))
 	//	uint32 bImportIAgree : 1;

@@ -1,4 +1,4 @@
-
+ï»¿
 // Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
@@ -49,7 +49,7 @@ class IM4U_API UVmdFactory : public UFactory
 	// End UFactory Interface
 
 	/**********************
-	* Create AnimSequence from VMD data.(V‹Kì¬—peŠÖ”)
+	* Create AnimSequence from VMD data.(æ–°è¦ä½œæˆç”¨è¦ªé–¢æ•°)
 	***********************/
 	UAnimSequence * ImportAnimations(
 		USkeleton* Skeleton, 
@@ -64,12 +64,12 @@ class IM4U_API UVmdFactory : public UFactory
 	//////////////
 	class UPmxImportUI* ImportUI;
 	/**********
-	* MMDŒü‚¯ƒxƒWƒF‹Èü‚ÌZoˆ—
+	* MMDå‘ã‘ãƒ™ã‚¸ã‚§æ›²ç·šã®ç®—å‡ºå‡¦ç†
 	***********/
 	float interpolateBezier(float x1, float y1, float  x2, float y2, float x);
 	/*******************
-	* Šù‘¶AnimSequ‚ÌƒAƒZƒbƒg‚ÉVMD‚Ì•\îƒf[ƒ^‚ğ’Ç‰Á‚·‚éˆ—
-	* MMD4Mecanimu‚Æ‚Ì‘‡—˜—pŒü‚¯ƒeƒXƒg‹@”\
+	* æ—¢å­˜AnimSequã®ã‚¢ã‚»ãƒƒãƒˆã«VMDã®è¡¨æƒ…ãƒ‡ãƒ¼ã‚¿ã‚’è¿½åŠ ã™ã‚‹å‡¦ç†
+	* MMD4Mecanimuã¨ã®ç·åˆåˆ©ç”¨å‘ã‘ãƒ†ã‚¹ãƒˆæ©Ÿèƒ½
 	**********************/
 	UAnimSequence * AddtionalMorphCurveImportToAnimations(
 		UAnimSequence* exsistAnimSequ,
@@ -78,7 +78,7 @@ class IM4U_API UVmdFactory : public UFactory
 		);
 	/*******************
 	* Import Morph Target AnimCurve
-	* VMDƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚©‚çMorphtarget‚ÌFloatCurve‚ğAnimSeq‚Éæ‚è‚Ş
+	* VMDãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰Morphtargetã®FloatCurveã‚’AnimSeqã«å–ã‚Šè¾¼ã‚€
 	**********************/
 	bool ImportMorphCurveToAnimSequence(
 		UAnimSequence* DestSeq,
@@ -88,7 +88,7 @@ class IM4U_API UVmdFactory : public UFactory
 		);
 	/*******************
 	* Import VMD Animation
-	* VMDƒtƒ@ƒCƒ‹‚Ìƒf[ƒ^‚©‚çƒ‚[ƒVƒ‡ƒ“ƒf[ƒ^‚ğAnimSeq‚Éæ‚è‚Ş
+	* VMDãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‡ãƒ¼ã‚¿ã‹ã‚‰ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’AnimSeqã«å–ã‚Šè¾¼ã‚€
 	**********************/
 	bool ImportVMDToAnimSequence(
 		UAnimSequence* DestSeq,
@@ -99,7 +99,7 @@ class IM4U_API UVmdFactory : public UFactory
 		);
 
 	/*****************
-	* MMD‘¤‚Ì–¼Ì‚©‚çTableRow‚ÌUE‘¤–¼Ì‚ğŒŸõ‚µæ“¾‚·‚é
+	* MMDå´ã®åç§°ã‹ã‚‰TableRowã®UEå´åç§°ã‚’æ¤œç´¢ã—å–å¾—ã™ã‚‹
 	* Return :T is Found
 	* @param :ue4Name is Found Row Name
 	****************/
@@ -109,7 +109,7 @@ class IM4U_API UVmdFactory : public UFactory
 		FName * ue4Name
 		);
 	/*****************
-	* Bone–¼Ì‚©‚çRefSkelton‚Åˆê’v‚·‚éBoneIndex‚ğŒŸõ‚µæ“¾‚·‚é
+	* Boneåç§°ã‹ã‚‰RefSkeltonã§ä¸€è‡´ã™ã‚‹BoneIndexã‚’æ¤œç´¢ã—å–å¾—ã™ã‚‹
 	* Return :index, -1 is not found
 	* @param :TargetName is Target Bone Name
 	****************/
@@ -118,7 +118,7 @@ class IM4U_API UVmdFactory : public UFactory
 		const FName & TargetName
 		);
 	/*****************
-	* Œ»İ‚ÌƒL[‚É‚¨‚¯‚éw’èBone‚ÌGlbÀ•W‚ğÄ‹A“I‚ÉZo‚·‚é
+	* ç¾åœ¨ã®ã‚­ãƒ¼ã«ãŠã‘ã‚‹æŒ‡å®šBoneã®Glbåº§æ¨™ã‚’å†å¸°çš„ã«ç®—å‡ºã™ã‚‹
 	* Return :trncform
 	* @param :TargetName is Target Bone Name
 	****************/
@@ -160,18 +160,18 @@ class IM4U_API UVmdFactory : public UFactory
 	float ImportMatineeActor(
 		MMD4UE4::VmdCameraTrackList* CameraNode,
 		//FbxNode* Node,
-		//ã‹L‚ÉŠY“–‚·‚éƒf[ƒ^‚ğ’²¸‚·‚é‚±‚Æ
+		//ä¸Šè¨˜ã«è©²å½“ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã‚’èª¿æŸ»ã™ã‚‹ã“ã¨
 		UInterpGroupInst* MatineeGroup
 		);
 	//
 	void ConsolidateMovementTrackInterpModes(
 		UInterpTrackMove* MovementTrack
 		);
-	//‚±‚ÌŠÖ”‚Ì–ß‚è’l‚ÍMMD‚ÌƒJ[ƒu“Á«‚É‡‚í‚¹‚ÄŒÅ’è’l‚ğ•Ï‚¦‚³‚¹‚é‚æ‚¤‚ÉC³‚·‚é
+	//ã“ã®é–¢æ•°ã®æˆ»ã‚Šå€¤ã¯MMDã®ã‚«ãƒ¼ãƒ–ç‰¹æ€§ã«åˆã‚ã›ã¦å›ºå®šå€¤ã‚’å¤‰ãˆã•ã›ã‚‹ã‚ˆã†ã«ä¿®æ­£ã™ã‚‹
 	EInterpCurveMode GetUnrealInterpMode(
 		//FbxAnimCurveKey FbxKey
 		);
-	//‚±‚ÌŠÖ”‚ª•K—v‚©•s–¾BSubTrack‚Ì‘¶İ‚É‚Â‚¢‚Ä’²¸‚ª•K—vB
+	//ã“ã®é–¢æ•°ãŒå¿…è¦ã‹ä¸æ˜ã€‚SubTrackã®å­˜åœ¨ã«ã¤ã„ã¦èª¿æŸ»ãŒå¿…è¦ã€‚
 	void ImportMoveSubTrack(
 		//FbxAnimCurve* FbxCurve,
 		int32 FbxDimension,
@@ -181,7 +181,7 @@ class IM4U_API UVmdFactory : public UFactory
 		//FbxAnimCurve* RealCurve,
 		float DefaultVal
 		);
-	//‚±‚ÌŠÖ”‚ª•K—v‚©•s–¾BMatineeAnimated‚ª‚Ç‚Ì•”•ª‚ÉŠY“–‚·‚é‚©‚É‚Â‚¢‚Ä’²¸‚ª•K—vB
+	//ã“ã®é–¢æ•°ãŒå¿…è¦ã‹ä¸æ˜ã€‚MatineeAnimatedãŒã©ã®éƒ¨åˆ†ã«è©²å½“ã™ã‚‹ã‹ã«ã¤ã„ã¦èª¿æŸ»ãŒå¿…è¦ã€‚
 	void ImportMatineeAnimated(
 		MMD4UE4::VmdCameraTrackList * VmdCurve,
 		//FbxAnimCurve* FbxCurve,

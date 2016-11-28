@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
 
@@ -49,16 +49,16 @@ namespace MMD4UE4
 
 		Buffer += sizeof(uint8);
 		/*
-		ƒoƒCƒg—ñ - byte
-		[0] - ƒGƒ“ƒR[ƒh•û®  | 0:UTF16 1:UTF8
-		[1] - ’Ç‰ÁUV” 	| 0`4 Ú×‚Í’¸“_QÆ
+		ãƒã‚¤ãƒˆåˆ— - byte
+		[0] - ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰æ–¹å¼  | 0:UTF16 1:UTF8
+		[1] - è¿½åŠ UVæ•° 	| 0ï½4 è©³ç´°ã¯é ‚ç‚¹å‚ç…§
 
-		[2] - ’¸“_IndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-		[3] - ƒeƒNƒXƒ`ƒƒIndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-		[4] - Ş¿IndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-		[5] - ƒ{[ƒ“IndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-		[6] - ƒ‚[ƒtIndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
-		[7] - „‘ÌIndexƒTƒCƒY | 1,2,4 ‚Ì‚¢‚¸‚ê‚©
+		[2] - é ‚ç‚¹Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+		[3] - ãƒ†ã‚¯ã‚¹ãƒãƒ£Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+		[4] - æè³ªIndexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+		[5] - ãƒœãƒ¼ãƒ³Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+		[6] - ãƒ¢ãƒ¼ãƒ•Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
+		[7] - å‰›ä½“Indexã‚µã‚¤ã‚º | 1,2,4 ã®ã„ãšã‚Œã‹
 		*/
 		FMemory::Memcpy(&this->baseHeader, Buffer, sizeof(this->baseHeader));
 		//NewMyAsset->MyStruct.ModelName.Append((char*)BufferPMXHeaderPtr__Impl.byteDate);
@@ -86,7 +86,7 @@ namespace MMD4UE4
 			= modelNameJP.Replace(TEXT("."), TEXT("_"));// [.] is broken filepath for ue4 
 		////////////////////////////////////////////
 		{
-			//“Œv
+			//çµ±è¨ˆ
 			uint32 statics_bdef1 = 0;
 			uint32 statics_bdef2 = 0;
 			uint32 statics_bdef4 = 0;
@@ -102,12 +102,12 @@ namespace MMD4UE4
 			{
 				PMX_VERTEX & pmxVertexPtr = vertexList[VertexIndex];
 				///
-				//ˆÊ’u(x,y,z)
+				//ä½ç½®(x,y,z)
 				memcopySize = sizeof(pmxVertexPtr.Position);
 				FMemory::Memcpy(&pmxVertexPtr.Position, Buffer, memcopySize);
 				pmxVertexPtr.Position = ConvertVectorAsixToUE4FromMMD(pmxVertexPtr.Position)*modelScale;
 				Buffer += memcopySize;
-				//–@ü(x,y,z)
+				//æ³•ç·š(x,y,z)
 				memcopySize = sizeof(pmxVertexPtr.Normal);
 				FMemory::Memcpy(&pmxVertexPtr.Normal, Buffer, memcopySize);
 				pmxVertexPtr.Normal = ConvertVectorAsixToUE4FromMMD(pmxVertexPtr.Normal);
@@ -117,11 +117,11 @@ namespace MMD4UE4
 				FMemory::Memcpy(&pmxVertexPtr.UV, Buffer, memcopySize);
 				Buffer += memcopySize;
 				/*
-				float tempUV = pmxVertexPtr.UV.X;//UE4À•WŒn”½“]
+				float tempUV = pmxVertexPtr.UV.X;//UE4åº§æ¨™ç³»åè»¢
 				pmxVertexPtr.UV.X = 1 - pmxVertexPtr.UV.Y;
 				pmxVertexPtr.UV.Y = 1 - tempUV;
 				*/
-				//’Ç‰ÁUV(x,y,z,w)  PMXƒwƒbƒ_‚Ì’Ç‰ÁUV”‚É‚æ‚é	n:’Ç‰ÁUV” 0`4
+				//è¿½åŠ UV(x,y,z,w)  PMXãƒ˜ãƒƒãƒ€ã®è¿½åŠ UVæ•°ã«ã‚ˆã‚‹	n:è¿½åŠ UVæ•° 0ï½4
 				for (int ExUVNum = 0; ExUVNum < this->baseHeader.UVNum; ++ExUVNum)
 				{
 					//
@@ -129,7 +129,7 @@ namespace MMD4UE4
 					FMemory::Memcpy(&pmxVertexPtr.AddUV[ExUVNum], Buffer, memcopySize);
 					Buffer += memcopySize;
 				}
-				// ƒEƒFƒCƒg•ÏŒ`•û® 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF
+				// ã‚¦ã‚§ã‚¤ãƒˆå¤‰å½¢æ–¹å¼ 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF
 				memcopySize = sizeof(pmxVertexPtr.WeightType);
 				FMemory::Memcpy(&pmxVertexPtr.WeightType, Buffer, memcopySize);
 				Buffer += memcopySize;
@@ -217,7 +217,7 @@ namespace MMD4UE4
 				{
 					UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Import FALSE/Return /UnCorrect EncodeType"));
 				}
-				//ƒGƒbƒW”{—¦  Ş¿‚ÌƒGƒbƒWƒTƒCƒY‚É‘Î‚µ‚Ä‚Ì”{—¦’l
+				//ã‚¨ãƒƒã‚¸å€ç‡  æè³ªã®ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚ºã«å¯¾ã—ã¦ã®å€ç‡å€¤
 				memcopySize = sizeof(pmxVertexPtr.ToonEdgeScale);
 				FMemory::Memcpy(&pmxVertexPtr.ToonEdgeScale, Buffer, memcopySize);
 				Buffer += memcopySize;
@@ -235,12 +235,12 @@ namespace MMD4UE4
 		////////////////////////////////////////////
 		{
 			/*
-			œ–Ê
+			â—é¢
 
-			n : ’¸“_IndexƒTƒCƒY     | ’¸“_‚ÌQÆIndex
+			n : é ‚ç‚¹Indexã‚µã‚¤ã‚º     | é ‚ç‚¹ã®å‚ç…§Index
 
-			¦3“_(3’¸“_Index)‚Å1–Ê
-			Ş¿–ˆ‚Ì–Ê”‚ÍŞ¿“à‚Ì–Ê(’¸“_)”‚ÅŠÇ— (“¯PMD•û®)
+			â€»3ç‚¹(3é ‚ç‚¹Index)ã§1é¢
+			æè³ªæ¯ã®é¢æ•°ã¯æè³ªå†…ã®é¢(é ‚ç‚¹)æ•°ã§ç®¡ç† (åŒPMDæ–¹å¼)
 			*/
 			uint32 PmxFaceNum = 0;
 			memcopySize = sizeof(PmxFaceNum);
@@ -265,17 +265,17 @@ namespace MMD4UE4
 		////////////////////////////////////////////
 		{
 
-			// ƒeƒNƒXƒ`ƒƒ‚Ì”‚ğæ“¾
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æ•°ã‚’å–å¾—
 			uint32 PmxTextureNum = 0;
 			//
 			memcopySize = sizeof(PmxTextureNum);
 			FMemory::Memcpy(&PmxTextureNum, Buffer, memcopySize);
 			Buffer += memcopySize;
 
-			// ƒeƒNƒXƒ`ƒƒƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			textureList.AddZeroed(PmxTextureNum);
 
-			// ƒeƒNƒXƒ`ƒƒ‚Ìî•ñ‚ğæ“¾
+			// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®æƒ…å ±ã‚’å–å¾—
 			for (uint32 i = 0; i < PmxTextureNum; i++)
 			{
 				textureList[i].TexturePath = PMXTexBufferToFString(&Buffer, pmxEncodeType);
@@ -283,20 +283,20 @@ namespace MMD4UE4
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [textureList] Complete"));
 		}
 		{
-			// ƒ}ƒeƒŠƒAƒ‹‚Ì”‚ğæ“¾
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ã®æ•°ã‚’å–å¾—
 			uint32 PmxMaterialNum = 0;
 			//
 			memcopySize = sizeof(PmxMaterialNum);
 			FMemory::Memcpy(&PmxMaterialNum, Buffer, memcopySize);
 			Buffer += memcopySize;
 
-			// ƒ}ƒeƒŠƒAƒ‹ƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			materialList.AddZeroed(PmxMaterialNum);
 
-			// ƒ}ƒeƒŠƒAƒ‹‚Ì“Ç‚İ‚±‚İ
+			// ãƒãƒ†ãƒªã‚¢ãƒ«ã®èª­ã¿ã“ã¿
 			for (uint32 i = 0; i < PmxMaterialNum; i++)
 			{
-				// Ş¿–¼‚Ìæ“¾
+				// æè³ªåã®å–å¾—
 				//materialList[i].Name = PMXTexBufferToFString(&Buffer, pmxEncodeType);
 				materialList[i].Name = FString::Printf(TEXT("%d_%s"), i, *PMXTexBufferToFString(&Buffer, pmxEncodeType));
 				materialList[i].NameEng = PMXTexBufferToFString(&Buffer, pmxEncodeType);
@@ -309,7 +309,7 @@ namespace MMD4UE4
 				memcopySize = sizeof(materialList[i].Specular);
 				FMemory::Memcpy(materialList[i].Specular, Buffer, memcopySize);
 				Buffer += memcopySize;
-				//SpecularŒW”
+				//Specularä¿‚æ•°
 				memcopySize = sizeof(materialList[i].SpecularPower);
 				FMemory::Memcpy(&materialList[i].SpecularPower, Buffer, memcopySize);
 				Buffer += memcopySize;
@@ -319,9 +319,9 @@ namespace MMD4UE4
 				Buffer += memcopySize;
 
 				/*
-				•`‰æƒtƒ‰ƒO(8bit) - Šebit 0:OFF 1:ON
-				0x01:—¼–Ê•`‰æ, 0x02:’n–Ê‰e, 0x04:ƒZƒ‹ƒtƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ, 0x08:ƒZƒ‹ƒtƒVƒƒƒhƒE‚Ì•`‰æ,
-				0x10:ƒGƒbƒW•`‰æ
+				æç”»ãƒ•ãƒ©ã‚°(8bit) - å„bit 0:OFF 1:ON
+				0x01:ä¸¡é¢æç”», 0x02:åœ°é¢å½±, 0x04:ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”», 0x08:ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã®æç”»,
+				0x10:ã‚¨ãƒƒã‚¸æç”»
 				*/
 				uint8 tempByte = 0;
 				memcopySize = sizeof(tempByte);
@@ -333,46 +333,46 @@ namespace MMD4UE4
 				materialList[i].SelfShadowDraw = (tempByte & 0x08) ? 1 : 0;
 				materialList[i].EdgeDraw = (tempByte & 0x10) ? 1 : 0;
 
-				//ƒGƒbƒWF (R,G,B,A)
+				//ã‚¨ãƒƒã‚¸è‰² (R,G,B,A)
 				memcopySize = sizeof(materialList[i].EdgeColor);
 				FMemory::Memcpy(materialList[i].EdgeColor, Buffer, memcopySize);
 				Buffer += memcopySize;
 
-				//ƒGƒbƒWƒTƒCƒY
+				//ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
 				memcopySize = sizeof(materialList[i].EdgeSize);
 				FMemory::Memcpy(&materialList[i].EdgeSize, Buffer, memcopySize);
 				Buffer += memcopySize;
-				//’ÊíƒeƒNƒXƒ`ƒƒ, ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹‚ÌQÆIndex
+				//é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£, ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‚ç…§Index
 				materialList[i].TextureIndex
 					= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
-				//ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒ, ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹‚ÌQÆIndex  ¦ƒeƒNƒXƒ`ƒƒŠg’£q‚Ì§ŒÀ‚È‚µ
+				//ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£, ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‚ç…§Index  â€»ãƒ†ã‚¯ã‚¹ãƒãƒ£æ‹¡å¼µå­ã®åˆ¶é™ãªã—
 				materialList[i].SphereTextureIndex 
 					= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
-				//ƒXƒtƒBƒAƒ‚[ƒh 0:–³Œø 1:æZ(sph) 2:‰ÁZ(spa) 
-				//3:ƒTƒuƒeƒNƒXƒ`ƒƒ(’Ç‰ÁUV1‚Ìx,y‚ğUVQÆ‚µ‚Ä’ÊíƒeƒNƒXƒ`ƒƒ•`‰æ‚ğs‚¤)
+				//ã‚¹ãƒ•ã‚£ã‚¢ãƒ¢ãƒ¼ãƒ‰ 0:ç„¡åŠ¹ 1:ä¹—ç®—(sph) 2:åŠ ç®—(spa) 
+				//3:ã‚µãƒ–ãƒ†ã‚¯ã‚¹ãƒãƒ£(è¿½åŠ UV1ã®x,yã‚’UVå‚ç…§ã—ã¦é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£æç”»ã‚’è¡Œã†)
 				memcopySize = sizeof(materialList[i].SphereMode);
 				FMemory::Memcpy(&materialList[i].SphereMode, Buffer, memcopySize);
 				Buffer += memcopySize;
-				//‹¤—LToonƒtƒ‰ƒO 0:Œp‘±’l‚ÍŒÂ•ÊToon 1 : Œp‘±’l‚Í‹¤—LToon
+				//å…±æœ‰Toonãƒ•ãƒ©ã‚° 0:ç¶™ç¶šå€¤ã¯å€‹åˆ¥Toon 1 : ç¶™ç¶šå€¤ã¯å…±æœ‰Toon
 				memcopySize = sizeof(materialList[i].ToonFlag);
 				FMemory::Memcpy(&materialList[i].ToonFlag, Buffer, memcopySize);
 				Buffer += memcopySize;
 
 				if (materialList[i].ToonFlag == 0)
-				{//ToonƒeƒNƒXƒ`ƒƒ, ƒeƒNƒXƒ`ƒƒƒe[ƒuƒ‹‚ÌQÆIndex
+				{//Toonãƒ†ã‚¯ã‚¹ãƒãƒ£, ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ†ãƒ¼ãƒ–ãƒ«ã®å‚ç…§Index
 					materialList[i].ToonTextureIndex 
 						= MMDExtendBufferSizeToUint32(&Buffer, this->baseHeader.TextureIndexSize);
 				}
 				else
-				{//‹¤—LToonƒeƒNƒXƒ`ƒƒ[0`9] -> ‚»‚ê‚¼‚ê toon01.bmp`toon10.bmp ‚É‘Î‰
+				{//å…±æœ‰Toonãƒ†ã‚¯ã‚¹ãƒãƒ£[0ï½9] -> ãã‚Œãã‚Œ toon01.bmpï½toon10.bmp ã«å¯¾å¿œ
 					memcopySize = sizeof(uint8);
 					FMemory::Memcpy(&materialList[i].ToonTextureIndex, Buffer, memcopySize);
 					Buffer += memcopySize;
 				}
 
-				// ƒƒ‚‚ÍƒXƒLƒbƒv
+				// ãƒ¡ãƒ¢ã¯ã‚¹ã‚­ãƒƒãƒ—
 				PMXTexBufferToFString(&Buffer, pmxEncodeType);
-				//Ş¿‚É‘Î‰‚·‚é–Ê(’¸“_)” (•K‚¸3‚Ì”{”‚É‚È‚é)
+				//æè³ªã«å¯¾å¿œã™ã‚‹é¢(é ‚ç‚¹)æ•° (å¿…ãš3ã®å€æ•°ã«ãªã‚‹)
 				memcopySize = sizeof(materialList[i].MaterialFaceNum);
 				FMemory::Memcpy(&materialList[i].MaterialFaceNum, Buffer, memcopySize);
 				Buffer += memcopySize;
@@ -381,15 +381,15 @@ namespace MMD4UE4
 		}
 		////////////////////////////////////////////
 		{
-			// ‚·‚×‚Ä‚ÌeBone‚ğUE4Œü‚¯‚É’Ç‰Á
-			// ƒ{[ƒ“ƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ã™ã¹ã¦ã®è¦ªBoneã‚’UE4å‘ã‘ã«è¿½åŠ 
+			// ãƒœãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			boneList.AddZeroed(1);
 
-			// ƒ{[ƒ“‚Ì”‚ğæ“¾
+			// ãƒœãƒ¼ãƒ³ã®æ•°ã‚’å–å¾—
 			uint32 PmxBoneNum = 0;
 			uint32 offsetBoneIndx = 1;
 
-			// ƒ{[ƒ“î•ñ‚Ìæ“¾
+			// ãƒœãƒ¼ãƒ³æƒ…å ±ã®å–å¾—
 			{
 				boneList[PmxBoneNum].Name = TEXT("Root");
 				boneList[PmxBoneNum].NameEng = "AllTopRootBone";
@@ -401,10 +401,10 @@ namespace MMD4UE4
 			FMemory::Memcpy(&PmxBoneNum, Buffer, memcopySize);
 			Buffer += memcopySize;
 
-			// ƒ{[ƒ“ƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒœãƒ¼ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			boneList.AddZeroed(PmxBoneNum);
 
-			// ƒ{[ƒ“î•ñ‚Ìæ“¾
+			// ãƒœãƒ¼ãƒ³æƒ…å ±ã®å–å¾—
 			uint32 PmxIKNum = 0;
 			for (uint32 i = 1; i < PmxBoneNum + offsetBoneIndx; i++)
 			{
@@ -580,7 +580,7 @@ namespace MMD4UE4
 		}
 		{
 			int32 i, j;
-			// ƒ‚[ƒtî•ñ‚Ì”‚ğæ“¾
+			// ãƒ¢ãƒ¼ãƒ•æƒ…å ±ã®æ•°ã‚’å–å¾—
 			int32 PmxMorphNum = 0;
 			uint32 offsetBoneIndx = 1;
 			//
@@ -588,10 +588,10 @@ namespace MMD4UE4
 			FMemory::Memcpy(&PmxMorphNum, Buffer, memcopySize);
 			Buffer += memcopySize;
 
-			// ƒ‚[ƒtƒf[ƒ^‚ğŠi”[‚·‚éƒƒ‚ƒŠ—Ìˆæ‚ÌŠm•Û
+			// ãƒ¢ãƒ¼ãƒ•ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒ¡ãƒ¢ãƒªé ˜åŸŸã®ç¢ºä¿
 			morphList.AddZeroed(PmxMorphNum);
 
-			// ƒ‚[ƒtî•ñ‚Ì“Ç‚İ‚İ
+			// ãƒ¢ãƒ¼ãƒ•æƒ…å ±ã®èª­ã¿è¾¼ã¿
 			int32 PmxSkinNum = 0;
 			for (i = 0; i < PmxMorphNum; i++)
 			{
@@ -615,7 +615,7 @@ namespace MMD4UE4
 
 				switch (morphList[i].Type)
 				{
-				case 0:	// ƒOƒ‹[ƒvƒ‚[ƒt
+				case 0:	// ã‚°ãƒ«ãƒ¼ãƒ—ãƒ¢ãƒ¼ãƒ•
 					morphList[i].Group.AddZeroed(morphList[i].DataNum);
 
 					for (j = 0; j < morphList[i].DataNum; j++)
@@ -629,7 +629,7 @@ namespace MMD4UE4
 					}
 					break;
 
-				case 1:	// ’¸“_
+				case 1:	// é ‚ç‚¹
 					PmxSkinNum++;
 					morphList[i].Vertex.AddZeroed(morphList[i].DataNum);
 
@@ -645,7 +645,7 @@ namespace MMD4UE4
 					}
 					break;
 
-				case 2:	// ƒ{[ƒ“ƒ‚[ƒt
+				case 2:	// ãƒœãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ•
 					morphList[i].Bone.AddZeroed(morphList[i].DataNum);
 
 					for (j = 0; j < morphList[i].DataNum; j++)
@@ -664,11 +664,11 @@ namespace MMD4UE4
 					}
 					break;
 
-				case 3:	// UVƒ‚[ƒt
-				case 4:	// ’Ç‰ÁUV1ƒ‚[ƒt
-				case 5:	// ’Ç‰ÁUV2ƒ‚[ƒt
-				case 6:	// ’Ç‰ÁUV3ƒ‚[ƒt
-				case 7:	// ’Ç‰ÁUV4ƒ‚[ƒt
+				case 3:	// UVãƒ¢ãƒ¼ãƒ•
+				case 4:	// è¿½åŠ UV1ãƒ¢ãƒ¼ãƒ•
+				case 5:	// è¿½åŠ UV2ãƒ¢ãƒ¼ãƒ•
+				case 6:	// è¿½åŠ UV3ãƒ¢ãƒ¼ãƒ•
+				case 7:	// è¿½åŠ UV4ãƒ¢ãƒ¼ãƒ•
 					morphList[i].UV.AddZeroed(morphList[i].DataNum);
 
 					for (j = 0; j < morphList[i].DataNum; j++)
@@ -682,7 +682,7 @@ namespace MMD4UE4
 					}
 					break;
 
-				case 8:	// Ş¿ƒ‚[ƒt
+				case 8:	// æè³ªãƒ¢ãƒ¼ãƒ•
 					morphList[i].Material.AddZeroed(morphList[i].DataNum);
 
 					for (j = 0; j < morphList[i].DataNum; j++)
@@ -742,21 +742,21 @@ namespace MMD4UE4
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Import [MorphList] Complete"));
 		}
 
-		/*ƒ{[ƒ“IndexC³*/
+		/*ãƒœãƒ¼ãƒ³Indexä¿®æ­£*/
 		if(false == FixSortParentBoneIndex())
 		{
 			/*BoneIndexSort NG*/
 			UE_LOG(LogMMD4UE4_PmxMeshInfo, Error, TEXT("PMX Importer Class FAULT: Bone Index NG?"));
 
-			//ƒ‚ƒfƒ‹“Ç‚İ‚İŒã‚ÌŒx•¶•\¦FƒRƒƒ“ƒg—“
+			//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿å¾Œã®è­¦å‘Šæ–‡è¡¨ç¤ºï¼šã‚³ãƒ¡ãƒ³ãƒˆæ¬„
 			const FText MessageDbg
 				= FText(LOCTEXT("PMX_FormatNG_Dbg_Msg",
 					"[Restriction]::IM4U Plugin / Bone Index Sort NG.\n\
-					“Ç‚İ‚İ‘ÎÛ‚ÌPMXƒf[ƒ^‚ÌBone\‘¢‚ª‘z’èŠO‚©‚à‚µ‚ê‚Ü‚¹‚ñB\n\
-					Œ»PluginVer‚Å‚ÍƒGƒfƒBƒ^ƒNƒ‰ƒbƒVƒ…‚ª”­¶‰Â”\«‚ª‚‚¢ˆ×A“Ç‚İ‚İˆ—‚ğ’†’f‚ğ„§‚µ‚Ü‚·B\n\
-					(Œ´ˆö—áFBone‚Ìeq\¬‚ÌIndexéŒ¾‡‚ª‹t“]‚µ‚Ä‚¢‚é? etc.)\n\
+					èª­ã¿è¾¼ã¿å¯¾è±¡ã®PMXãƒ‡ãƒ¼ã‚¿ã®Boneæ§‹é€ ãŒæƒ³å®šå¤–ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“ã€‚\n\
+					ç¾PluginVerã§ã¯ã‚¨ãƒ‡ã‚£ã‚¿ã‚¯ãƒ©ãƒƒã‚·ãƒ¥ãŒç™ºç”Ÿå¯èƒ½æ€§ãŒé«˜ã„ç‚ºã€èª­ã¿è¾¼ã¿å‡¦ç†ã‚’ä¸­æ–­ã‚’æ¨å¥¨ã—ã¾ã™ã€‚\n\
+					(åŸå› ä¾‹ï¼šBoneã®è¦ªå­æ§‹æˆã®Indexå®£è¨€é †ãŒé€†è»¢ã—ã¦ã„ã‚‹? etc.)\n\
 					\n\
-					’†’f‚µ‚Ü‚·‚©(Yes)?\n\
+					ä¸­æ–­ã—ã¾ã™ã‹(Yes)?\n\
 					Do you want to abort(Press Yes)? Or, continue(Press No)?"));
 			if (EAppReturnType::Yes == FMessageDialog::Open(EAppMsgType::YesNo, MessageDbg))
 			{
@@ -777,7 +777,7 @@ namespace MMD4UE4
 
 		/////
 		int32 i;// , j;
-		// ƒ‚[ƒtî•ñ‚Ì”‚ğæ“¾
+		// ãƒ¢ãƒ¼ãƒ•æƒ…å ±ã®æ•°ã‚’å–å¾—
 		int32 boneNum = boneList.Num();
 
 		// init
@@ -785,10 +785,10 @@ namespace MMD4UE4
 
 		for (i = 0; i < boneNum; i++)
 		{
-			// ƒx[ƒX‚ÌBoneIndex‚ğ•Û
+			// ãƒ™ãƒ¼ã‚¹ã®BoneIndexã‚’ä¿æŒ
 			fixedHierarchyBone[i].originalBoneIndex = i;
 
-			//eƒ{[ƒ“‚Ì‡”Ô”»’èFok is, parent index < self
+			//è¦ªãƒœãƒ¼ãƒ³ã®é †ç•ªåˆ¤å®šï¼šok is, parent index < self
 			if (boneList[i].ParentBoneIndex < i)
 			{
 				fixedHierarchyBone[i].fixFlag_Parent = false;

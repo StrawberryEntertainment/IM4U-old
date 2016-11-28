@@ -1,4 +1,4 @@
-/**********************
+ï»¿/**********************
 * Copy From :
 * @muzun
 * http://bebolog.blogspot.jp/2014/11/c.html
@@ -12,8 +12,8 @@
 #include <iconv.h>
 #endif
 
-// g‚¢•û:
-//   std::string utf8_str;  // UTF-8‚ÅƒGƒ“ƒR[ƒh‚³‚ê‚½•¶š
+// ä½¿ã„æ–¹:
+//   std::string utf8_str;  // UTF-8ã§ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸæ–‡å­—
 //   std::string sjis_str = convert_encoding(utf8_str, "utf-8", "shift-jis");
 
 class EncodeHelper

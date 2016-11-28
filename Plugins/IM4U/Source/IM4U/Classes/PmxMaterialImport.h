@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
 #include "Engine.h"
@@ -8,7 +8,7 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCategoryPMXMaterialImport, Log, All)
 
-/** •¡»Œ³Material‚ÌIndex */
+/** è¤‡è£½å…ƒMaterialã®Index */
 enum EDuplicateBaseMatTypeIndex
 {
 	/** Select Static Mesh if you'd like to import static mesh. */
@@ -33,8 +33,8 @@ class UPmxMaterialImport
 	//virtual UClass* ResolveSupportedClass() override;
 
 	/* 
-	 * ƒ‚ƒfƒ‹ƒCƒ“ƒ|[ƒg‚É¶¬‚·‚éƒ}ƒeƒŠƒAƒ‹‚Ì•¡»Œ³‚ÌƒAƒZƒbƒgƒpƒX
-	 * ¦«—ˆ“I‚É‚ÍPJŒÅ—L‚Ìİ’èƒpƒX‚ğ‚½‚¹‚ç‚ê‚ê‚Î‚Æ
+	 * ãƒ¢ãƒ‡ãƒ«ã‚¤ãƒ³ãƒãƒ¼ãƒˆæ™‚ã«ç”Ÿæˆã™ã‚‹ãƒãƒ†ãƒªã‚¢ãƒ«ã®è¤‡è£½å…ƒã®ã‚¢ã‚»ãƒƒãƒˆãƒ‘ã‚¹
+	 * â€»å°†æ¥çš„ã«ã¯PJå›ºæœ‰ã®è¨­å®šãƒ‘ã‚¹ã‚’æŒãŸã›ã‚‰ã‚Œã‚Œã°ã¨
 	 */
 #define D_IM4U_MMDBaseMat_Path_Normal "/IM4U/Material/M_MMD_MatBase_Masked.M_MMD_MatBase_Masked"
 #define D_IM4U_MMDBaseMat_Path_Luminou "/IM4U/Material/M_MMD_MatBase_Luminous.M_MMD_MatBase_Luminous"
@@ -42,7 +42,7 @@ class UPmxMaterialImport
 #define D_IM4U_MMDBaseMat_Path_Unlit_Luminou "/IM4U/Material/M_MMD_MatBase_UnLit_Luminus.M_MMD_MatBase_UnLit_Luminus"
 
 	/* 
-	 * Material Inst—pParamem Name
+	 * Material Instç”¨Paramem Name
 	 */
 	/* Texture Base */
 #define D_IM4U_MatInst_Name_BaseTexture		"TextureBase"

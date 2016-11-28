@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 
 #include "IM4UPrivatePCH.h"
@@ -221,7 +221,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 	}
 	else
 	{
-		//ƒ‚ƒfƒ‹“Ç‚İ‚İŒã‚ÌŒx•¶•\¦FƒRƒƒ“ƒg—“
+		//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿å¾Œã®è­¦å‘Šæ–‡è¡¨ç¤ºï¼šã‚³ãƒ¡ãƒ³ãƒˆæ¬„
 		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic", "{0}"), FText::FromString("tilesss"));
 		const FText Message
 			= FText::Format(LOCTEXT("ImportReadMe_Generic_Msg",
@@ -232,12 +232,12 @@ UObject* UPmxFactory::FactoryCreateBinary
 			FEditorDelegates::OnAssetPostImport.Broadcast(this, NULL);
 			return NULL;
 		}
-		TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} §ŒÀ–€"), FText::FromString("IM4U Plugin"));
+		TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} åˆ¶é™äº‹é …"), FText::FromString("IM4U Plugin"));
 		const FText MessageDbg
 			= FText(LOCTEXT("ImportReadMe_Generic_Dbg_Msg",
-			"Ÿ‚ÌImportOption—pSlate‚Í‚Ü‚¾À‘•“r’†‚Å‚·B\n\
-			Import‘ÎÛ‚ÍSkeleton‚Ì‚İ¶¬‰Â”\B\n\
-			Œ»“_‚Å—LŒø‚Èƒpƒ‰ƒ[ƒ^‚ÍA•\¦‚³‚ê‚Ä‚¢‚é€–Ú‚ª—LŒø‚Å‚·B") );
+			"æ¬¡ã®ImportOptionç”¨Slateã¯ã¾ã å®Ÿè£…é€”ä¸­ã§ã™ã€‚\n\
+			Importå¯¾è±¡ã¯Skeletonã®ã¿ç”Ÿæˆå¯èƒ½ã€‚\n\
+			ç¾æ™‚ç‚¹ã§æœ‰åŠ¹ãªãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã¯ã€è¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹é …ç›®ãŒæœ‰åŠ¹ã§ã™ã€‚") );
 		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
 	}
 
@@ -611,7 +611,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 	{
 		const FText Message 
 			= FText::Format(LOCTEXT("ImportFailed_Generic", 
-				"Failed to import '{0}'. Failed to create asset '{1}'\nMMDƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ‚ğ’†~‚µ‚Ü‚·B\nIM4U Plugin"),
+				"Failed to import '{0}'. Failed to create asset '{1}'\nMMDãƒ¢ãƒ‡ãƒ«ã®èª­ã¿è¾¼ã¿ã‚’ä¸­æ­¢ã—ã¾ã™ã€‚\nIM4U Plugin"),
 				FText::FromString(*Name.ToString()), FText::FromString(*Name.ToString()));
 		FMessageDialog::Open(EAppMsgType::Ok, Message);
 		//UE_LOG(LogAssetTools, Warning, TEXT("%s"), *Message.ToString());
@@ -1451,8 +1451,8 @@ UMMDExtendAsset * UPmxFactory::CreateMMDExtendFromMMDModel(
 
 	//MMD Extend asset
 
-	// TBD::ƒAƒZƒbƒg¶¬ŠÖ”‚ÅŠù‘¶ƒAƒZƒbƒg‚Ì”»’f‚ª‚Å‚«‚Ä‚¢‚È‚¢‚Æv‚í‚ê‚éB
-	// ê‡‚É‚æ‚Á‚Ä‚ÍVMDFactory‚ÌƒAƒZƒbƒg¶¬ˆ—‚ğŒ³‚ÉÄİŒv‚·‚é‚±‚Æ
+	// TBD::ã‚¢ã‚»ãƒƒãƒˆç”Ÿæˆé–¢æ•°ã§æ—¢å­˜ã‚¢ã‚»ãƒƒãƒˆæ™‚ã®åˆ¤æ–­ãŒã§ãã¦ã„ãªã„ã¨æ€ã‚ã‚Œã‚‹ã€‚
+	// å ´åˆã«ã‚ˆã£ã¦ã¯VMDFactoryã®ã‚¢ã‚»ãƒƒãƒˆç”Ÿæˆå‡¦ç†ã‚’å…ƒã«å†è¨­è¨ˆã™ã‚‹ã“ã¨
 	FString ObjectName = FString::Printf(TEXT("%s_MMDExtendAsset"), *Name.ToString());
 	NewMMDExtendAsset = CreateAsset<UMMDExtendAsset>(InParent->GetName(), ObjectName, true);
 	if (!NewMMDExtendAsset)

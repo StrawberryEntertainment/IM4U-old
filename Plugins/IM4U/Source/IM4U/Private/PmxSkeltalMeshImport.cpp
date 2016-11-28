@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+﻿// Copyright 2015 BlackMa9. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
 
@@ -1256,13 +1256,13 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 				break;
 			case 3: //3:SDEF
 				{
-					//���������FSDEF
-					//SDEF�Ɋւ��Ă�BDEF2�ɕϊ����Ĉ����Ƃ���B
-					//����́ASDEF_C�ASDEF_R0�ASDEF_R1�Ɋւ���p�����[�^��ݒ肷����@���s���Ȃ��߁B
-					//��PF(ex.MMD4Mecanim��Dxlib)�ł̎���������ɉ�͋y�я����W���A
-					//���AMMD�ł�SDEF����̎d�l�𖞂������@����������܂ŕۗ��A
-					//SDEF�̎d�l�iMMD�j�Ɋւ��Ă͈ȉ��̃y�[�W���Q�l�ɂ��邱�ƁB
-					//Ref :�F �݂����� �e�\�t�g�ɂ��SDEF�ό`�̍��� - FC2
+					//制限事項：SDEF
+					//SDEFに関してはBDEF2に変換して扱うとする。
+					//これは、SDEF_C、SDEF_R0、SDEF_R1に関するパラメータを設定する方法が不明なため。
+					//別PF(ex.MMD4MecanimやDxlib)での実装例を元に解析及び情報収集し、
+					//かつ、MMDでのSDEF動作の仕様を満たす方法を見つけられるまで保留、
+					//SDEFの仕様（MMD）に関しては以下のページを参考にすること。
+					//Ref :： みくだん 各ソフトによるSDEF変形の差異 - FC2
 					// http://mikudan.blog120.fc2.com/blog-entry-339.html
 
 					/////////////////////////////////////
@@ -1277,8 +1277,8 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 				break;
 #if 0 //for pmx ver 2.1 formnat
 			case 4:
-				// ���������FQDEF
-				// QDEF�Ɋւ��āAMMD�ł̎d�l�𒲂ׂ鎖�B
+				// 制限事項：QDEF
+				// QDEFに関して、MMDでの仕様を調べる事。
 				{
 					for (multiBone = 0; multiBone < 4; ++multiBone)
 					{
@@ -1292,8 +1292,8 @@ bool UPmxFactory::FillSkelMeshImporterFromFbx(
 #endif
 			default:
 				{
-					//�ُ�n
-					//0:BDEF1 �`���Ɠ�����@�Ŏb��Ή�����
+					//異常系
+					//0:BDEF1 形式と同じ手法で暫定対応する
 					ImportData.Influences.AddUninitialized();
 					ImportData.Influences.Last().BoneIndex = PmxMeshInfo->vertexList[ControlPointIndex].BoneIndex[0];
 					ImportData.Influences.Last().Weight = PmxMeshInfo->vertexList[ControlPointIndex].BoneWeight[0];
@@ -1454,13 +1454,13 @@ public:
 #endif
 	}
 
-	//UE4.7�n�܂�
+	//UE4.7系まで
 	static const TCHAR *Name()
 	{
 		return TEXT("FAsyncImportMorphTargetWork");
 	}
 
-	//UE4.8�ȍ~�ŗ��p����ꍇ�ɕK�v
+	//UE4.8以降で利用する場合に必要
 #if 1
 	FORCEINLINE TStatId GetStatId() const
 	{
@@ -1576,7 +1576,7 @@ void UPmxFactory::ImportMorphTargetsInternal(
 	{
 		MMD4UE4::PMX_MORPH * pmxMorphPtr = &(PmxMeshInfo.morphList[NodeIndex]);
 		if (pmxMorphPtr->Type == 1 && pmxMorphPtr->Vertex.Num()>0)
-		{//���_Morph
+		{//頂点Morph
 
 			FString ShapeName = pmxMorphPtr->Name;
 			MMD4UE4::PMX_MORPH & ShapeArray

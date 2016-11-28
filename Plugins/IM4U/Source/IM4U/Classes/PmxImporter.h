@@ -1,4 +1,4 @@
-// Copyright 2015 BlackMa9. All Rights Reserved.
+ï»¿// Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
 
@@ -20,247 +20,247 @@
 namespace MMD4UE4
 {
 
-	// ƒ}ƒNƒ’è‹` -----------------------------------
+	// ãƒã‚¯ãƒ­å®šç¾© -----------------------------------
 
-	#define PMX_MAX_IKLINKNUM		(64)			// ‘Î‰‚·‚éIKƒŠƒ“ƒN‚ÌÅ‘å”
+	#define PMX_MAX_IKLINKNUM		(64)			// å¯¾å¿œã™ã‚‹IKãƒªãƒ³ã‚¯ã®æœ€å¤§æ•°
 
-	// ƒf[ƒ^Œ^’è‹` ---------------------------------
+	// ãƒ‡ãƒ¼ã‚¿å‹å®šç¾© ---------------------------------
 
-	// PMXƒtƒ@ƒCƒ‹‚Ìî•ñ‚ğŠi”[‚·‚é\‘¢‘Ì
+	// PMXãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±ã‚’æ ¼ç´ã™ã‚‹æ§‹é€ ä½“
 	struct PMX_BASEINFO
 	{
-		uint8	EncodeType;							// •¶šƒR[ƒh‚ÌƒGƒ“ƒR[ƒhƒ^ƒCƒv 0:UTF16 1:UTF8
-		uint8	UVNum;								// ’Ç‰Á‚t‚u” ( 0`4 )
-		uint8	VertexIndexSize;					// ’¸“_IndexƒTƒCƒY ( 1 or 2 or 4 )
-		uint8	TextureIndexSize;					// ƒeƒNƒXƒ`ƒƒIndexƒTƒCƒY ( 1 or 2 or 4 )
-		uint8	MaterialIndexSize;					// ƒ}ƒeƒŠƒAƒ‹IndexƒTƒCƒY ( 1 or 2 or 4 )
-		uint8	BoneIndexSize;						// ƒ{[ƒ“IndexƒTƒCƒY ( 1 or 2 or 4 )
-		uint8	MorphIndexSize;						// ƒ‚[ƒtIndexƒTƒCƒY ( 1 or 2 or 4 )
-		uint8	RigidIndexSize;						// „‘ÌIndexƒTƒCƒY ( 1 or 2 or 4 )
+		uint8	EncodeType;							// æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã‚¿ã‚¤ãƒ— 0:UTF16 1:UTF8
+		uint8	UVNum;								// è¿½åŠ ï¼µï¼¶æ•° ( 0ï½4 )
+		uint8	VertexIndexSize;					// é ‚ç‚¹Indexã‚µã‚¤ã‚º ( 1 or 2 or 4 )
+		uint8	TextureIndexSize;					// ãƒ†ã‚¯ã‚¹ãƒãƒ£Indexã‚µã‚¤ã‚º ( 1 or 2 or 4 )
+		uint8	MaterialIndexSize;					// ãƒãƒ†ãƒªã‚¢ãƒ«Indexã‚µã‚¤ã‚º ( 1 or 2 or 4 )
+		uint8	BoneIndexSize;						// ãƒœãƒ¼ãƒ³Indexã‚µã‚¤ã‚º ( 1 or 2 or 4 )
+		uint8	MorphIndexSize;						// ãƒ¢ãƒ¼ãƒ•Indexã‚µã‚¤ã‚º ( 1 or 2 or 4 )
+		uint8	RigidIndexSize;						// å‰›ä½“Indexã‚µã‚¤ã‚º ( 1 or 2 or 4 )
 	};
 
-	// ’¸“_ƒf[ƒ^
+	// é ‚ç‚¹ãƒ‡ãƒ¼ã‚¿
 	struct PMX_VERTEX
 	{
-		FVector		Position;						// À•W
-		FVector		Normal;							// –@ü
-		FVector2D	UV;								// •W€UV’l
-		FVector4	AddUV[4];						// ’Ç‰ÁUV’l
-		uint8		WeightType;						// ƒEƒGƒCƒgƒ^ƒCƒv( 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF )
-		uint32		BoneIndex[4];					// ƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-		float		BoneWeight[4];					// ƒ{[ƒ“ƒEƒFƒCƒg
+		FVector		Position;						// åº§æ¨™
+		FVector		Normal;							// æ³•ç·š
+		FVector2D	UV;								// æ¨™æº–UVå€¤
+		FVector4	AddUV[4];						// è¿½åŠ UVå€¤
+		uint8		WeightType;						// ã‚¦ã‚¨ã‚¤ãƒˆã‚¿ã‚¤ãƒ—( 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF )
+		uint32		BoneIndex[4];					// ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		float		BoneWeight[4];					// ãƒœãƒ¼ãƒ³ã‚¦ã‚§ã‚¤ãƒˆ
 		FVector		SDEF_C;							// SDEF-C
 		FVector		SDEF_R0;						// SDEF-R0
 		FVector		SDEF_R1;						// SDEF-R1
-		float		ToonEdgeScale;					// ƒgƒD[ƒ“ƒGƒbƒW‚ÌƒXƒP[ƒ‹
+		float		ToonEdgeScale;					// ãƒˆã‚¥ãƒ¼ãƒ³ã‚¨ãƒƒã‚¸ã®ã‚¹ã‚±ãƒ¼ãƒ«
 	};
 
-	// –ÊƒŠƒXƒg
+	// é¢ãƒªã‚¹ãƒˆ
 	struct PMX_FACE
 	{
-		uint32		VertexIndex[3];					//’¸“_IndexList
+		uint32		VertexIndex[3];					//é ‚ç‚¹IndexList
 	};
 
-	// ƒeƒNƒXƒ`ƒƒî•ñ
+	// ãƒ†ã‚¯ã‚¹ãƒãƒ£æƒ…å ±
 	struct PMX_TEXTURE
 	{
 		FString	TexturePath;
 	};
 
-	// ƒ}ƒeƒŠƒAƒ‹î•ñ
+	// ãƒãƒ†ãƒªã‚¢ãƒ«æƒ…å ±
 	struct PMX_MATERIAL
 	{
-		FString	Name;						// –¼‘O
-		FString	NameEng;						// –¼‘O
+		FString	Name;						// åå‰
+		FString	NameEng;						// åå‰
 
-		float	Diffuse[4];						// ƒfƒBƒtƒ…[ƒYƒJƒ‰[
-		float	Specular[3];						// ƒXƒyƒLƒ…ƒ‰ƒJƒ‰[
-		float	SpecularPower;						// ƒXƒyƒLƒ…ƒ‰’è”
-		float	Ambient[3];						// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[
+		float	Diffuse[4];						// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼
+		float	Specular[3];						// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼
+		float	SpecularPower;						// ã‚¹ãƒšã‚­ãƒ¥ãƒ©å®šæ•°
+		float	Ambient[3];						// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼
 
-		uint8	CullingOff;						// —¼–Ê•`‰æ
-		uint8	GroundShadow;						// ’n–Ê‰e
-		uint8	SelfShadowMap;						// ƒZƒ‹ƒtƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ
-		uint8	SelfShadowDraw;					// ƒZƒ‹ƒtƒVƒƒƒhƒE‚Ì•`‰æ
-		uint8	EdgeDraw;							// ƒGƒbƒW‚Ì•`‰æ
+		uint8	CullingOff;						// ä¸¡é¢æç”»
+		uint8	GroundShadow;						// åœ°é¢å½±
+		uint8	SelfShadowMap;						// ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã¸ã®æç”»
+		uint8	SelfShadowDraw;					// ã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ã‚¦ã®æç”»
+		uint8	EdgeDraw;							// ã‚¨ãƒƒã‚¸ã®æç”»
 
-		float	EdgeColor[4];					// ƒGƒbƒWƒJƒ‰[
-		float	EdgeSize;							// ƒGƒbƒWƒTƒCƒY
+		float	EdgeColor[4];					// ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼
+		float	EdgeSize;							// ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
 
-		int		TextureIndex;						// ’ÊíƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX
-		int		SphereTextureIndex;				// ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX
-		uint8	SphereMode;						// ƒXƒtƒBƒAƒ‚[ƒh( 0:–³Œø 1:æZ 2:‰ÁZ 3:ƒTƒuƒeƒNƒXƒ`ƒƒ(’Ç‰ÁUV1‚Ìx,y‚ğUVQÆ‚µ‚Ä’ÊíƒeƒNƒXƒ`ƒƒ•`‰æ‚ğs‚¤)
+		int		TextureIndex;						// é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		int		SphereTextureIndex;				// ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		uint8	SphereMode;						// ã‚¹ãƒ•ã‚£ã‚¢ãƒ¢ãƒ¼ãƒ‰( 0:ç„¡åŠ¹ 1:ä¹—ç®— 2:åŠ ç®— 3:ã‚µãƒ–ãƒ†ã‚¯ã‚¹ãƒãƒ£(è¿½åŠ UV1ã®x,yã‚’UVå‚ç…§ã—ã¦é€šå¸¸ãƒ†ã‚¯ã‚¹ãƒãƒ£æç”»ã‚’è¡Œã†)
 
-		uint8	ToonFlag;							// ‹¤—LƒgƒD[ƒ“ƒtƒ‰ƒO( 0:ŒÂ•ÊToon 1:‹¤—LToon )
-		int		ToonTextureIndex;					// ƒgƒD[ƒ“ƒeƒNƒXƒ`ƒƒƒCƒ“ƒfƒbƒNƒX
+		uint8	ToonFlag;							// å…±æœ‰ãƒˆã‚¥ãƒ¼ãƒ³ãƒ•ãƒ©ã‚°( 0:å€‹åˆ¥Toon 1:å…±æœ‰Toon )
+		int		ToonTextureIndex;					// ãƒˆã‚¥ãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 
-		int		MaterialFaceNum;					// ƒ}ƒeƒŠƒAƒ‹‚ª“K‰‚³‚ê‚Ä‚¢‚é–Ê‚Ì”
+		int		MaterialFaceNum;					// ãƒãƒ†ãƒªã‚¢ãƒ«ãŒé©å¿œã•ã‚Œã¦ã„ã‚‹é¢ã®æ•°
 	};
 
-	// ‚h‚jƒŠƒ“ƒNî•ñ
+	// ï¼©ï¼«ãƒªãƒ³ã‚¯æƒ…å ±
 	struct PMX_IKLINK
 	{
-		int		BoneIndex;							// ƒŠƒ“ƒNƒ{[ƒ“‚ÌƒCƒ“ƒfƒbƒNƒX
-		uint8	RotLockFlag;						// ‰ñ“]§ŒÀ( 0:OFF 1:ON )
-		float	RotLockMin[3];					// ‰ñ“]§ŒÀA‰ºŒÀ
-		float	RotLockMax[3];					// ‰ñ“]§ŒÀAãŒÀ
+		int		BoneIndex;							// ãƒªãƒ³ã‚¯ãƒœãƒ¼ãƒ³ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		uint8	RotLockFlag;						// å›è»¢åˆ¶é™( 0:OFF 1:ON )
+		float	RotLockMin[3];					// å›è»¢åˆ¶é™ã€ä¸‹é™
+		float	RotLockMax[3];					// å›è»¢åˆ¶é™ã€ä¸Šé™
 	};
 
-	// ‚h‚jî•ñ
+	// ï¼©ï¼«æƒ…å ±
 	struct PMX_IK
 	{
-		int		TargetBoneIndex;					// IKƒ^[ƒQƒbƒg‚Ìƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-		int		LoopNum;							// IKŒvZ‚Ìƒ‹[ƒv‰ñ”
-		float	RotLimit;							// ŒvZˆê‰ñ•Ó‚è‚Ì§ŒÀŠp“x
+		int		TargetBoneIndex;					// IKã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		int		LoopNum;							// IKè¨ˆç®—ã®ãƒ«ãƒ¼ãƒ—å›æ•°
+		float	RotLimit;							// è¨ˆç®—ä¸€å›è¾ºã‚Šã®åˆ¶é™è§’åº¦
 
-		int		LinkNum;							// ‚h‚jƒŠƒ“ƒN‚Ì”
-		PMX_IKLINK Link[PMX_MAX_IKLINKNUM];		// ‚h‚jƒŠƒ“ƒNî•ñ
+		int		LinkNum;							// ï¼©ï¼«ãƒªãƒ³ã‚¯ã®æ•°
+		PMX_IKLINK Link[PMX_MAX_IKLINKNUM];		// ï¼©ï¼«ãƒªãƒ³ã‚¯æƒ…å ±
 	};
 
-	// ƒ{[ƒ“î•ñ
+	// ãƒœãƒ¼ãƒ³æƒ…å ±
 	struct PMX_BONE
 	{
-		FString	Name;						// –¼‘O
-		FString	NameEng;						// –¼‘O
-		FVector	Position;						// À•W
-		int		ParentBoneIndex;					// eƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-		int		TransformLayer;					// •ÏŒ`ŠK‘w
+		FString	Name;						// åå‰
+		FString	NameEng;						// åå‰
+		FVector	Position;						// åº§æ¨™
+		int		ParentBoneIndex;					// è¦ªãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		int		TransformLayer;					// å¤‰å½¢éšå±¤
 
-		uint8	Flag_LinkDest;						// Ú‘±æ
-		uint8	Flag_EnableRot;					// ‰ñ“]‚ª‚Å‚«‚é‚©
-		uint8	Flag_EnableMov;					// ˆÚ“®‚ª‚Å‚«‚é‚©
-		uint8	Flag_Disp;							// •\¦
-		uint8	Flag_EnableControl;				// ‘€ì‚ª‚Å‚«‚é‚©
+		uint8	Flag_LinkDest;						// æ¥ç¶šå…ˆ
+		uint8	Flag_EnableRot;					// å›è»¢ãŒã§ãã‚‹ã‹
+		uint8	Flag_EnableMov;					// ç§»å‹•ãŒã§ãã‚‹ã‹
+		uint8	Flag_Disp;							// è¡¨ç¤º
+		uint8	Flag_EnableControl;				// æ“ä½œãŒã§ãã‚‹ã‹
 		uint8	Flag_IK;							// IK
-		uint8	Flag_AddRot;						// ‰ñ“]•t—^
-		uint8	Flag_AddMov;						// ˆÚ“®•t—^
-		uint8	Flag_LockAxis;						// ²ŒÅ’è
-		uint8	Flag_LocalAxis;					// ƒ[ƒJƒ‹²
-		uint8	Flag_AfterPhysicsTransform;		// •¨—Œã•ÏŒ`
-		uint8	Flag_OutParentTransform;			// ŠO•”e•ÏŒ`
+		uint8	Flag_AddRot;						// å›è»¢ä»˜ä¸
+		uint8	Flag_AddMov;						// ç§»å‹•ä»˜ä¸
+		uint8	Flag_LockAxis;						// è»¸å›ºå®š
+		uint8	Flag_LocalAxis;					// ãƒ­ãƒ¼ã‚«ãƒ«è»¸
+		uint8	Flag_AfterPhysicsTransform;		// ç‰©ç†å¾Œå¤‰å½¢
+		uint8	Flag_OutParentTransform;			// å¤–éƒ¨è¦ªå¤‰å½¢
 
-		FVector	OffsetPosition;				// ƒIƒtƒZƒbƒgÀ•W
-		int		LinkBoneIndex;						// Ú‘±æƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-		int		AddParentBoneIndex;				// •t—^eƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-		float	AddRatio;							// •t—^—¦
-		FVector	LockAxisVector;				// ²ŒÅ’è‚Ì²‚Ì•ûŒüƒxƒNƒgƒ‹
-		FVector	LocalAxisXVector;				// ƒ[ƒJƒ‹²‚Ì‚w²
-		FVector	LocalAxisZVector;				// ƒ[ƒJƒ‹²‚Ì‚y²
-		int		OutParentTransformKey;				// ŠO•”e•ÏŒ`‚Ì Key’l
+		FVector	OffsetPosition;				// ã‚ªãƒ•ã‚»ãƒƒãƒˆåº§æ¨™
+		int		LinkBoneIndex;						// æ¥ç¶šå…ˆãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		int		AddParentBoneIndex;				// ä»˜ä¸è¦ªãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		float	AddRatio;							// ä»˜ä¸ç‡
+		FVector	LockAxisVector;				// è»¸å›ºå®šæ™‚ã®è»¸ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
+		FVector	LocalAxisXVector;				// ãƒ­ãƒ¼ã‚«ãƒ«è»¸ã®ï¼¸è»¸
+		FVector	LocalAxisZVector;				// ãƒ­ãƒ¼ã‚«ãƒ«è»¸ã®ï¼ºè»¸
+		int		OutParentTransformKey;				// å¤–éƒ¨è¦ªå¤‰å½¢æ™‚ã® Keyå€¤
 
-		PMX_IK	IKInfo;							// ‚h‚jî•ñ
+		PMX_IK	IKInfo;							// ï¼©ï¼«æƒ…å ±
 	};
 
-	// ’¸“_ƒ‚[ƒtî•ñ
+	// é ‚ç‚¹ãƒ¢ãƒ¼ãƒ•æƒ…å ±
 	struct PMX_MORPH_VERTEX
 	{
-		int		Index;								// ’¸“_ƒCƒ“ƒfƒbƒNƒX
-		FVector	Offset;						// ’¸“_À•WƒIƒtƒZƒbƒg
+		int		Index;								// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		FVector	Offset;						// é ‚ç‚¹åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	};
 
-	// ‚t‚uƒ‚[ƒtî•ñ
+	// ï¼µï¼¶ãƒ¢ãƒ¼ãƒ•æƒ…å ±
 	struct PMX_MORPH_UV
 	{
-		int		Index;								// ’¸“_ƒCƒ“ƒfƒbƒNƒX
-		float	Offset[4];							// ’¸“_‚t‚uƒIƒtƒZƒbƒg
+		int		Index;								// é ‚ç‚¹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		float	Offset[4];							// é ‚ç‚¹ï¼µï¼¶ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	};
 
-	// ƒ{[ƒ“ƒ‚[ƒtî•ñ
+	// ãƒœãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ•æƒ…å ±
 	struct PMX_MORPH_BONE
 	{
-		int		Index;								// ƒ{[ƒ“ƒCƒ“ƒfƒbƒNƒX
-		FVector	Offset;						// À•WƒIƒtƒZƒbƒg
-		float	Quat[4];							// ‰ñ“]ƒNƒH[ƒ^ƒjƒIƒ“
+		int		Index;								// ãƒœãƒ¼ãƒ³ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		FVector	Offset;						// åº§æ¨™ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+		float	Quat[4];							// å›è»¢ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
 	};
 
-	// Ş¿ƒ‚[ƒtî•ñ
+	// æè³ªãƒ¢ãƒ¼ãƒ•æƒ…å ±
 	struct PMX_MORPH_MATERIAL
 	{
-		int		Index;								// ƒ}ƒeƒŠƒAƒ‹ƒCƒ“ƒfƒbƒNƒX
-		uint8	CalcType;							// ŒvZƒ^ƒCƒv( 0:æZ  1:‰ÁZ )
-		float	Diffuse[4];						// ƒfƒBƒtƒ…[ƒYƒJƒ‰[
-		float	Specular[3];						// ƒXƒyƒLƒ…ƒ‰ƒJƒ‰[
-		float	SpecularPower;						// ƒXƒyƒLƒ…ƒ‰ŒW”
-		float	Ambient[3];						// ƒAƒ“ƒrƒGƒ“ƒgƒJƒ‰[
-		float	EdgeColor[4];					// ƒGƒbƒWƒJƒ‰[
-		float	EdgeSize;							// ƒGƒbƒWƒTƒCƒY
-		float	TextureScale[4];					// ƒeƒNƒXƒ`ƒƒŒW”
-		float	SphereTextureScale[4];			// ƒXƒtƒBƒAƒeƒNƒXƒ`ƒƒŒW”
-		float	ToonTextureScale[4];				// ƒgƒD[ƒ“ƒeƒNƒXƒ`ƒƒŒW”
+		int		Index;								// ãƒãƒ†ãƒªã‚¢ãƒ«ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		uint8	CalcType;							// è¨ˆç®—ã‚¿ã‚¤ãƒ—( 0:ä¹—ç®—  1:åŠ ç®— )
+		float	Diffuse[4];						// ãƒ‡ã‚£ãƒ•ãƒ¥ãƒ¼ã‚ºã‚«ãƒ©ãƒ¼
+		float	Specular[3];						// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ã‚«ãƒ©ãƒ¼
+		float	SpecularPower;						// ã‚¹ãƒšã‚­ãƒ¥ãƒ©ä¿‚æ•°
+		float	Ambient[3];						// ã‚¢ãƒ³ãƒ“ã‚¨ãƒ³ãƒˆã‚«ãƒ©ãƒ¼
+		float	EdgeColor[4];					// ã‚¨ãƒƒã‚¸ã‚«ãƒ©ãƒ¼
+		float	EdgeSize;							// ã‚¨ãƒƒã‚¸ã‚µã‚¤ã‚º
+		float	TextureScale[4];					// ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+		float	SphereTextureScale[4];			// ã‚¹ãƒ•ã‚£ã‚¢ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
+		float	ToonTextureScale[4];				// ãƒˆã‚¥ãƒ¼ãƒ³ãƒ†ã‚¯ã‚¹ãƒãƒ£ä¿‚æ•°
 	};
 
-	// ƒOƒ‹[ƒvƒ‚[ƒt
+	// ã‚°ãƒ«ãƒ¼ãƒ—ãƒ¢ãƒ¼ãƒ•
 	struct PMX_MORPH_GROUP
 	{
-		int		Index;								// ƒ‚[ƒtƒCƒ“ƒfƒbƒNƒX
-		float	Ratio;								// ƒ‚[ƒt—¦
+		int		Index;								// ãƒ¢ãƒ¼ãƒ•ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		float	Ratio;								// ãƒ¢ãƒ¼ãƒ•ç‡
 	};
 
-	// ƒ‚[ƒtî•ñ
+	// ãƒ¢ãƒ¼ãƒ•æƒ…å ±
 	struct PMX_MORPH
 	{
-		FString	Name;						// –¼‘O
-		FString	NameEng;						// –¼‘O
+		FString	Name;						// åå‰
+		FString	NameEng;						// åå‰
 
-		uint8	ControlPanel;						// ‘€ìƒpƒlƒ‹
-		uint8	Type;								// ƒ‚[ƒt‚Ìí—Ş  0:ƒOƒ‹[ƒv 1:’¸“_ 2:ƒ{[ƒ“ 3:UV 4:’Ç‰ÁUV1 5:’Ç‰ÁUV2 6:’Ç‰ÁUV3 7:’Ç‰ÁUV4 8:Ş¿
+		uint8	ControlPanel;						// æ“ä½œãƒ‘ãƒãƒ«
+		uint8	Type;								// ãƒ¢ãƒ¼ãƒ•ã®ç¨®é¡  0:ã‚°ãƒ«ãƒ¼ãƒ— 1:é ‚ç‚¹ 2:ãƒœãƒ¼ãƒ³ 3:UV 4:è¿½åŠ UV1 5:è¿½åŠ UV2 6:è¿½åŠ UV3 7:è¿½åŠ UV4 8:æè³ª
 
-		int		DataNum;							// ƒ‚[ƒtî•ñ‚Ì”
+		int		DataNum;							// ãƒ¢ãƒ¼ãƒ•æƒ…å ±ã®æ•°
 
-		TArray<PMX_MORPH_VERTEX>	Vertex;				// ’¸“_ƒ‚[ƒt
-		TArray<PMX_MORPH_UV>		UV;						// UVƒ‚[ƒt
-		TArray<PMX_MORPH_BONE>		Bone;					// ƒ{[ƒ“ƒ‚[ƒt
-		TArray<PMX_MORPH_MATERIAL>	Material;			// ƒ}ƒeƒŠƒAƒ‹ƒ‚[ƒt
-		TArray<PMX_MORPH_GROUP>		Group;				// ƒOƒ‹[ƒvƒ‚[ƒt
+		TArray<PMX_MORPH_VERTEX>	Vertex;				// é ‚ç‚¹ãƒ¢ãƒ¼ãƒ•
+		TArray<PMX_MORPH_UV>		UV;						// UVãƒ¢ãƒ¼ãƒ•
+		TArray<PMX_MORPH_BONE>		Bone;					// ãƒœãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ•
+		TArray<PMX_MORPH_MATERIAL>	Material;			// ãƒãƒ†ãƒªã‚¢ãƒ«ãƒ¢ãƒ¼ãƒ•
+		TArray<PMX_MORPH_GROUP>		Group;				// ã‚°ãƒ«ãƒ¼ãƒ—ãƒ¢ãƒ¼ãƒ•
 	};
 
-	// „‘Ìî•ñ
+	// å‰›ä½“æƒ…å ±
 	struct PMX_RIGIDBODY
 	{
-		FString	Name;						// –¼‘O
+		FString	Name;						// åå‰
 
-		int		BoneIndex;							// ‘ÎÛƒ{[ƒ“”Ô†
+		int		BoneIndex;							// å¯¾è±¡ãƒœãƒ¼ãƒ³ç•ªå·
 
-		uint8	RigidBodyGroupIndex;				// „‘ÌƒOƒ‹[ƒv”Ô†
-		uint16	RigidBodyGroupTarget;				// „‘ÌƒOƒ‹[ƒv‘ÎÛ
+		uint8	RigidBodyGroupIndex;				// å‰›ä½“ã‚°ãƒ«ãƒ¼ãƒ—ç•ªå·
+		uint16	RigidBodyGroupTarget;				// å‰›ä½“ã‚°ãƒ«ãƒ¼ãƒ—å¯¾è±¡
 
-		uint8	ShapeType;							// Œ`ó( 0:‹…  1:”   2:ƒJƒvƒZƒ‹ )
-		float	ShapeW;							// •
-		float	ShapeH;							// ‚‚³
-		float	ShapeD;							// ‰œs
+		uint8	ShapeType;							// å½¢çŠ¶( 0:çƒ  1:ç®±  2:ã‚«ãƒ—ã‚»ãƒ« )
+		float	ShapeW;							// å¹…
+		float	ShapeH;							// é«˜ã•
+		float	ShapeD;							// å¥¥è¡Œ
 
-		FVector	Position;						// ˆÊ’u
-		float	Rotation[3];						// ‰ñ“]( ƒ‰ƒWƒAƒ“ )
+		FVector	Position;						// ä½ç½®
+		float	Rotation[3];						// å›è»¢( ãƒ©ã‚¸ã‚¢ãƒ³ )
 
-		float	RigidBodyWeight;					// ¿—Ê
-		float	RigidBodyPosDim;					// ˆÚ“®Œ¸Š
-		float	RigidBodyRotDim;					// ‰ñ“]Œ¸Š
-		float	RigidBodyRecoil;					// ”½”­—Í
-		float	RigidBodyFriction;					// –€C—Í
+		float	RigidBodyWeight;					// è³ªé‡
+		float	RigidBodyPosDim;					// ç§»å‹•æ¸›è¡°
+		float	RigidBodyRotDim;					// å›è»¢æ¸›è¡°
+		float	RigidBodyRecoil;					// åç™ºåŠ›
+		float	RigidBodyFriction;					// æ‘©æ“¦åŠ›
 
-		uint8	RigidBodyType;						// „‘Ìƒ^ƒCƒv( 0:Bone’Ç]  1:•¨—‰‰Z  2:•¨—‰‰Z(BoneˆÊ’u‡‚í‚¹) )
+		uint8	RigidBodyType;						// å‰›ä½“ã‚¿ã‚¤ãƒ—( 0:Boneè¿½å¾“  1:ç‰©ç†æ¼”ç®—  2:ç‰©ç†æ¼”ç®—(Boneä½ç½®åˆã‚ã›) )
 	};
 
-	// ƒWƒ‡ƒCƒ“ƒgî•ñ
+	// ã‚¸ãƒ§ã‚¤ãƒ³ãƒˆæƒ…å ±
 	struct PMX_JOINT
 	{
-		FString	Name;						// –¼‘O
+		FString	Name;						// åå‰
 
-		uint8	Type;								// í—Ş( 0:ƒXƒvƒŠƒ“ƒO6DOF ( PMX2.0 ‚Å‚Í 0 ‚Ì‚İ )
+		uint8	Type;								// ç¨®é¡( 0:ã‚¹ãƒ—ãƒªãƒ³ã‚°6DOF ( PMX2.0 ã§ã¯ 0 ã®ã¿ )
 
-		int		RigidBodyAIndex;					// Ú‘±æ„‘Ì‚`
-		int		RigidBodyBIndex;					// Ú‘±æ„‘Ì‚a
+		int		RigidBodyAIndex;					// æ¥ç¶šå…ˆå‰›ä½“ï¼¡
+		int		RigidBodyBIndex;					// æ¥ç¶šå…ˆå‰›ä½“ï¼¢
 
-		FVector	Position;						// ˆÊ’u
-		float	Rotation[3];						// ‰ñ“]( ƒ‰ƒWƒAƒ“ )
+		FVector	Position;						// ä½ç½®
+		float	Rotation[3];						// å›è»¢( ãƒ©ã‚¸ã‚¢ãƒ³ )
 
-		float	ConstrainPositionMin[3];			// ˆÚ“®§ŒÀ-‰ºŒÀ
-		float	ConstrainPositionMax[3];			// ˆÚ“®§ŒÀ-ãŒÀ
-		float	ConstrainRotationMin[3];			// ‰ñ“]§ŒÀ-‰ºŒÀ
-		float	ConstrainRotationMax[3];			// ‰ñ“]§ŒÀ-ãŒÀ
+		float	ConstrainPositionMin[3];			// ç§»å‹•åˆ¶é™-ä¸‹é™
+		float	ConstrainPositionMax[3];			// ç§»å‹•åˆ¶é™-ä¸Šé™
+		float	ConstrainRotationMin[3];			// å›è»¢åˆ¶é™-ä¸‹é™
+		float	ConstrainRotationMax[3];			// å›è»¢åˆ¶é™-ä¸Šé™
 
-		float	SpringPosition[3];				// ƒoƒl’è”-ˆÚ“®
-		float	SpringRotation[3];				// ƒoƒl’è”-‰ñ“]
+		float	SpringPosition[3];				// ãƒãƒå®šæ•°-ç§»å‹•
+		float	SpringRotation[3];				// ãƒãƒå®šæ•°-å›è»¢
 	};
 	//////////////////////////////////////////////////////////////
 
@@ -276,13 +276,13 @@ namespace MMD4UE4
 	DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_PmxMeshInfo, Log, All)
 
 	////////////////////////////////////////////////////////////////////
-	// Inport—p meta data Ši”[ƒNƒ‰ƒX
+	// Inportç”¨ meta data æ ¼ç´ã‚¯ãƒ©ã‚¹
 	class PmxMeshInfo : public MMDImportHelper
 	{
 		//////////////////////////////////////
 		// Sort Parent Bone ( sort tree bones)
-		// memo: ƒ{[ƒ“‚Ì”z—ñ‚Åq->e‚Ì‡‚Ìê‡A
-		//       ProcessImportMeshSkeleton“à•”‚Ìcheck‚Éˆø‚Á‚©‚©‚èƒNƒ‰ƒbƒVƒ…‚·‚é‚½‚ßB
+		// memo: ãƒœãƒ¼ãƒ³ã®é…åˆ—ã§å­->è¦ªã®é †ã®å ´åˆã€
+		//       ProcessImportMeshSkeletonå†…éƒ¨ã®checkã«å¼•ã£ã‹ã‹ã‚Šã‚¯ãƒ©ãƒƒã‚·ãƒ¥ã™ã‚‹ãŸã‚ã€‚
 		// how to: after PMXLoaderBinary func.
 		//////////////////////////////////////
 		bool FixSortParentBoneIndex();

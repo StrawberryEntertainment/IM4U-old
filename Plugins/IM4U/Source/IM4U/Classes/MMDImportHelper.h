@@ -1,4 +1,4 @@
-
+﻿
 // Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
@@ -9,8 +9,8 @@
 
 namespace MMD4UE4
 {
-	// ToDo: MMD(PMX,PMD,VMD)�̋��ʊ֐��Ƃ��ă��t�@�N�^�����O���鎖
-	//		 ����APMX�n�APMD/VMD�n�ŕʂ�Ď������Ă���ׁB
+	// ToDo: MMD(PMX,PMD,VMD)の共通関数としてリファクタリングする事
+	//		 現状、PMX系、PMD/VMD系で別れて実装している為。
 
 	///////////////
 	// encode type 

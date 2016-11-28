@@ -1,4 +1,4 @@
-
+ï»¿
 // Copyright 2015 BlackMa9. All Rights Reserved.
 #pragma once
 
@@ -10,7 +10,7 @@
 // Copy From DxLib DxModelLoaderVMD.h
 // DX Library Copyright (C) 2001-2008 Takumi Yamada.
 
-//MMD‚Ìƒ‚[ƒVƒ‡ƒ“ƒf[ƒ^(VMD)Œ`®@‚ß‚à2@(•\¦EIK)
+//MMDã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿(VMD)å½¢å¼ã€€ã‚ã‚‚2ã€€(è¡¨ç¤ºãƒ»IK)
 //http://blog.goo.ne.jp/torisu_tetosuki/e/2a2cb5c2de7563c5e6f20b19e1fe6139
 
 //#define uint8 (unsigned char)
@@ -32,32 +32,32 @@ namespace MMD4UE4
 #define D_VMD_KEY_BEZIER_AR_2_KND_Y		1		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
 #define D_VMD_KEY_BEZIER_AR_2_KND_Z		2		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
 #define D_VMD_KEY_BEZIER_AR_2_KND_R		3		/* [AR0;BEZ-id][AR1:xy][AR1:XYZ R]**/
-	// VMDƒL[ƒf[ƒ^( 111byte )
+	// VMDã‚­ãƒ¼ãƒ‡ãƒ¼ã‚¿( 111byte )
 	struct VMD_KEY
 	{
 		//uint8	Data[111];
 		
-		char	Name[ 15 ] ;						// –¼‘O
-		uint32	Frame ;								// ƒtƒŒ[ƒ€
-		float	Position[ 3 ] ;						// À•W
-		float	Quaternion[ 4 ] ;					// ƒNƒH[ƒ^ƒjƒIƒ“
-		/*float	PosXBezier[ 4 ] ;					// À•W‚w—pƒxƒWƒF‹Èüî•ñ
-		float	PosYBezier[ 4 ] ;					// À•W‚x—pƒxƒWƒF‹Èüî•ñ
-		float	PosZBezier[ 4 ] ;					// À•W‚y—pƒxƒWƒF‹Èüî•ñ
-		float	RotBezier[4 ] ;					// ‰ñ“]—pƒxƒWƒF‹Èüî•ñ
+		char	Name[ 15 ] ;						// åå‰
+		uint32	Frame ;								// ãƒ•ãƒ¬ãƒ¼ãƒ 
+		float	Position[ 3 ] ;						// åº§æ¨™
+		float	Quaternion[ 4 ] ;					// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+		/*float	PosXBezier[ 4 ] ;					// åº§æ¨™ï¼¸ç”¨ãƒ™ã‚¸ã‚§æ›²ç·šæƒ…å ±
+		float	PosYBezier[ 4 ] ;					// åº§æ¨™ï¼¹ç”¨ãƒ™ã‚¸ã‚§æ›²ç·šæƒ…å ±
+		float	PosZBezier[ 4 ] ;					// åº§æ¨™ï¼ºç”¨ãƒ™ã‚¸ã‚§æ›²ç·šæƒ…å ±
+		float	RotBezier[4 ] ;					// å›è»¢ç”¨ãƒ™ã‚¸ã‚§æ›²ç·šæƒ…å ±
 		*/
 		uint8	Bezier[2][2][4];					// [id] [xy][XYZ R]
 
 	};
 
-	// VMD•\îƒL[ƒf[ƒ^( 23byte )
+	// VMDè¡¨æƒ…ã‚­ãƒ¼ãƒ‡ãƒ¼ã‚¿( 23byte )
 	struct VMD_FACE_KEY
 	{
-		/*uint8	Data[23];						// ƒf[ƒ^
+		/*uint8	Data[23];						// ãƒ‡ãƒ¼ã‚¿
 		*/
-		char	Name[ 15 ] ;						// •\î–¼
-		uint32	Frame ;								// ƒtƒŒ[ƒ€
-		float	Factor ;							// ƒuƒŒƒ“ƒh—¦
+		char	Name[ 15 ] ;						// è¡¨æƒ…å
+		uint32	Frame ;								// ãƒ•ãƒ¬ãƒ¼ãƒ 
+		float	Factor ;							// ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡
 		
 	};
 
@@ -71,54 +71,54 @@ namespace MMD4UE4
 #define D_VMD_CAMERA_INTERPOLATION_AR_1_Y		1	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
 #define D_VMD_CAMERA_INTERPOLATION_AR_2_X		0	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
 #define D_VMD_CAMERA_INTERPOLATION_AR_2_Y		1	/*Interpolation[AR0-6:X,Y,Z,Rot,Len,View][AR1-2:X,Y][AR2-2:P1,P2]*/
-	// VMDƒJƒƒ‰ƒL[ƒf[ƒ^
+	// VMDã‚«ãƒ¡ãƒ©ã‚­ãƒ¼ãƒ‡ãƒ¼ã‚¿
 	struct VMD_CAMERA
 	{
-		/*uint8	Data[61];						// ƒf[ƒ^
+		/*uint8	Data[61];						// ãƒ‡ãƒ¼ã‚¿
 		*/
-		uint32	Frame;								//  4:  0:ƒtƒŒ[ƒ€”Ô†
-		float	Length;								//  8:  4: -(‹——£)
-		float	Location[3];						// 20:  8:ˆÊ’u
-		float	Rotate[3];							// 32: 20:ƒIƒCƒ‰[Šp // X²‚Í•„†‚ª”½“]‚µ‚Ä‚¢‚é‚Ì‚Å’ˆÓ
-		uint8	Interpolation[6][2][2];				// 56: 32:•âŠÔî•ñ // [6:X,Y,Z,Rot,Len,View][2:X,Y][2:P1,P2]
-		uint32	ViewingAngle;						// 60: 56:Œü‚«
-		uint8	Perspective;						// 61: 60:Ë‰eƒJƒƒ‰‚©‚Ç‚¤‚© 0:Ë‰eƒJƒƒ‰ 1:³Ë‰eƒJƒƒ‰
+		uint32	Frame;								//  4:  0:ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·
+		float	Length;								//  8:  4: -(è·é›¢)
+		float	Location[3];						// 20:  8:ä½ç½®
+		float	Rotate[3];							// 32: 20:ã‚ªã‚¤ãƒ©ãƒ¼è§’ // Xè»¸ã¯ç¬¦å·ãŒåè»¢ã—ã¦ã„ã‚‹ã®ã§æ³¨æ„
+		uint8	Interpolation[6][2][2];				// 56: 32:è£œé–“æƒ…å ± // [6:X,Y,Z,Rot,Len,View][2:X,Y][2:P1,P2]
+		uint32	ViewingAngle;						// 60: 56:å‘ã
+		uint8	Perspective;						// 61: 60:å°„å½±ã‚«ãƒ¡ãƒ©ã‹ã©ã†ã‹ 0:å°„å½±ã‚«ãƒ¡ãƒ© 1:æ­£å°„å½±ã‚«ãƒ¡ãƒ©
 		
 	};
-	// VMD Æ–¾
+	// VMD ç…§æ˜
 	struct VMD_LIGHT
 	{
 		uint32	flameNo;
 		float	RGB[3];
 		float	Loc[3];
 	};
-	// VMDƒZƒ‹ƒtƒVƒƒƒh[
+	// VMDã‚»ãƒ«ãƒ•ã‚·ãƒ£ãƒ‰ãƒ¼
 	struct VMD_SELFSHADOW{
 		uint32	FlameNo;
 		uint8	Mode;
 		float	Distance;
 	};
 	////////////////////////////////////////////////////
-	// mmd 7.40ˆÈ~‚Åì¬‚³‚ê‚½VMD‚Ìê‡ˆÈ‰º‚ÌŠg’£ƒf[ƒ^‚ª“ü‚é
-	// QlFMMD‚Ìƒ‚[ƒVƒ‡ƒ“ƒf[ƒ^(VMD)Œ`®@‚ß‚à2@(•\¦EIK)
+	// mmd 7.40ä»¥é™ã§ä½œæˆã•ã‚ŒãŸVMDã®å ´åˆä»¥ä¸‹ã®æ‹¡å¼µãƒ‡ãƒ¼ã‚¿ãŒå…¥ã‚‹
+	// å‚è€ƒï¼šMMDã®ãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿(VMD)å½¢å¼ã€€ã‚ã‚‚2ã€€(è¡¨ç¤ºãƒ»IK)
 	///////////////////////////////////////////////////
-	// •\¦EIKƒf[ƒ^
-	//int dataCount; // ƒf[ƒ^”
+	// è¡¨ç¤ºãƒ»IKãƒ‡ãƒ¼ã‚¿
+	//int dataCount; // ãƒ‡ãƒ¼ã‚¿æ•°
 	//VMD_VISIBLE_IK_DATA data[dataCount];
 	////////////
-	// IKƒf[ƒ^—p\‘¢‘Ì
+	// IKãƒ‡ãƒ¼ã‚¿ç”¨æ§‹é€ ä½“
 	typedef struct _VMD_IK_DATA
 	{
-		char ikBoneName[20]; // IKƒ{[ƒ“–¼
-		unsigned char ikEnabled; // IK—LŒø // 0:off 1:on
+		char ikBoneName[20]; // IKãƒœãƒ¼ãƒ³å
+		unsigned char ikEnabled; // IKæœ‰åŠ¹ // 0:off 1:on
 	} VMD_IK_DATA;
-	// •\¦EIKƒf[ƒ^—p\‘¢‘Ì
+	// è¡¨ç¤ºãƒ»IKãƒ‡ãƒ¼ã‚¿ç”¨æ§‹é€ ä½“
 	typedef struct _VMD_VISIBLE_IK_DATA
 	{
-		int frameNo; // ƒtƒŒ[ƒ€”Ô†
-		unsigned char visible; // •\¦ // 0:off 1:on
-		int ikCount; // IK”
-		TArray<VMD_IK_DATA> ikData; // ikData[ikCount]; // IKƒf[ƒ^ƒŠƒXƒg
+		int frameNo; // ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·
+		unsigned char visible; // è¡¨ç¤º // 0:off 1:on
+		int ikCount; // IKæ•°
+		TArray<VMD_IK_DATA> ikData; // ikData[ikCount]; // IKãƒ‡ãƒ¼ã‚¿ãƒªã‚¹ãƒˆ
 	} VMD_VISIBLE_IK_DATA;
 	////////////////////////////////////////////////////
 
@@ -187,7 +187,7 @@ namespace MMD4UE4
 	};
 	//
 	DECLARE_LOG_CATEGORY_EXTERN(LogMMD4UE4_VmdMotionInfo, Log, All)
-	// Inport—p meta data Ši”[ƒNƒ‰ƒX
+	// Inportç”¨ meta data æ ¼ç´ã‚¯ãƒ©ã‚¹
 	class VmdMotionInfo : public MMDImportHelper
 	{
 	public:
@@ -214,7 +214,7 @@ namespace MMD4UE4
 			EVMD_KEYCAM 
 		};
 		//////////////////////////////////////////
-		// w’èList“à‚ÅŠY“–‚·‚éFrame–¼‚ª‚ ‚ê‚Î‚»‚ÌIndex’l‚ğ•Ô‚·BˆÙí’l=-1B
+		// æŒ‡å®šListå†…ã§è©²å½“ã™ã‚‹FrameåãŒã‚ã‚Œã°ãã®Indexå€¤ã‚’è¿”ã™ã€‚ç•°å¸¸å€¤=-1ã€‚
 		int32 FindKeyTrackName(
 			FString targetName,
 			EVMDKEYFRAMETYPE listType);
