@@ -401,4 +401,11 @@ ImportOptionの「bCreateMaterialInstMode」を有効にすることで動作し
 - Add:[Experiment]Material-Instance生成モード有効、かつ、UnlitModeを有効にするとshaderModelをUnlitにする機能を追加。  
 
 
+## Ver 0.7.4 2017/1/1
+
+- Up :[Experiment]Material-Instanceを生成する機能の暫定リリース版に更新。  
+- Fix:[Experiment]プラグイン用Material AssetのEmissive関係のノード構成を修正。 
+- Fix:[Experiment]プラグイン用Material Assetのコメント分にBasePathを追加。    
+- Fix:[Experiment]プラグイン用Material AssetのLuminous系のインポート時に設定する値の計算式を修正。    
+
 以上

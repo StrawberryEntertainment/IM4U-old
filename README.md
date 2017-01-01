@@ -1,5 +1,6 @@
 
-IM4U-Source-Repository For.UE4.13.x
+# IM4U-Source-Repository For.UE4.13.x
+
 =============
 
 Import MMD Model and Motion file for UnrealEngine4 Plugin.
@@ -7,14 +8,17 @@ Import MMD Model and Motion file for UnrealEngine4 Plugin.
 
 Plugin-Release repository (include dll, not include src files).  
 -> https://github.com/bm9/IM4U  
- please select brunch or tag.  
+ please select brunch or release tag.  
 
 =============
+
+---
 
 Original Readme (Unreal Engine)
 =============
 
-Unreal Engine
+# Unreal Engine
+
 =============
 
 Welcome to the Unreal Engine source code! 

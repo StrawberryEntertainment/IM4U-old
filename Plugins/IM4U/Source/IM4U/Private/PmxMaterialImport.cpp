@@ -1530,9 +1530,15 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous(
 	}
 	//Specular Powor
 	{
+		float specPowr = 0.0f;
+		if (PmxMaterial.SpecularPower > D_IM4U_Param_SpecularPowor_Min)
+		{
+			specPowr = (PmxMaterial.SpecularPower - D_IM4U_Param_SpecularPowor_Min);
+			specPowr = specPowr / (D_IM4U_Param_SpecularPowor_Thd - D_IM4U_Param_SpecularPowor_Min);
+		}
 		pUMIC->SetScalarParameterValueEditorOnly(
 			FName(TEXT(D_IM4U_MatInst_Name_SpecularPower)),
-			PmxMaterial.SpecularPower - D_IM4U_Param_SpecularPowor_Thd);
+			specPowr);
 	}
 
 	if (pUMIC->BasePropertyOverrides.TwoSided != PmxMaterial.CullingOff)
@@ -1637,9 +1643,15 @@ UMaterialInterface* UPmxMaterialImport::CreateMaterialInst_Luminous_Unlit(
 	}
 	//Specular Powor
 	{
+		float specPowr = 0.0f;
+		if (PmxMaterial.SpecularPower > D_IM4U_Param_SpecularPowor_Min)
+		{
+			specPowr = (PmxMaterial.SpecularPower - D_IM4U_Param_SpecularPowor_Min);
+			specPowr = specPowr/(D_IM4U_Param_SpecularPowor_Thd - D_IM4U_Param_SpecularPowor_Min);
+		}
 		pUMIC->SetScalarParameterValueEditorOnly(
 			FName(TEXT(D_IM4U_MatInst_Name_SpecularPower)),
-				PmxMaterial.SpecularPower - D_IM4U_Param_SpecularPowor_Thd);
+			specPowr);
 	}
 
 	if (pUMIC->BasePropertyOverrides.TwoSided != PmxMaterial.CullingOff)

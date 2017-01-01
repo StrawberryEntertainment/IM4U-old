@@ -59,6 +59,8 @@ class UPmxMaterialImport
 
 	/* Luminous Specular Powor th*/
 #define D_IM4U_Param_SpecularPowor_Thd		110.0f
+	/* Luminous Specular Powor Min*/
+#define D_IM4U_Param_SpecularPowor_Min		100.0f
 
 	/***********************/
 
