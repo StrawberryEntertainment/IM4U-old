@@ -11,8 +11,7 @@
 #include "ObjectTools.h"
 #include "AssetRegistryModule.h"
 
-#include "PmxImporter.h"
-#include "PmxImportUI.h"
+#include "VmdImportUI.h"
 
 
 #include "Factory/VmdImportOption.h"
@@ -54,7 +53,7 @@ void UVmdFactory::PostInitProperties()
 {
 	Super::PostInitProperties();
 
-	ImportUI = NewObject<UPmxImportUI>(this, NAME_None, RF_NoFlags);
+	ImportUI = NewObject<UVmdImportUI>(this, NAME_None, RF_NoFlags);
 }
 
 bool UVmdFactory::DoesSupportClass(UClass* Class)
@@ -93,7 +92,8 @@ UObject* UVmdFactory::FactoryCreateBinary
 	/////////////////////////////////////////
 	UAnimSequence* LastCreatedAnim = NULL;
 	USkeleton* Skeleton = NULL;
-	PMXImportOptions* ImportOptions = NULL;
+	USkeletalMesh* SkeletalMesh = NULL;
+	VMDImportOptions* ImportOptions = NULL;
 	//////////////////////////////////////
 
 	/***************************************
@@ -105,45 +105,18 @@ UObject* UVmdFactory::FactoryCreateBinary
 		FText TitleStr = FText::Format(LOCTEXT("ImportReadMe_Generic_Dbg", "{0} 制限事項"), FText::FromString("IM4U Plugin"));
 		const FText MessageDbg
 			= FText(LOCTEXT("ImportReadMe_Generic_Dbg_Comment",
-			"次のImportOption用Slateはまだ実装途中です。\n\
-			現時点で有効なパラメータは、\n\
-			::Skeleton Asset(必須::Animation関連付け先)\n\
-			::Animation Asset(NULL以外で既存AssetにMorphのみ追加する処理を実行。NULLでBoneとMorph含む新規Asset作成)\n\
-			::DataTable(MMD2UE4Name) Asset(任意：NULL以外で読み込み時にBoneとMorphNameをMMD=UE4で読み替えてImportを実行する。事前にCSV形式でImportか新規作成しておく必要あり。)\n\
-			::MmdExtendAsse(任意：NULL以外でVMDからAnimSeqアセット生成時にExtendからIK情報を参照し計算する際に使用。事前にモデルインポートか手動にてアセット生成しておくこと。)\n\
-			です。\n\
-			\n\
-			注意：新規Asset生成はIKなど未対応の為非推奨。追加Morphのみ対応。"
+"現時点で有効なパラメータは、以下です\n\n\
+::Skeleton Asset(必須::Animation関連付け先)\n\
+::SkeletalMesh Asset(任意::Animation関連付け先、MorphTarget. NULLならばMorphTargetはSkipします。)\n\
+::Animation Asset(NULL以外で既存AssetにMorphのみ追加する処理を実行。NULLでBoneとMorph含む新規Asset作成)\n\
+::DataTable(MMD2UE4Name) Asset(任意：NULL以外で読み込み時にBoneとMorphNameをMMD=UE4で読み替えてImportを実行する。事前にCSV形式でImportか新規作成しておく必要あり。)\n\
+::MmdExtendAsse(任意：NULL以外でVMDからAnimSeqアセット生成時にExtendからIK情報を参照し計算する際に使用。事前にモデルインポートか手動にてアセット生成しておくこと。)\n\
+\n\
+\n\
+注意：新規Asset生成はIKなど未対応の為非推奨。追加Morphのみ対応。"
 			)
 			);
 		FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
-	}
-
-	//Test VMD Slate（現在はコメントアウト。削除予定）
-	if(false)
-	{
-		TSharedPtr<SWindow> ParentWindow;
-		// Check if the main frame is loaded.  When using the old main frame it may not be.
-		if (FModuleManager::Get().IsModuleLoaded("MainFrame"))
-		{
-			IMainFrameModule& MainFrame = FModuleManager::LoadModuleChecked<IMainFrameModule>("MainFrame");
-			ParentWindow = MainFrame.GetParentWindow();
-		}
-
-		TSharedPtr<SVMDImportOptions> ImportOptionsWindow;
-
-		TSharedRef<SWindow> Window = SNew(SWindow)
-			.Title(LOCTEXT("VMDOptionsWindowTitle", "VMD Targfet DataTable Options"))
-			.SizingRule(ESizingRule::Autosized);
-
-		Window->SetContent
-			(
-			SAssignNew(ImportOptionsWindow, SVMDImportOptions)
-			.WidgetWindow(Window)
-			);
-
-		FSlateApplication::Get().AddModalWindow(Window, ParentWindow, false);
-
 	}
 	/***************************************
 	* VMD取り込み時の警告表示
@@ -155,13 +128,13 @@ UObject* UVmdFactory::FactoryCreateBinary
 		const FText MessageDbg
 			= FText::Format(LOCTEXT("ImportVMD_TargetModelInfo_Comment",
 			"注意：モーションデータ取り込み情報：：\n\
-			\n\
-			本VMDは、「{0}」用に作成されたファイルです。\n\
-			\n\
-			モデル向けモーションの場合、同じボーン名のデータのみ取り込まれます。\n\
-			モデル側のボーン名と異なる名称の同一ボーンが含まれる場合、\n\
-			事前に変換テーブル(MMD2UE4NameTableRow)を作成し、\n\
-			InportOption画面にて指定することで取り込むことが可能です。"
+\n\
+本VMDは、「{0}」用に作成されたファイルです。\n\
+\n\
+モデル向けモーションの場合、同じボーン名のデータのみ取り込まれます。\n\
+モデル側のボーン名と異なる名称の同一ボーンが含まれる場合、\n\
+事前に変換テーブル(MMD2UE4NameTableRow)を作成し、\n\
+InportOption画面にて指定することで取り込むことが可能です。"
 			)
 			, FText::FromString(vmdMotionInfo.ModelName)
 			);
@@ -173,18 +146,18 @@ UObject* UVmdFactory::FactoryCreateBinary
 	if (vmdMotionInfo.keyCameraList.Num() == 0)
 	{
 		//カメラアニメーションでない場合
-		FPmxImporter* PmxImporter = FPmxImporter::GetInstance();
+		FVmdImporter* VmdImporter = FVmdImporter::GetInstance();
 
-		EPMXImportType ForcedImportType = PMXIT_StaticMesh;
+		EVMDImportType ForcedImportType = VMDIT_Animation;
 		bool bOperationCanceled = false;
 		bool bIsPmxFormat = true;
 		// show Import Option Slate
 		bool bImportAll = false;
 		ImportUI->bIsObjImport = false;//anim mode
-		ImportUI->OriginalImportType = EPMXImportType::PMXIT_Animation;
+		ImportUI->OriginalImportType = EVMDImportType::VMDIT_Animation;
 		ImportOptions
-			= GetImportOptions(
-				PmxImporter,
+			= GetVMDImportOptions(
+				VmdImporter,
 				ImportUI,
 				true,//bShowImportDialog, 
 				InParent->GetPathName(),
@@ -194,31 +167,110 @@ UObject* UVmdFactory::FactoryCreateBinary
 				bIsPmxFormat,
 				ForcedImportType
 				);
+		/* 一度目の判定 */
 		if (ImportOptions)
 		{
 			Skeleton = ImportUI->Skeleton;
-			////////////////////////////////////
-			if (!ImportOptions->AnimSequenceAsset)
+			SkeletalMesh = ImportUI->SkeletonMesh;
+			/* 最低限のパラメータ設定チェック */
+			if ( (!Skeleton) ||  (!SkeletalMesh) || (Skeleton != SkeletalMesh->Skeleton))
 			{
-				//create AnimSequence Asset from VMD
-				LastCreatedAnim = ImportAnimations(
-					Skeleton,
-					InParent,
-					Name.ToString(),
-					ImportUI->MMD2UE4NameTableRow,
-					ImportUI->MmdExtendAsset,
-					&vmdMotionInfo
+
+				UE_LOG(LogMMD4UE4_VMDFactory, Warning,
+					TEXT("[ImportAnimations]::Parameter check for Import option!"));
+
+				{
+					//モデル読み込み後の警告文表示：コメント欄
+					FText TitleStr = FText(LOCTEXT("ImportVMD_OptionWarn_CheckPh1", "警告[ImportVMD_TargetModelInfo]"));
+					const FText MessageDbg
+						= FText::Format(LOCTEXT("ImportVMD_OptionWarn_CheckPh1_Comment",
+							"注意：Parameter check for Import option ：：\n\
+\n\
+[Mandatory](必須)\n\
+- Skeleton Asset : you select target skeleton .\n\
+	if NULL , import error.\n\
+[Optional](任意)\n\
+- SkeletalMesh Asset : you select target skeletal mesh. \n\
+- However , SkeltalMesh include skeleton. (ただし、必ずメッシュは同じスケルトンを選ぶこと)\n\
+	if NULL , skip import morph curve.(モーフが取り込まれません)\n\
+\n\
+Retry ImportOption!"
+						)
+							, FText::FromString(vmdMotionInfo.ModelName)
+						);
+					FMessageDialog::Open(EAppMsgType::Ok, MessageDbg, &TitleStr);
+				}
+				/* もう一回させる*/
+				ImportOptions
+					= GetVMDImportOptions(
+						VmdImporter,
+						ImportUI,
+						true,//bShowImportDialog, 
+						InParent->GetPathName(),
+						bOperationCanceled,
+						bImportAll,
+						ImportUI->bIsObjImport,//bIsPmxFormat,
+						bIsPmxFormat,
+						ForcedImportType
 					);
+			}
+		}
+		if (ImportOptions)
+		{
+			Skeleton = ImportUI->Skeleton;
+			SkeletalMesh = ImportUI->SkeletonMesh;
+			bool preParamChk = true;/*ParameterチェックOK有無*/
+			/*包含関係チェック*/
+			if (SkeletalMesh)
+			{
+				if (Skeleton != SkeletalMesh->Skeleton)
+				{
+					//TBD::ERR case
+					{
+						UE_LOG(LogMMD4UE4_VMDFactory, Error,
+							TEXT("ImportAnimations : Skeleton not equrl skeletalmesh->skelton ...")
+						);
+					}
+					preParamChk = false;
+				}
+			}
+			if (preParamChk)
+			{
+
+				////////////////////////////////////
+				if (!ImportOptions->AnimSequenceAsset)
+				{
+					//create AnimSequence Asset from VMD
+					LastCreatedAnim = ImportAnimations(
+						Skeleton,
+						SkeletalMesh,
+						InParent,
+						Name.ToString(),
+						ImportUI->MMD2UE4NameTableRow,
+						ImportUI->MmdExtendAsset,
+						&vmdMotionInfo
+					);
+				}
+				else
+				{
+					//TBD::OptionでAinimSeqが選択されていない場合、終了
+					// add morph curve only to exist ainimation
+					LastCreatedAnim = AddtionalMorphCurveImportToAnimations(
+						SkeletalMesh,
+						ImportOptions->AnimSequenceAsset,//UAnimSequence* exsistAnimSequ,
+						ImportUI->MMD2UE4NameTableRow,
+						&vmdMotionInfo
+					);
+				}
 			}
 			else
 			{
-				//TBD::OptionでAinimSeqが選択されていない場合、終了
-				// add morph curve only to exist ainimation
-				LastCreatedAnim = AddtionalMorphCurveImportToAnimations(
-					ImportOptions->AnimSequenceAsset,//UAnimSequence* exsistAnimSequ,
-					ImportUI->MMD2UE4NameTableRow,
-					&vmdMotionInfo
-					); 
+				//TBD::ERR case
+				{
+					UE_LOG(LogMMD4UE4_VMDFactory, Error,
+						TEXT("ImportAnimations : preParamChk false. import ERROR !!!! ...")
+					);
+				}
 			}
 		}
 		else
@@ -260,6 +312,7 @@ UObject* UVmdFactory::FactoryCreateBinary
 
 UAnimSequence * UVmdFactory::ImportAnimations(
 	USkeleton* Skeleton,
+	USkeletalMesh* SkeletalMesh,
 	UObject* Outer,
 	const FString& Name,
 	//UFbxAnimSequenceImportData* TemplateImportData, 
@@ -276,6 +329,12 @@ UAnimSequence * UVmdFactory::ImportAnimations(
 	// we need skeleton to create animsequence
 	if (Skeleton == NULL)
 	{
+		//TBD::ERR case
+		{
+			UE_LOG(LogMMD4UE4_VMDFactory, Error,
+				TEXT("ImportAnimations : args Skeleton is null ...")
+			);
+		}
 		return NULL;
 	}
 
@@ -334,14 +393,16 @@ UAnimSequence * UVmdFactory::ImportAnimations(
 	//////////////////////
 	if (LastCreatedAnim)
 	{
+		bool importSuccessFlag = true;
 		/* vmd animation regist*/
 		if (!ImportVMDToAnimSequence(LastCreatedAnim, Skeleton, ReNameTable, mmdExtend, vmdMotionInfo))
 		{
 			//TBD::ERR case
 			check(false);
+			importSuccessFlag = false;
 		}
 		/* morph animation regist*/
-		if (!ImportMorphCurveToAnimSequence(LastCreatedAnim, Skeleton, ReNameTable,vmdMotionInfo))
+		if (!ImportMorphCurveToAnimSequence(LastCreatedAnim, Skeleton, SkeletalMesh, ReNameTable,vmdMotionInfo))
 		{
 			//TBD::ERR case
 			{
@@ -350,6 +411,16 @@ UAnimSequence * UVmdFactory::ImportAnimations(
 					);
 			}
 			//check(false);
+			importSuccessFlag = false;
+		}
+
+		/*Import正常時にPreviewMeshを更新する*/
+		if ( (importSuccessFlag) && (SkeletalMesh) )
+		{
+			LastCreatedAnim->SetPreviewMesh(SkeletalMesh);
+			UE_LOG(LogMMD4UE4_VMDFactory, Log,
+				TEXT("[ImportAnimations] Set PreviewMesh Pointer.")
+			);
 		}
 	}
 
@@ -403,6 +474,7 @@ float UVmdFactory::interpolateBezier(float x1, float y1, float  x2, float y2, fl
 * MMD4Mecanimuとの総合利用向けテスト機能
 **********************/
 UAnimSequence * UVmdFactory::AddtionalMorphCurveImportToAnimations(
+	USkeletalMesh* SkeletalMesh,
 	UAnimSequence* exsistAnimSequ,
 	UDataTable* ReNameTable,
 	MMD4UE4::VmdMotionInfo* vmdMotionInfo
@@ -431,6 +503,7 @@ UAnimSequence * UVmdFactory::AddtionalMorphCurveImportToAnimations(
 		if (!ImportMorphCurveToAnimSequence(
 			exsistAnimSequ,
 			Skeleton, 
+			SkeletalMesh,
 			ReNameTable, 
 			vmdMotionInfo)
 			)
@@ -469,6 +542,7 @@ UAnimSequence * UVmdFactory::AddtionalMorphCurveImportToAnimations(
 bool UVmdFactory::ImportMorphCurveToAnimSequence(
 	UAnimSequence* DestSeq,
 	USkeleton* Skeleton,
+	USkeletalMesh* SkeletalMesh,
 	UDataTable* ReNameTable,
 	MMD4UE4::VmdMotionInfo* vmdMotionInfo
 	)
@@ -478,7 +552,8 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 		//TBD:: ERR in Param...
 		return false;
 	}
-	USkeletalMesh * mesh = Skeleton->GetAssetPreviewMesh(DestSeq);// GetPreviewMesh();
+	//USkeletalMesh * mesh = Skeleton->GetAssetPreviewMesh(DestSeq);// GetPreviewMesh();
+	USkeletalMesh * mesh = SkeletalMesh;
 	if (!mesh)
 	{
 		//このルートに入る条件がSkeleton Asset生成後一度もアセットを開いていない場合、
@@ -516,16 +591,19 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 #endif
 		/**********************************/
 		//self
-		UMorphTarget * morphTargetPtr = mesh->FindMorphTarget(Name);
-		if (!morphTargetPtr)
+		if (mesh != NULL)
 		{
-			//TDB::ERR. not found Morph Target(Name) in mesh
+			UMorphTarget * morphTargetPtr = mesh->FindMorphTarget(Name);
+			if (!morphTargetPtr)
 			{
-				UE_LOG(LogMMD4UE4_VMDFactory, Warning,
-					TEXT("ImportMorphCurveToAnimSequence Target Morph Not Found...Search[%s]VMD-Org[%s]"),
-					*Name.ToString(), *vmdFaceTrackPtr->TrackName );
+				//TDB::ERR. not found Morph Target(Name) in mesh
+				{
+					UE_LOG(LogMMD4UE4_VMDFactory, Warning,
+						TEXT("ImportMorphCurveToAnimSequence Target Morph Not Found...Search[%s]VMD-Org[%s]"),
+						*Name.ToString(), *vmdFaceTrackPtr->TrackName);
+				}
+				continue;
 			}
-			continue;
 		}
 		/*********************************/
 		// Add or retrieve curve
@@ -539,7 +617,7 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 		Skeleton->AddSmartNameAndModify(USkeleton::AnimCurveMappingName, Name, NewName);
 
 		// FloatCurve for Morph Target 
-		int CurveFlags = ACF_DriveMorphTarget;
+		int CurveFlags = ACF_DriveMorphTarget_DEPRECATED;
 
 		FFloatCurve * CurveToImport
 			= static_cast<FFloatCurve *>(DestSeq->RawCurveData.GetCurveData(NewName.UID, FRawCurveTracks::FloatType));
@@ -638,8 +716,10 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 	DestSeq->SequenceLength = FGenericPlatformMath::Max<float>(1.0f / 30.0f*(float)DestSeq->NumFrames, MINIMUM_ANIMATION_LENGTH);
 	/////////////////////////////////
 	const int32 NumBones = Skeleton->GetReferenceSkeleton().GetNum();
+#if 0 /* :UE414: 4.14からのエンジン仕様変更による対象 */
 	DestSeq->RawAnimationData.AddZeroed(NumBones);
 	DestSeq->AnimationTrackNames.AddUninitialized(NumBones);
+#endif
 
 
 	const TArray<FTransform>& RefBonePose = Skeleton->GetReferenceSkeleton().GetRefBonePose();
@@ -651,17 +731,18 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 	// SkeletonとのBone関係を登録する＠必須事項
 	for (int32 BoneIndex = 0; BoneIndex < NumBones; ++BoneIndex)
 	{
+#if 0 /* :UE414: 4.14 エンジン仕様変更 */
 		DestSeq->AnimationTrackNames[BoneIndex] = Skeleton->GetReferenceSkeleton().GetBoneName(BoneIndex);
 		// add mapping to skeleton bone track
 		DestSeq->TrackToSkeletonMapTable.Add(FTrackToSkeletonMap(BoneIndex));
-
+#endif /* :UE414: */
 		TempRawTrackList.Add(FRawAnimSequenceTrack());
 		check(BoneIndex == TempRawTrackList.Num() - 1);
 		FRawAnimSequenceTrack& RawTrack = TempRawTrackList[BoneIndex];
 
 
 		//★TBD:追加処理：以下検討中
-		FName targetName = DestSeq->AnimationTrackNames[BoneIndex];
+		FName targetName = Skeleton->GetReferenceSkeleton().GetBoneName(BoneIndex);;
 		if (ReNameTable)
 		{
 			//もし変換テーブルのアセットを指定している場合はテーブルから変換名を取得する
@@ -960,6 +1041,8 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 	//TBD::多分バグがあるはず…
 	FTransform subLocRef;
 	FTransform tempLoc;
+	TArray<FRawAnimSequenceTrack> ImportRawTrackList;
+	ImportRawTrackList.AddZeroed(NumBones);
 	GWarn->BeginSlowTask(LOCTEXT("BeginImportAnimation", "Importing Animation"), true);
 	for (int32 k = 0; k < DestSeq->NumFrames; k++)
 	{
@@ -979,10 +1062,14 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 
 		for (int32 BoneIndex = 0; BoneIndex < NumBones; ++BoneIndex)
 		{
+#if 1 /* :UE414: 4.14からのエンジン仕様変更 */
+			FRawAnimSequenceTrack &RawTrack = ImportRawTrackList[BoneIndex];
+						
+#else	/* ~UE4.13 */
 			DestSeq->AnimationTrackNames[BoneIndex] = Skeleton->GetReferenceSkeleton().GetBoneName(BoneIndex);
 
 			FRawAnimSequenceTrack& RawTrack = DestSeq->RawAnimationData[BoneIndex];
-
+#endif
 			FRawAnimSequenceTrack& LocalRawTrack = TempRawTrackList[BoneIndex];
 
 			/////////////////////////////////////
@@ -996,6 +1083,7 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			}
 		}
 	}
+#if 0 /* :UE414: 4.14でAnimationの登録仕様が変わったため、いったん機能制限とする */
 	if(mmdExtend)
 	{
 		FName targetName;
@@ -1574,6 +1662,17 @@ bool UVmdFactory::ImportVMDToAnimSequence(
 			}
 		}
 	}
+#endif /* :UE414: 4.14のAnimationクラス仕様変更による機能制限 */
+
+	/* AddTrack */
+	for (int32 BoneIndex = 0; BoneIndex < NumBones; ++BoneIndex)
+	{
+		FName BoneName = Skeleton->GetReferenceSkeleton().GetBoneName(BoneIndex);
+
+		FRawAnimSequenceTrack &RawTrack = ImportRawTrackList[BoneIndex];
+
+		DestSeq->AddNewRawTrack(BoneName, &RawTrack);
+	}
 	GWarn->EndSlowTask();
 	return true;
 }
@@ -1754,9 +1853,9 @@ FTransform UVmdFactory::CalcGlbTransformFromBoneIndex(
 		return FTransform::Identity;
 	}
 	FTransform resultTrans(
-		DestSeq->RawAnimationData[BoneIndex].RotKeys[keyIndex],
-		DestSeq->RawAnimationData[BoneIndex].PosKeys[keyIndex],
-		DestSeq->RawAnimationData[BoneIndex].ScaleKeys[keyIndex]
+		DestSeq->GetRawAnimationData()[BoneIndex].RotKeys[keyIndex],
+		DestSeq->GetRawAnimationData()[BoneIndex].PosKeys[keyIndex],
+		DestSeq->GetRawAnimationData()[BoneIndex].ScaleKeys[keyIndex]
 		);
 	int ParentBoneIndex = Skeleton->GetReferenceSkeleton().GetParentIndex(BoneIndex);
 	if (ParentBoneIndex >= 0)

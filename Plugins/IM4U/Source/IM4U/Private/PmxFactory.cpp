@@ -56,7 +56,7 @@ DEFINE_LOG_CATEGORY(LogMMD4UE4_PMXFactory)
 
 extern void ProcessImportMeshInfluences(FSkeletalMeshImportData& ImportData);
 extern void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalMeshImportData& ImportData);
-extern bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalDepth, FSkeletalMeshImportData& ImportData);
+extern bool ProcessImportMeshSkeleton(const USkeleton* SkeletonAsset, FReferenceSkeleton& RefSkeleton, int32& SkeletalDepth, FSkeletalMeshImportData& ImportData);
 
 /////////////////////////////////////////////////////////
 
@@ -796,7 +796,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 	// process reference skeleton from import data
 	int32 SkeletalDepth = 0;
-	if (!ProcessImportMeshSkeleton(SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
+	if (!ProcessImportMeshSkeleton(SkeletalMesh->Skeleton, SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
 	{
 		SkeletalMesh->ClearFlags(RF_Standalone);
 		SkeletalMesh->Rename(NULL, GetTransientPackage());
@@ -1174,7 +1174,7 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 	// process reference skeleton from import data
 	int32 SkeletalDepth = 0;
-	if (!ProcessImportMeshSkeleton(SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
+	if (!ProcessImportMeshSkeleton(SkeletalMesh->Skeleton, SkeletalMesh->RefSkeleton, SkeletalDepth, *SkelMeshImportDataPtr))
 	{
 		SkeletalMesh->ClearFlags(RF_Standalone);
 		SkeletalMesh->Rename(NULL, GetTransientPackage());

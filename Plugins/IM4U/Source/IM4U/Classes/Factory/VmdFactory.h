@@ -12,7 +12,7 @@
 #include "SkelImport.h"
 #include "AnimationUtils.h"
 
-#include "PmxImportUI.h"
+#include "VmdImportUI.h"
 
 #include "VmdImporter.h"
 
@@ -52,7 +52,8 @@ class IM4U_API UVmdFactory : public UFactory
 	* Create AnimSequence from VMD data.(新規作成用親関数)
 	***********************/
 	UAnimSequence * ImportAnimations(
-		USkeleton* Skeleton, 
+		USkeleton* Skeleton,
+		USkeletalMesh* SkeletalMesh,
 		UObject* Outer,
 		const FString& Name, 
 		//UFbxAnimSequenceImportData* TemplateImportData, 
@@ -62,7 +63,7 @@ class IM4U_API UVmdFactory : public UFactory
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		);
 	//////////////
-	class UPmxImportUI* ImportUI;
+	class UVmdImportUI* ImportUI;
 	/**********
 	* MMD向けベジェ曲線の算出処理
 	***********/
@@ -72,6 +73,7 @@ class IM4U_API UVmdFactory : public UFactory
 	* MMD4Mecanimuとの総合利用向けテスト機能
 	**********************/
 	UAnimSequence * AddtionalMorphCurveImportToAnimations(
+		USkeletalMesh* SkeletalMesh,
 		UAnimSequence* exsistAnimSequ,
 		UDataTable* ReNameTable,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
@@ -83,6 +85,7 @@ class IM4U_API UVmdFactory : public UFactory
 	bool ImportMorphCurveToAnimSequence(
 		UAnimSequence* DestSeq,
 		USkeleton* Skeleton,
+		USkeletalMesh* SkeletalMesh,
 		UDataTable* ReNameTable,
 		MMD4UE4::VmdMotionInfo* vmdMotionInfo
 		);

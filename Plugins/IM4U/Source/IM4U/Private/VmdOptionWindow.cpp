@@ -1,19 +1,19 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
-// Copyright 2015 BlackMa9. All Rights Reserved.
+// Copyright 2017- BlackMa9. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
 
 #include "UnrealEd.h"
-#include "PmxOptionWindow.h"
+#include "VmdOptionWindow.h"
 #include "Editor/ContentBrowser/Public/ContentBrowserModule.h"
 #include "IDocumentation.h"
 #include "PropertyEditorModule.h"
 #include "IDetailsView.h"
 
-#define LOCTEXT_NAMESPACE "PMXOption"
+#define LOCTEXT_NAMESPACE "VMDOption"
 
-void SPmxOptionWindow::Construct(const FArguments& InArgs)
+void SVmdOptionWindow::Construct(const FArguments& InArgs)
 {
 	ImportUI = InArgs._ImportUI;
 	WidgetWindow = InArgs._WidgetWindow;
@@ -77,16 +77,16 @@ void SPmxOptionWindow::Construct(const FArguments& InArgs)
 							.HAlign(HAlign_Center)
 							.Text(LOCTEXT("MMDOptionWindow_ImportAll", "Import All"))
 							.ToolTipText(LOCTEXT("MMDOptionWindow_ImportAll_ToolTip", "Import all files with these same settings"))
-							.IsEnabled(this, &SPmxOptionWindow::CanImport)
-							.OnClicked(this, &SPmxOptionWindow::OnImportAll)
+							.IsEnabled(this, &SVmdOptionWindow::CanImport)
+							.OnClicked(this, &SVmdOptionWindow::OnImportAll)
 						]
 					+ SUniformGridPanel::Slot(1, 0)
 						[
 							SAssignNew(ImportButton, SButton)
 							.HAlign(HAlign_Center)
 							.Text(LOCTEXT("MMDOptionWindow_Import", "Import"))
-							.IsEnabled(this, &SPmxOptionWindow::CanImport)
-							.OnClicked(this, &SPmxOptionWindow::OnImport)
+							.IsEnabled(this, &SVmdOptionWindow::CanImport)
+							.OnClicked(this, &SVmdOptionWindow::OnImport)
 						]
 					+ SUniformGridPanel::Slot(2, 0)
 						[
@@ -94,7 +94,7 @@ void SPmxOptionWindow::Construct(const FArguments& InArgs)
 							.HAlign(HAlign_Center)
 							.Text(LOCTEXT("MMDOptionWindow_Cancel", "Cancel"))
 							.ToolTipText(LOCTEXT("MMDOptionWindow_Cancel_ToolTip", "Cancels importing this MMD file"))
-							.OnClicked(this, &SPmxOptionWindow::OnCancel)
+							.OnClicked(this, &SVmdOptionWindow::OnCancel)
 						]
 				]
 		];
@@ -111,7 +111,7 @@ void SPmxOptionWindow::Construct(const FArguments& InArgs)
 	DetailsView->SetObject(ImportUI);
 }
 
-bool SPmxOptionWindow::CanImport()  const
+bool SVmdOptionWindow::CanImport()  const
 {
 #if 0
 	// do test to see if we are ready to import

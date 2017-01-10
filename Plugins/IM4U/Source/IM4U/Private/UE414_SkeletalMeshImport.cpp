@@ -1,4 +1,4 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 /*=============================================================================
 	SkeletalMeshImport.cpp: Skeletal mesh import code.
@@ -11,6 +11,8 @@
 #include "SkelImport.h"
 #include "SkeletalMeshSorting.h"
 #include "../../../../Source/Runtime/Engine/Classes/PhysicsEngine/PhysicsAsset.h"
+//#include "FbxImporter.h"
+//#include "FbxErrors.h"
 #include "Engine/SkeletalMeshSocket.h"
 //#include "LODUtilities.h"
 //#include "Developer/MeshUtilities/Public/MeshUtilities.h"
@@ -30,7 +32,7 @@ bool SkeletonsAreCompatible( const FReferenceSkeleton& NewSkel, const FReference
 		return false;
 	}
 
-	for(int32 i=1; i<NewSkel.GetNum(); i++)
+	for(int32 i=1; i<NewSkel.GetRawBoneNum(); i++)
 	{
 		// See if bone is in both skeletons.
 		int32 NewBoneIndex = i;
@@ -55,6 +57,7 @@ bool SkeletonsAreCompatible( const FReferenceSkeleton& NewSkel, const FReference
 
 	return true;
 }
+
 /**
 * Takes an imported bone name, removes any leading or trailing spaces, and converts the remaining spaces to dashes.
 */
@@ -174,10 +177,20 @@ void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalM
 		{
 			const FString& MaterialName = ImportedMaterial.MaterialImportName;
 			Material = FindObject<UMaterialInterface>(ANY_PACKAGE, *MaterialName);
+
+			if (Material == nullptr)
+			{
+				int32 SkinOffset = MaterialName.Find(TEXT("_skin"));
+				if (SkinOffset != INDEX_NONE)
+				{
+					const FString& MaterialNameNoSkin = MaterialName.LeftChop(MaterialName.Len() - SkinOffset);
+					Material = FindObject<UMaterialInterface>(ANY_PACKAGE, *MaterialNameNoSkin);
+				}
+			}
 		}
 
 		const bool bEnableShadowCasting = true;
-		Materials.Add( FSkeletalMaterial( Material, bEnableShadowCasting ) );
+		Materials.Add( FSkeletalMaterial( Material, bEnableShadowCasting, false, Material != nullptr ? Material->GetFName() : FName(*(ImportedMaterial.MaterialImportName)), FName(*(ImportedMaterial.MaterialImportName)) ) );
 	}
 
 	int32 NumMaterialsToAdd = FMath::Max<int32>( ImportedMaterials.Num(), ImportData.MaxMaterialIndex + 1 );
@@ -185,7 +198,7 @@ void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalM
 	// Pad the material pointers
 	while( NumMaterialsToAdd > Materials.Num() )
 	{
-		Materials.Add( FSkeletalMaterial( NULL, true ) );
+		Materials.Add( FSkeletalMaterial( NULL, true, false, NAME_None, NAME_None ) );
 	}
 }
 
@@ -197,12 +210,14 @@ void ProcessImportMeshMaterials(TArray<FSkeletalMaterial>& Materials, FSkeletalM
 * @param ImportData - raw binary import data to process
 * @return true if the operation completed successfully
 */
-bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalDepth, FSkeletalMeshImportData& ImportData)
+bool ProcessImportMeshSkeleton(const USkeleton* SkeletonAsset, FReferenceSkeleton& RefSkeleton, int32& SkeletalDepth, FSkeletalMeshImportData& ImportData)
 {
 	TArray <VBone>&	RefBonesBinary = ImportData.RefBonesBinary;
 
 	// Setup skeletal hierarchy + names structure.
 	RefSkeleton.Empty();
+
+	FReferenceSkeletonModifier RefSkelModifier(RefSkeleton, SkeletonAsset);
 
 	// Digest bones to the serializable format.
 	for( int32 b=0; b<RefBonesBinary.Num(); b++ )
@@ -212,14 +227,14 @@ bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalD
 		const FMeshBoneInfo BoneInfo(FName(*BoneName, FNAME_Add), BinaryBone.Name, BinaryBone.ParentIndex);
 		const FTransform BoneTransform(BinaryBone.BonePos.Transform);
 
-		if(RefSkeleton.FindBoneIndex(BoneInfo.Name) != INDEX_NONE)
+		if(RefSkeleton.FindRawBoneIndex(BoneInfo.Name) != INDEX_NONE)
 		{
 			//UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
 			//FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Error, FText::Format(LOCTEXT("SkeletonHasDuplicateBones", "Skeleton has non-unique bone names.\nBone named '{0}' encountered more than once."), FText::FromName(BoneInfo.Name))), FFbxErrors::SkeletalMesh_DuplicateBones);
 			return false;
 		}
 
-		RefSkeleton.Add(BoneInfo, BoneTransform);
+		RefSkelModifier.Add(BoneInfo, BoneTransform);
 	}
 
 	// Add hierarchy index to each bone and detect max depth.
@@ -228,9 +243,9 @@ bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalD
 	TArray<int32> SkeletalDepths;
 	SkeletalDepths.Empty( RefBonesBinary.Num() );
 	SkeletalDepths.AddZeroed( RefBonesBinary.Num() );
-	for( int32 b=0; b < RefSkeleton.GetNum(); b++ )
+	for( int32 b=0; b < RefSkeleton.GetRawBoneNum(); b++ )
 	{
-		int32 Parent	= RefSkeleton.GetParentIndex(b);
+		int32 Parent	= RefSkeleton.GetRawParentIndex(b);
 		int32 Depth	= 1.0f;
 
 		SkeletalDepths[b]	= 1.0f;
@@ -247,7 +262,6 @@ bool ProcessImportMeshSkeleton(FReferenceSkeleton& RefSkeleton, int32& SkeletalD
 
 	return true;
 }
-
 /**
 * Process and update the vertex Influences using the raw binary import data
 * 
@@ -359,9 +373,10 @@ void ProcessImportMeshInfluences(FSkeletalMeshImportData& ImportData)
 	// The below code relies on influences being sorted by vertex index.
 	if( Influences.Num() == 0 )
 	{
-		//UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
+#if 0
+		UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
 		// warn about no influences
-		//FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Warning, LOCTEXT("WarningNoSkelInfluences", "Warning skeletal mesh is has no vertex influences")), FFbxErrors::SkeletalMesh_NoInfluences);
+		FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Warning, LOCTEXT("WarningNoSkelInfluences", "Warning skeletal mesh is has no vertex influences")), FFbxErrors::SkeletalMesh_NoInfluences);
 		// add one for each wedge entry
 		Influences.AddUninitialized(Wedges.Num());
 		for( int32 WedgeIdx=0; WedgeIdx<Wedges.Num(); WedgeIdx++ )
@@ -387,6 +402,7 @@ void ProcessImportMeshInfluences(FSkeletalMeshImportData& ImportData)
 				LastVertexIndex = CurrentVertexIndex;
 			}
 		}
+#endif
 	}
 }
 #if 0
@@ -808,7 +824,7 @@ void TryRegenerateLODs(ExistingSkelMeshData* MeshData, USkeletalMesh* SkeletalMe
 	int32 TotalLOD = MeshData->ExistingLODModels.Num();
 
 	// see if mesh reduction util is available
-	static bool bAutoMeshReductionAvailable = FModuleManager::Get().LoadModuleChecked<IMeshUtilities>("MeshUtilities").GetMeshReductionInterface() != NULL;
+	static bool bAutoMeshReductionAvailable = FModuleManager::Get().LoadModuleChecked<IMeshUtilities>("MeshUtilities").GetSkeletalMeshReductionInterface() != NULL;
 
 	if (bAutoMeshReductionAvailable)
 	{
@@ -854,20 +870,53 @@ void RestoreExistingSkelMeshData(ExistingSkelMeshData* MeshData, USkeletalMesh* 
 	if(MeshData && SkeletalMesh)
 	{
 		// Fix Materials array to be the correct size.
-		if(MeshData->ExistingMaterials.Num() > SkeletalMesh->Materials.Num())
+		if (MeshData->bSaveRestoreMaterials)
 		{
-			MeshData->ExistingMaterials.RemoveAt( SkeletalMesh->Materials.Num(), MeshData->ExistingMaterials.Num() - SkeletalMesh->Materials.Num() );
-		}
-		else if(SkeletalMesh->Materials.Num() > MeshData->ExistingMaterials.Num())
-		{
-			MeshData->ExistingMaterials.AddZeroed( SkeletalMesh->Materials.Num() - MeshData->ExistingMaterials.Num() );
-		}
+			if (MeshData->ExistingMaterials.Num() > SkeletalMesh->Materials.Num())
+			{
+				for (int32 i = 0; i < MeshData->ExistingLODModels.Num(); i++)
+				{
+					FStaticLODModel& LODModel = MeshData->ExistingLODModels[i];
+					FSkeletalMeshLODInfo& LODInfo = MeshData->ExistingLODInfo[i];
+					for (int32 OldMaterialIndex : LODInfo.LODMaterialMap)
+					{
+						int32 MaterialNumber = SkeletalMesh->Materials.Num();
+						if (OldMaterialIndex >= MaterialNumber && OldMaterialIndex < MeshData->ExistingMaterials.Num())
+						{
+							SkeletalMesh->Materials.AddZeroed((OldMaterialIndex + 1) - MaterialNumber);
+						}
+					}
+				}
+			}
+			else if (SkeletalMesh->Materials.Num() > MeshData->ExistingMaterials.Num())
+			{
+				int32 ExistingMaterialsCount = MeshData->ExistingMaterials.Num();
+				MeshData->ExistingMaterials.AddZeroed(SkeletalMesh->Materials.Num() - MeshData->ExistingMaterials.Num());
+				//Set the ImportedMaterialSlotName on new material slot to allow next reimport to reorder the array correctly
+				for (int32 MaterialIndex = ExistingMaterialsCount; MaterialIndex < SkeletalMesh->Materials.Num(); ++MaterialIndex)
+				{
+					MeshData->ExistingMaterials[MaterialIndex].ImportedMaterialSlotName = SkeletalMesh->Materials[MaterialIndex].ImportedMaterialSlotName;
+				}
+			}
 
-		SkeletalMesh->Materials = MeshData->ExistingMaterials;
+			for (int32 CopyIndex = 0; CopyIndex < SkeletalMesh->Materials.Num(); ++CopyIndex)
+			{
+				if (MeshData->ExistingMaterials[CopyIndex].ImportedMaterialSlotName == NAME_None)
+				{
+					MeshData->ExistingMaterials[CopyIndex].ImportedMaterialSlotName = SkeletalMesh->Materials[CopyIndex].ImportedMaterialSlotName;
+					//Set some default value for the MaterialSlotName
+					if (MeshData->ExistingMaterials[CopyIndex].MaterialSlotName == NAME_None)
+					{
+						MeshData->ExistingMaterials[CopyIndex].MaterialSlotName = SkeletalMesh->Materials[CopyIndex].MaterialSlotName;
+					}
+				}
+				SkeletalMesh->Materials[CopyIndex] = MeshData->ExistingMaterials[CopyIndex];
+			}
+		}
 
 		// this is not ideal. Ideally we'll have to save only diff with indicating which joints, 
 		// but for now, we allow them to keep the previous pose IF the element count is same
-		if (MeshData->ExistingRetargetBasePose.Num() == SkeletalMesh->RefSkeleton.GetNum())
+		if (MeshData->ExistingRetargetBasePose.Num() == SkeletalMesh->RefSkeleton.GetRawBoneNum())
 		{
 			SkeletalMesh->RetargetBasePose = MeshData->ExistingRetargetBasePose;
 		}
@@ -884,95 +933,107 @@ void RestoreExistingSkelMeshData(ExistingSkelMeshData* MeshData, USkeletalMesh* 
 		}
 
 		// We copy back and fix-up the LODs that still work with this skeleton.
-		if( MeshData->ExistingLODModels.Num() > 0 && SkeletonsAreCompatible(SkeletalMesh->RefSkeleton, MeshData->ExistingRefSkeleton) )
+		if( MeshData->ExistingLODModels.Num() > 0 )
 		{
-			// First create mapping table from old skeleton to new skeleton.
-			TArray<int32> OldToNewMap;
-			OldToNewMap.AddUninitialized(MeshData->ExistingRefSkeleton.GetNum());
-			for(int32 i=0; i<MeshData->ExistingRefSkeleton.GetNum(); i++)
+			bool bRegenLODs = true;
+			if (SkeletonsAreCompatible(SkeletalMesh->RefSkeleton, MeshData->ExistingRefSkeleton))
 			{
-				OldToNewMap[i] = SkeletalMesh->RefSkeleton.FindBoneIndex(MeshData->ExistingRefSkeleton.GetBoneName(i));
-			}
-
-			for(int32 i=0; i<MeshData->ExistingLODModels.Num(); i++)
-			{
-				FStaticLODModel& LODModel = MeshData->ExistingLODModels[i];
-				FSkeletalMeshLODInfo& LODInfo = MeshData->ExistingLODInfo[i];
-
-				
-				// Fix ActiveBoneIndices array.
-				bool bMissingBone = false;
-				FName MissingBoneName = NAME_None;
-				for(int32 j=0; j<LODModel.ActiveBoneIndices.Num() && !bMissingBone; j++)
+				bRegenLODs = false;
+				// First create mapping table from old skeleton to new skeleton.
+				TArray<int32> OldToNewMap;
+				OldToNewMap.AddUninitialized(MeshData->ExistingRefSkeleton.GetRawBoneNum());
+				for (int32 i = 0; i < MeshData->ExistingRefSkeleton.GetRawBoneNum(); i++)
 				{
-					int32 NewBoneIndex = OldToNewMap[ LODModel.ActiveBoneIndices[j] ];
-					if(NewBoneIndex == INDEX_NONE)
-					{
-						bMissingBone = true;
-						MissingBoneName = MeshData->ExistingRefSkeleton.GetBoneName( LODModel.ActiveBoneIndices[j] );
-					}
-					else
-					{
-						LODModel.ActiveBoneIndices[j] = NewBoneIndex;
-					}
+					OldToNewMap[i] = SkeletalMesh->RefSkeleton.FindBoneIndex(MeshData->ExistingRefSkeleton.GetBoneName(i));
 				}
 
-				// Fix RequiredBones array.
-				for(int32 j=0; j<LODModel.RequiredBones.Num() && !bMissingBone; j++)
+				for (int32 i = 0; i < MeshData->ExistingLODModels.Num(); i++)
 				{
-					int32 NewBoneIndex = OldToNewMap[ LODModel.RequiredBones[j] ];
-					if(NewBoneIndex == INDEX_NONE)
-					{
-						bMissingBone = true;
-						MissingBoneName = MeshData->ExistingRefSkeleton.GetBoneName( LODModel.RequiredBones[j] );
-					}
-					else
-					{
-						LODModel.RequiredBones[j] = NewBoneIndex;
-					}
-				}
+					FStaticLODModel& LODModel = MeshData->ExistingLODModels[i];
+					FSkeletalMeshLODInfo& LODInfo = MeshData->ExistingLODInfo[i];
 
-				// Sort ascending for parent child relationship
-				LODModel.RequiredBones.Sort();
-				LODModel.ActiveBoneIndices.Sort();
 
-				// Fix the chunks' BoneMaps.
-				for(int32 ChunkIndex = 0;ChunkIndex < LODModel.Chunks.Num();ChunkIndex++)
-				{
-					FSkelMeshChunk& Chunk = LODModel.Chunks[ChunkIndex];
-					for(int32 BoneIndex = 0;BoneIndex < Chunk.BoneMap.Num();BoneIndex++)
+					// Fix ActiveBoneIndices array.
+					bool bMissingBone = false;
+					FName MissingBoneName = NAME_None;
+					for (int32 j = 0; j < LODModel.ActiveBoneIndices.Num() && !bMissingBone; j++)
 					{
-						int32 NewBoneIndex = OldToNewMap[ Chunk.BoneMap[BoneIndex] ];
-						if(NewBoneIndex == INDEX_NONE)
+						int32 NewBoneIndex = OldToNewMap[LODModel.ActiveBoneIndices[j]];
+						if (NewBoneIndex == INDEX_NONE)
 						{
 							bMissingBone = true;
-							MissingBoneName = MeshData->ExistingRefSkeleton.GetBoneName(Chunk.BoneMap[BoneIndex]);
-							break;
+							MissingBoneName = MeshData->ExistingRefSkeleton.GetBoneName(LODModel.ActiveBoneIndices[j]);
 						}
 						else
 						{
-							Chunk.BoneMap[BoneIndex] = NewBoneIndex;
+							LODModel.ActiveBoneIndices[j] = NewBoneIndex;
 						}
 					}
-					if(bMissingBone)
+
+					// Fix RequiredBones array.
+					for (int32 j = 0; j < LODModel.RequiredBones.Num() && !bMissingBone; j++)
 					{
+						int32 NewBoneIndex = OldToNewMap[LODModel.RequiredBones[j]];
+						if (NewBoneIndex == INDEX_NONE)
+						{
+							bMissingBone = true;
+							MissingBoneName = MeshData->ExistingRefSkeleton.GetBoneName(LODModel.RequiredBones[j]);
+						}
+						else
+						{
+							LODModel.RequiredBones[j] = NewBoneIndex;
+						}
+					}
+
+					// Sort ascending for parent child relationship
+					LODModel.RequiredBones.Sort();
+					LODModel.ActiveBoneIndices.Sort();
+
+					// Fix the sections' BoneMaps.
+					for (int32 SectionIndex = 0; SectionIndex < LODModel.Sections.Num(); SectionIndex++)
+					{
+						FSkelMeshSection& Section = LODModel.Sections[SectionIndex];
+						for (int32 BoneIndex = 0; BoneIndex < Section.BoneMap.Num(); BoneIndex++)
+						{
+							int32 NewBoneIndex = OldToNewMap[Section.BoneMap[BoneIndex]];
+							if (NewBoneIndex == INDEX_NONE)
+							{
+								bMissingBone = true;
+								MissingBoneName = MeshData->ExistingRefSkeleton.GetBoneName(Section.BoneMap[BoneIndex]);
+								break;
+							}
+							else
+							{
+								Section.BoneMap[BoneIndex] = NewBoneIndex;
+							}
+						}
+						if (bMissingBone)
+						{
+							break;
+						}
+					}
+
+					if (bMissingBone)
+					{
+						UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
+						FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Warning, FText::Format(LOCTEXT("NewMeshMissingBoneFromLOD", "New mesh is missing bone '{0}' required by an LOD."), FText::FromName(MissingBoneName))), FFbxErrors::SkeletalMesh_LOD_MissingBone);
+						bRegenLODs = true;
 						break;
 					}
-				}
+					else
+					{
+						FStaticLODModel* NewLODModel = new(SkeletalMesh->GetImportedResource()->LODModels) FStaticLODModel(LODModel);
 
-				if(bMissingBone)
-				{
-					UnFbx::FFbxImporter* FFbxImporter = UnFbx::FFbxImporter::GetInstance();
-					FFbxImporter->AddTokenizedErrorMessage(FTokenizedMessage::Create(EMessageSeverity::Warning, FText::Format(LOCTEXT("NewMeshMissingBoneFromLOD", "New mesh is missing bone '{0}' required by an LOD. LOD will be removed."), FText::FromName(MissingBoneName))), FFbxErrors::SkeletalMesh_LOD_MissingBone);
-				}
-				else
-				{
-					FStaticLODModel* NewLODModel = new(SkeletalMesh->GetImportedResource()->LODModels) FStaticLODModel( LODModel );
-			
-					NewLODModel->MultiSizeIndexContainer.RebuildIndexBuffer( MeshData->ExistingIndexBufferData[i] );
+						NewLODModel->RebuildIndexBuffer(&MeshData->ExistingIndexBufferData[i], &MeshData->ExistingAdjacencyIndexBufferData[i]);
 
-					SkeletalMesh->LODInfo.Add( LODInfo );
+						SkeletalMesh->LODInfo.Add(LODInfo);
+					}
 				}
+			}
+ 			
+			if (bRegenLODs)
+			{
+				TryRegenerateLODs(MeshData, SkeletalMesh);
 			}
 		}
 
@@ -990,6 +1051,8 @@ void RestoreExistingSkelMeshData(ExistingSkelMeshData* MeshData, USkeletalMesh* 
 				PhysicsAsset->PreviewSkeletalMesh = SkeletalMesh;
 			}
 		}
+
+		SkeletalMesh->ShadowPhysicsAsset = MeshData->ExistingShadowPhysicsAsset;
 
 		SkeletalMesh->Skeleton = MeshData->ExistingSkeleton;
 

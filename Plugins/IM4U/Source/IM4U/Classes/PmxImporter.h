@@ -395,8 +395,8 @@ PMXImportOptions* GetImportOptions(
 	UPmxImportUI* ImportUI,
 	bool bShowOptionDialog,
 	const FString& FullPath,
-	bool& OutOperationCanceled,
-	bool& OutImportAll,
+	bool& bOutOperationCanceled,
+	bool& bOutImportAll,
 	bool bIsObjFormat,
 	bool bForceImportType = false,
 	EPMXImportType ImportType = PMXIT_StaticMesh

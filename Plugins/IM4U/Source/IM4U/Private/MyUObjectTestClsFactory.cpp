@@ -1757,9 +1757,15 @@ UStaticMesh* UMyUObjectTestClsFactory::CreateStaticMesh(
 	// Add one LOD for the base mesh
 	FStaticMeshSourceModel* SrcModel = new(StaticMesh->SourceModels) FStaticMeshSourceModel();
 	SrcModel->RawMeshBulkData->SaveRawMesh(RawMesh);
-	StaticMesh->Materials = Materials;
+	//StaticMesh->Materials = Materials;
 
-	int32 NumSections = StaticMesh->Materials.Num();
+	for (int32 MatNum = 0; MatNum < Materials.Num(); ++MatNum)
+	{
+		StaticMesh->StaticMaterials.Add(FStaticMaterial());
+		StaticMesh->StaticMaterials[MatNum].MaterialInterface = Materials[MatNum];
+	}
+
+	int32 NumSections = StaticMesh->StaticMaterials.Num();
 
 	// Set up the SectionInfoMap to enable collision
 	for (int32 SectionIdx = 0; SectionIdx < NumSections; ++SectionIdx)

@@ -36,14 +36,14 @@ PMXImportOptions* GetImportOptions(
 	UPmxImportUI* ImportUI,
 	bool bShowOptionDialog,
 	const FString& FullPath,
-	bool& OutOperationCanceled,
+	bool& bOutOperationCanceled,
 	bool& bOutImportAll,
 	bool bIsObjFormat,
 	bool bForceImportType,
 	EPMXImportType ImportType 
 	)
 {
-	OutOperationCanceled = false;
+	bOutOperationCanceled = false;
 
 	if (bShowOptionDialog)
 	{
@@ -165,7 +165,7 @@ PMXImportOptions* GetImportOptions(
 		}
 		else
 		{
-			OutOperationCanceled = true;
+			bOutOperationCanceled = true;
 		}
 	}
 	else if (GIsAutomationTesting)

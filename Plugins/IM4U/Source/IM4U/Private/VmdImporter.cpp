@@ -13,6 +13,8 @@ namespace MMD4UE4
 
 	VmdMotionInfo::VmdMotionInfo()
 	{
+		maxFrame = 0;
+		minFrame = 0;
 	}
 
 

@@ -1,10 +1,11 @@
 ﻿
-// Copyright 2015 BlackMa9. All Rights Reserved.
+// Copyright 2015-2017 BlackMa9. All Rights Reserved.
 #pragma once
 
 
 #include "Engine.h"
 #include "MMDImportHelper.h"
+#include "VmdImportUI.h"
 
 
 // Copy From DxLib DxModelLoaderVMD.h
@@ -237,3 +238,87 @@ namespace MMD4UE4
 	};
 
 }
+
+
+///////////////////////////////////////////////////////////////////
+//	Compy Refafct FBImporter.h
+/////////////////////////////////////////////
+
+struct VMDImportOptions
+{
+	// General options
+	FVector ImportTranslation;
+	FRotator ImportRotation;
+	float ImportUniformScale;
+	//EMMDNormalImportMethod NormalImportMethod;
+	// Static Mesh options
+	bool bCombineToSingle;
+	//EVertexColorImportOptionMMD::Type VertexColorImportOption;
+	FColor VertexOverrideColor;
+	// Skeletal Mesh options
+	bool bImportMorph;
+	bool bImportAnimations;
+	// Animation option
+	USkeleton* SkeletonForAnimation;
+	USkeletalMesh* SkeletalMeshForAnimation;
+	//EFBXAnimationLengthImportType AnimationLengthImportType;
+	struct FIntPoint AnimationRange;
+	FString AnimationName;
+
+	UAnimSequence* AnimSequenceAsset;
+	UDataTable* MMD2UE4NameTableRow;
+	UMMDExtendAsset* MmdExtendAsset;
+};
+
+
+VMDImportOptions* GetVMDImportOptions(
+	class FVmdImporter* PmxImporter,
+	UVmdImportUI* ImportUI,
+	bool bShowOptionDialog,
+	const FString& FullPath,
+	bool& bOutOperationCanceled,
+	bool& bOutImportAll,
+	bool bIsObjFormat,
+	bool bForceImportType = false,
+	EVMDImportType ImportType = VMDIT_Animation);
+
+
+void ApplyVMDImportUIToImportOptions(
+	UVmdImportUI* ImportUI,
+	VMDImportOptions& InOutImportOptions);
+
+/************************/
+
+
+/**
+* Main VMD Importer class.
+*/
+class FVmdImporter
+{
+public:
+	~FVmdImporter();
+	/**
+	* Returns the importer singleton. It will be created on the first request.
+	*/
+	IM4U_API static FVmdImporter* GetInstance();
+	static void DeleteInstance();
+
+	/**
+	* Get the object of import options
+	*
+	* @return FBXImportOptions
+	*/
+	IM4U_API VMDImportOptions* GetImportOptions() const;
+
+	VMDImportOptions* ImportOptions;
+protected:
+	static TSharedPtr<FVmdImporter> StaticInstance;
+
+	FVmdImporter();
+	/**
+	* Clean up for destroy the Importer.
+	*/
+	void CleanUp();
+
+};
+

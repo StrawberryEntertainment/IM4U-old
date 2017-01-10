@@ -2,7 +2,7 @@
 #include "../IM4UPrivatePCH.h"
 
 #include "Factory/VmdImportOption.h"
-
+#if 0
 void SVMDImportOptions::Construct(const FArguments& InArgs)
 {
 	WidgetWindow = InArgs._WidgetWindow;
@@ -268,4 +268,6 @@ FText SVMDImportOptions::GetSelectedCurveTypeText() const
 		? FText::FromString(GetCurveTypeText(CurveModePtr))
 		: FText::GetEmpty();
 }
+#endif
+
 #endif

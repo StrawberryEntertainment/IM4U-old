@@ -61,7 +61,7 @@ class UPmxImportUI : public UObject
 		uint32 bCombineMeshes : 1;
 
 	/** Skeleton to use for imported asset. When importing a mesh, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
-	UPROPERTY(EditAnywhere, Category = Mesh, meta = (OBJRestrict = "false"))
+	//UPROPERTY(EditAnywhere, Category = Mesh, meta = (OBJRestrict = "false"))
 	class USkeleton* Skeleton;
 
 	/** If checked, create new PhysicsAsset if it doesn't have it */
@@ -152,7 +152,7 @@ class UPmxImportUI : public UObject
 		uint32 bImportAutoLuminousMaterials : 1;
 
 	/** Skeleton to use for imported asset. When importing a mesh, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
-	UPROPERTY(EditAnywhere, Category = Animation, meta = (OBJRestrict = "false"))
+	//UPROPERTY(EditAnywhere, Category = Animation, meta = (OBJRestrict = "false"))
 		class UAnimSequence* AnimSequenceAsset;
 
 	/** Skeleton to use for imported asset. When importing a mesh, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
@@ -160,7 +160,7 @@ class UPmxImportUI : public UObject
 		TArray<class UMMDSkeletalMeshImportData*> TestArrayList;
 	
 	/** MMD2UE4NameTableRow to use for imported asset. When importing a Anim, leaving this as "None" will create a new skeleton. When importing and animation this MUST be specified to import the asset. */
-	UPROPERTY(EditAnywhere, Category = Animation, meta = (OBJRestrict = "false"))
+	//UPROPERTY(EditAnywhere, Category = Animation, meta = (OBJRestrict = "false"))
 		UDataTable*  MMD2UE4NameTableRow;
 
 	/** mmd extend assset to use for calc ik . */

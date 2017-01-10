@@ -14,7 +14,7 @@
 //DEFINE_LOG_CATEGORY(LogVMDImportFactory);
 
 #define LOCTEXT_NAMESPACE "VMDImportFactory"
-
+#if 0
 /** Enum to indicate what to import CSV as */
 enum EVMDImportType
 {
@@ -134,3 +134,4 @@ public:
 	UPROPERTY(EditAnywhere, Category = AnimationList, meta = (ImportType = "Animation"))
 		TArray<int *> TestArrayList;
 };
+#endif
