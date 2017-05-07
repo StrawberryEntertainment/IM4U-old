@@ -1,7 +1,7 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
 #include "IM4UPrivatePCH.h"
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "MMDMeshImportData.h"
 
 UMMDMeshImportData::UMMDMeshImportData(const FObjectInitializer& ObjectInitializer)

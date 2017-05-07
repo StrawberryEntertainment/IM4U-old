@@ -4,17 +4,21 @@
 #include "IM4UPrivatePCH.h"
 #include "PmxMaterialImport.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "ComponentReregisterContext.h"
 #include "AssetRegistryModule.h"
 #include "AssetToolsModule.h"
 
 #include "ContentBrowserModule.h"
+#include "Editor/ContentBrowser/Public/IContentBrowserSingleton.h"
 
 #include "PackageTools.h"
 
 #include "ObjectTools.h"
 
+#include "Factories/TextureFactory.h"
+#include "Factories/MaterialFactoryNew.h"
+#include "Factories/MaterialInstanceConstantFactoryNew.h"
 
 #include "Materials/MaterialExpressionTextureSample.h"
 #include "Materials/MaterialExpressionTextureCoordinate.h"

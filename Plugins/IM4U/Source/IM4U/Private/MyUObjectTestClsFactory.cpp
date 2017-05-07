@@ -5,10 +5,11 @@
 #include "MyUObjectTestClsFactory.h"
 #include "MyUObjectTestCls.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "ComponentReregisterContext.h"
 #include "AssetRegistryModule.h"
 #include "AssetToolsModule.h"
+#include "Developer/AssetTools/Public/IAssetTools.h"
 
 #include "PackageTools.h"
 #include "RawMesh.h"

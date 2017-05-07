@@ -811,4 +811,6 @@ namespace MMD4UE4
 		UE_LOG(LogMMD4UE4_PmxMeshInfo, Warning, TEXT("PMX Importer Class Complete: FixSortParentBoneIndex"));
 		return bRet;
 	}
+
+#undef LOCTEXT_NAMESPACE
 }

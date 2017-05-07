@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 
 #include "MainFrame.h"
 #include "ModuleManager.h"

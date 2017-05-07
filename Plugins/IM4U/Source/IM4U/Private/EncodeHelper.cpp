@@ -2,55 +2,11 @@
 #include "IM4UPrivatePCH.h"
 #include "EncodeHelper.h"
 
-
-uint32 EncodeHelper::string_to_codepage(std::string code_str)
-{
-#ifdef _WIN32
-	std::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
-
-	if (code_str == "shift_jis" || code_str == "shift-jis") {
-		return CP_ACP;
-	}
-
-	if (code_str == "utf-8") {
-		return CP_UTF8;
-	}
-#endif
-	// 
-	return 0;
-}
-
-#ifdef _WIN32
 std::string EncodeHelper::convert_encoding(const std::string &str, const char *fromcode, const char *tocode)
 {
-	uint32 from_code = string_to_codepage(std::string(fromcode));
-	uint32 to_code = string_to_codepage(std::string(tocode));
-
-	WCHAR *utf16str;
-	char *outstr;
-	int rtn_len;
-
-	// utf-16に変換
-	int utf16str_len = MultiByteToWideChar(from_code, 0, str.c_str(), -1, NULL, 0);
-	utf16str = new WCHAR[utf16str_len + 1];
-	rtn_len = MultiByteToWideChar(from_code, 0, str.c_str(), -1, utf16str, utf16str_len);
-	utf16str[rtn_len] = L'\0';
-
-	// utf-16から任意の文字コードに変換
-	int outstr_len = WideCharToMultiByte(to_code, 0, utf16str, -1, NULL, 0, NULL, NULL);
-	outstr = new char[outstr_len + 1];
-	rtn_len = WideCharToMultiByte(to_code, 0, utf16str, -1, outstr, outstr_len, NULL, NULL);
-	outstr[rtn_len] = '\0';
-
-	std::string s(outstr);
-	delete[] utf16str;
-	delete[] outstr;
-
-	return s;
-}
+#ifdef _WIN32
+	return libEncodeHelperWin.convert_encoding(str,fromcode, tocode);
 #else
-std::string EncodeHelper::convert_encoding(const std::string &str, const char *fromcode, const char *tocode)
-{
 	char *outstr, *instr;
 	iconv_t icd;
 	size_t instr_len = std::strlen(str.c_str());
@@ -91,5 +47,5 @@ std::string EncodeHelper::convert_encoding(const std::string &str, const char *f
 	delete[] outstr;
 
 	return s;
-}
 #endif
+}

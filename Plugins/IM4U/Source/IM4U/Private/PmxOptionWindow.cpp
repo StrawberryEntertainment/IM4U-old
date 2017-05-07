@@ -4,7 +4,7 @@
 
 #include "IM4UPrivatePCH.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "PmxOptionWindow.h"
 #include "Editor/ContentBrowser/Public/ContentBrowserModule.h"
 #include "IDocumentation.h"

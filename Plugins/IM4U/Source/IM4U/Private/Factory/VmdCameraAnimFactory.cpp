@@ -36,7 +36,8 @@
 //ここの関数を使ってVMDのカメラモーションをMatineeAnimにインポートさせたい予定
 #if 1 //all
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
+#include "Editor.h"
 #include "Matinee/MatineeActor.h"
 #include "Matinee/MatineeActorCameraAnim.h"
 #include "Matinee/InterpGroup.h"

@@ -3,7 +3,7 @@
 
 #include "IM4UPrivatePCH.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "Factories.h"
 #include "BusyCursor.h"
 #include "SSkeletonWidget.h"
@@ -35,6 +35,7 @@
 #include "ComponentReregisterContext.h"
 
 #include "PhysicsEngine/PhysicsAsset.h"
+#include "Editor/UnrealEd/Public/PhysicsAssetUtils.h"
 ////////////
 
 #include "PmxFactory.h"
@@ -554,6 +555,7 @@ UObject* UPmxFactory::FactoryCreateBinary
 						//end phese
 						if (NewObject)
 						{
+							TotalNumNodes++;
 							NodeIndex++;
 							FFormatNamedArguments Args;
 							Args.Add(TEXT("NodeIndex"), NodeIndex);
@@ -1544,3 +1546,5 @@ UMMDExtendAsset * UPmxFactory::CreateMMDExtendFromMMDModel(
 
 	return NewMMDExtendAsset;
 }
+
+#undef LOCTEXT_NAMESPACE

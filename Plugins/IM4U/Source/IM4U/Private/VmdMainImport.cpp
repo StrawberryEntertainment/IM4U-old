@@ -6,7 +6,7 @@ Main implementation of FFbxImporter : import FBX data to Unreal
 
 #include "IM4UPrivatePCH.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 //#include "FeedbackContextEditor.h"
 
 #include "Factories.h"
@@ -297,3 +297,6 @@ bool UVmdImportUI::CanEditChange(const UProperty* InProperty) const
 
 	return bIsMutable;
 }
+
+
+#undef LOCTEXT_NAMESPACE

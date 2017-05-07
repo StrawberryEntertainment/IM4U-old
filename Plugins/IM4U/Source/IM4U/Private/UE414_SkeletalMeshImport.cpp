@@ -6,7 +6,7 @@
 
 #include "IM4UPrivatePCH.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "Factories.h"
 #include "SkelImport.h"
 #include "SkeletalMeshSorting.h"

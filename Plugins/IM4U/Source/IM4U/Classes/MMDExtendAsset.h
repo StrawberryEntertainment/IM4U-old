@@ -4,7 +4,7 @@
 #include "Engine.h"
 #include "Factories/Factory.h"
 //#include "Factories/FbxFactory.h"
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "Factories.h"
 #include "BusyCursor.h"
 #include "SSkeletonWidget.h"

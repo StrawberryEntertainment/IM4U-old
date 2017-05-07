@@ -5,7 +5,7 @@
 #include "Factory/VmdFactory.h"
 #include "VmdImporter.h"
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "SkelImport.h"
 #include "AnimationUtils.h"
 #include "ObjectTools.h"

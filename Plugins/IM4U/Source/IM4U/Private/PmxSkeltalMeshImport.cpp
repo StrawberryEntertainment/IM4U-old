@@ -3,7 +3,7 @@
 #include "IM4UPrivatePCH.h"
 
 
-#include "UnrealEd.h"
+#include "CoreMinimal.h"
 #include "Factories.h"
 #include "BusyCursor.h"
 #include "SSkeletonWidget.h"
@@ -1659,7 +1659,6 @@ void UPmxFactory::ImportMorphTargetsInternal(
 
 			// now we get a shape for whole mesh, import to unreal as a morph target
 			// @todo AssetImportData do we need import data for this temp mesh?
-			UFbxSkeletalMeshImportData* TmpMeshImportData = NULL;
 			USkeletalMesh* TmpSkeletalMesh 
 				= (USkeletalMesh*)ImportSkeletalMesh(
 					GetTransientPackage(),
