@@ -17,6 +17,7 @@
 /////////////////////////
 
 #include "Engine.h"
+#include "Editor.h"
 #include "TextureLayout.h"
 #include "SkelImport.h"
 //#include "FbxImporter.h"
@@ -1013,10 +1014,6 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 
 		if (ExistingSkelMesh)
 		{
-#if WITH_APEX_CLOTHING
-			//for supporting re-import 
-			ApexClothingUtils::BackupClothingDataFromSkeletalMesh(ExistingSkelMesh);
-#endif// #if WITH_APEX_CLOTHING
 
 			ExistingSkelMesh->PreEditChange(NULL);
 			//ExistSkelMeshDataPtr = SaveExistingSkelMeshData(ExistingSkelMesh);
@@ -1424,10 +1421,6 @@ USkeletalMesh* UPmxFactory::ImportSkeletalMesh(
 		}
 	}
 #endif
-#if WITH_APEX_CLOTHING
-	//for supporting re-import 
-	ApexClothingUtils::ReapplyClothingDataToSkeletalMesh(SkeletalMesh);
-#endif// #if WITH_APEX_CLOTHING
 	return SkeletalMesh;
 }
 

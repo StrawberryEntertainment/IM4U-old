@@ -21,7 +21,7 @@ namespace UnrealBuildTool.Rules
 			get { return Path.GetFullPath(Path.Combine(ThirdPartyPath, "LibEncodeHelperWin", "lib")); }
 		}
 		
-		public IM4U(TargetInfo Target)
+		public IM4U(ReadOnlyTargetRules Target) : base(Target)
 		{
 			string LibEHWinSourcePath = ThirdPartyPath + "LibEncodeHelperWin/";
 

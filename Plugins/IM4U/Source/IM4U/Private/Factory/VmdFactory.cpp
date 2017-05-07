@@ -617,16 +617,16 @@ bool UVmdFactory::ImportMorphCurveToAnimSequence(
 		Skeleton->AddSmartNameAndModify(USkeleton::AnimCurveMappingName, Name, NewName);
 
 		// FloatCurve for Morph Target 
-		int CurveFlags = ACF_DriveMorphTarget_DEPRECATED;
+		int CurveFlags = AACF_DriveMorphTarget_DEPRECATED;
 
 		FFloatCurve * CurveToImport
-			= static_cast<FFloatCurve *>(DestSeq->RawCurveData.GetCurveData(NewName.UID, FRawCurveTracks::FloatType));
+			= static_cast<FFloatCurve *>(DestSeq->RawCurveData.GetCurveData(NewName.UID, ERawCurveTrackTypes::RCT_Float));
 		if (CurveToImport == NULL)
 		{
 			if (DestSeq->RawCurveData.AddCurveData(NewName, CurveFlags))
 			{
 				CurveToImport
-					= static_cast<FFloatCurve *> (DestSeq->RawCurveData.GetCurveData(NewName.UID, FRawCurveTracks::FloatType));
+					= static_cast<FFloatCurve *> (DestSeq->RawCurveData.GetCurveData(NewName.UID, ERawCurveTrackTypes::RCT_Float));
 				CurveToImport->Name = NewName;
 			}
 			else
